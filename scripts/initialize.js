@@ -1,7 +1,7 @@
 var Promise = require('bluebird')
 var inq = require('inquirer')
 
-var fs = Promise.promisifiyAll(require('fs'))
+var fs = Promise.promisifyAll(require('fs'))
 
 var _ = require('lodash')
 _.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
@@ -47,54 +47,57 @@ var questions = [
         type: 'input',
         name: 'dbName',
         message: 'MySQL database',
-        when: answered('dbUser')
+        when: answered('dbUser'),
+        default: function(a) { return a.dbUser }
     }, {
         type: 'input',
         name: 'ftpUser',
-        message: 'FTP username'
+        message: 'FTP username',
+        default: function(a) { return a.dbUser }
     }, {
         type: 'input',
         name: 'ftpPass',
         message: 'FTP password',
-        when: answered('ftpUser')
+        when: answered('ftpUser'),
+        default: function(a) { return a.dbPass }
     }
 ]
 
 function setPackageName (name) {
     var file = 'package.json'
-    var write = _.partial(fs.writeFileAsync, file)
     return fs.readFileAsync(file)
         .then(JSON.parse)
         .then(function(obj) {
             obj.name = name
-            return JSON.stringify(obj)
+            return JSON.stringify(obj, null, '  ')
         })
-        .then(write)
+        .then(function(content) {
+            return fs.writeFileAsync(file, content, 'utf8')
+        })
 }
 
 function replaceIntoFiles (context) {
-    var files = templatizedFiles
-        'package.json',
-        'craft/config/general.php',
-        'craft/config/db.php'
-    ]
     return Promise.all(templatizedFiles.map(function(file) {
         return fs.readFileAsync(file)
             .then(function(tpl) {
                 return _.template(tpl)(context)
             })
-            .then(_.partial(fs.writeFileAsync, file))
+            .then(function(content) {
+                return fs.writeFileAsync(file, content, 'utf8')
+            })
     }))
 }
 
 // 1. update package.json with name
 // 2. update craft/config/general
+// 3. inform user of changes
 inq.prompt(questions, function (a, done) {
 
     setPackageName(a.name)
         .then(replaceIntoFiles(a))
         .then(function(res) {
-            console.log(results);
-            done(null)
+            templatizedFiles.forEach(function(file) {
+                console.log('Updated file:', file);
+            })
         })
 })

@@ -1,0 +1,42 @@
+{% import 'macros.twig' as m %}
+
+<div class="bg--grey">
+    <footer class="row row--text__content footer mt+">
+
+        <div class="small-12 medium-3 columns">
+            <h4 class="heading--small">Who we are</h4>
+            {{m.linkList(footer.whoWeAre)}}
+        </div>
+
+        <div class="small-12 medium-3 columns">
+            <h4 class="heading--small">What we do</h4>
+            {{m.linkList(footer.whatWeDo)}}
+        </div>
+
+        <div class="small-12 medium-3 columns">
+            <h4 class="heading--small">Contact us</h4>
+            <ul>
+            <li class="h--small h--bold" style="line-height: 1.4;">
+            {{footer.companyName}}<br>
+            {{footer.companyAddress|nl2br}}
+            </li>
+            <li><a class="nav" href="mailto:{{footer.email}}">{{footer.email}}</a></li>
+            <li><a class="nav" href="tel{{footer.phoneNumber}}">{{footer.phoneNumber}}</a></li>
+            </ul>
+        </div>
+
+        <div class="small-12 medium-3 columns mb+ pb+">
+            <a onclick="javascript:body.scrollTop=0;" class="h--small uc">Back to top</a>
+            {% include 'partials/components/search-form' %}
+            <div class="pt-">
+            {% set shareCls = "share__btn share__btn--footer" %}
+                {% for block in footer.socialLinks %}
+                <a class="{{shareCls}} {{block.iconClass}}"
+                    href="{{block.linkTo.url}}">
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+
+    </footer>
+</div>
