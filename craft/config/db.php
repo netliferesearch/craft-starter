@@ -8,20 +8,20 @@
  */
 
 return array(
-
-	// The database server name or IP address. Usually this is 'localhost' or '127.0.0.1'.
-	'server' => 'localhost',
-
-	// The database username to connect with.
-	'user' => 'root',
-
-	// The database password to connect with.
-	'password' => '',
-
-	// The name of the database to select.
-	'database' => '',
-
-	// The prefix to use when naming tables. This can be no more than 5 characters.
-	'tablePrefix' => 'craft',
-
+    '*' => array(
+        'database' => '{{name}}',
+        'tablePrefix' => 'craft',
+    ),
+    'localhost' => array(
+        'server' => 'server.prototypes.no',
+        'user' => '{{dbUser}}',
+        'password' => '{{dbPass}}',
+        'database' => '{{dbName}}'
+    ),
+    'prototypes.no' => array(
+        'server' => 'localhost',
+        'user' => '{{dbUser}}',
+        'password' => '{{dbPass}}',
+        'database' => '{{dbName}}'
+    )
 );

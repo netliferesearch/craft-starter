@@ -5,8 +5,5 @@
     "authors": [
         { "name": "Raymond Julin", "email": "raymond.julin@gmail.com" }
     ],
-    "scripts": {
-        "post-create-project-cmd": "php scripts/initialize"
-    },
     "require": {}
 }
