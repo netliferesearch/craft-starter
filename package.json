@@ -6,6 +6,7 @@
   "private": true,
   "scripts": {
     "assets": "wget -m -nH ftp://{{ftpUser}}:{{ftpPass}}@ftp.prototypes.no/www/images",
+    "test": "./node_modules/standard/bin/cmd.js",
     "init": "node scripts/initialize",
     "start": "sh start.sh"
   },
@@ -25,7 +26,15 @@
     "gulp-util": "^3.0.4",
     "inquirer": "^0.9.0",
     "lodash": "^3.10.1",
+    "standard": "^5.1.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.2.1"
+  },
+  "standard": {
+    "ignore": [
+      "craft",
+      "public/vendor",
+      "public/js/dist.js"
+    ]
   }
 }
