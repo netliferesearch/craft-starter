@@ -3,10 +3,10 @@
     "description": "Craft CMS project starter",
     "license": "MIT",
     "authors": [
-        {
-            "name": "Raymond Julin",
-            "email": "raymond.julin@gmail.com"
-        }
+        { "name": "Raymond Julin", "email": "raymond.julin@gmail.com" }
     ],
+    "scripts": {
+        "post-create-project-cmd": "php scripts/initialize"
+    },
     "require": {}
 }
