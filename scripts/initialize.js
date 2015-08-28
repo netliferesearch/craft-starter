@@ -7,6 +7,7 @@ var _ = require('lodash')
 _.templateSettings.interpolate = /{{([\s\S]+?)}}/g
 
 var templatizedFiles = [
+  'README.md',
   '.git/config',
   'package.json',
   'craft/config/general.php',
@@ -39,7 +40,7 @@ var questions = [
     type: 'input',
     name: 'dbUser',
     message: 'MySQL username',
-    default: function (a) { return 'craft_' + a.name }
+    default: function (a) { return 'netlifer_' + a.name }
   },
   {
     type: 'input',
@@ -58,7 +59,7 @@ var questions = [
     type: 'input',
     name: 'ftpUser',
     message: 'FTP username',
-    default: function (a) { return a.dbUser }
+    default: function (a) { return a.dbUser.replace('netlifer_', '') }
   },
   {
     type: 'input',
@@ -75,6 +76,12 @@ var questions = [
   }
 ]
 
+function writeFileFn (file) {
+  return function (content) {
+    return fs.writeFileAsync(file, content, 'utf8')
+  }
+}
+
 function setPackageName (name) {
   var file = 'package.json'
   return fs.readFileAsync(file)
@@ -83,9 +90,7 @@ function setPackageName (name) {
       obj.name = name
       return JSON.stringify(obj, null, '  ')
     })
-    .then(function (content) {
-      return fs.writeFileAsync(file, content, 'utf8')
-    })
+    .then(writeFileFn(file))
 }
 
 function replaceIntoFiles (context, files) {
@@ -94,17 +99,16 @@ function replaceIntoFiles (context, files) {
     .then(function (tpl) {
       return _.template(tpl)(context)
     })
-    .then(function (content) {
-      return fs.writeFileAsync(file, content, 'utf8')
-    })
+    .then(writeFileFn(file))
   }))
 }
 
 function copyFile (from, to) {
   return fs.readFileAsync(from)
-    .then(function (content) { 
-      return fs.writeFileAsync(to, content, 'utf-8')
+    .then(function(content) {
+      return content.toString()
     })
+    .then(writeFileFn(to))
 }
 
 // 1. update package.json with name
@@ -113,8 +117,14 @@ function copyFile (from, to) {
 inq.prompt(questions, function (a, done) {
 
   setPackageName(a.name)
-    .then(copyFile('./.templates/gitconfig', '.git/config'))
+    .then(Promise.all([
+      copyFile('.templates/gitconfig', '.git/config'),
+      copyFile('.templates/README.md', 'README.md')
+    ]))
     .then(replaceIntoFiles(a, templatizedFiles))
+    .error(function (err) {
+      console.log('err', err);
+    })
     .then(function () {
       templatizedFiles.forEach(function (file) {
         console.log('Updated file:', file)
