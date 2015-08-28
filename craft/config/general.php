@@ -10,19 +10,19 @@ return array(
         'devMode' => true,
         'cache' => false,
         'siteUrl' => array(
-            'en' => 'http://localhost:9091',
-            'no' => 'http://localhost:9091/no'
+            'no' => 'http://localhost:9091',
+            'en' => 'http://localhost:9091/en'
         ),
         'environmentVariables' => array(
-            'siteUrl' => 'http://localhost:9091',
+            'siteUrl' => 'http://localhost:8080',
             'basePath' => realpath(getcwd() . '/public/')
         )
     ),
     'prototypes.no' => array(
         'omitScriptNameInUrls' => true,
         'siteUrl' => array(
-            'en' => 'http://{{name}}.prototypes.no',
-            'no' => 'http://{{name}}.prototypes.no/no',
+            'no' => 'http://{{name}}.prototypes.no',
+            'en' => 'http://{{name}}.prototypes.no/en',
         ),
         'environmentVariables' => array(
             'siteUrl' => 'http://{{name}}.prototypes.no',

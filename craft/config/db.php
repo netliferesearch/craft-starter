@@ -9,10 +9,7 @@
 
 return array(
     '*' => array(
-        'database' => '{{name}}',
         'tablePrefix' => 'craft',
-    ),
-    'localhost' => array(
         'server' => 'server.prototypes.no',
         'user' => '{{dbUser}}',
         'password' => '{{dbPass}}',
