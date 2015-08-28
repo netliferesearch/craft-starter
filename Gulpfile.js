@@ -1,5 +1,6 @@
 var gulp = require('gulp')
 var sass = require('gulp-sass')
+var plumber = require('gulp-plumber')
 var watchify = require('watchify')
 var babelify = require('babelify')
 var browserify = require('browserify')
@@ -35,7 +36,9 @@ gulp.task('js', buildJs)
 
 gulp.task('sass', function () {
   return gulp.src('style.scss')
+    .pipe(plumber())
     .pipe(sass().on('error', sass.logError))
+    .pipe(plumber.stop())
     .pipe(inlineAssets({
       baseDir: dir.dist,
       debug: true

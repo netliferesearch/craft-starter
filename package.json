@@ -21,6 +21,7 @@
     "gulp-css-purge": "^1.0.27",
     "gulp-inline-base64": "^0.1.4",
     "gulp-minify-css": "^1.1.1",
+    "gulp-plumber": "^1.0.1",
     "gulp-sass": "^2.0.0",
     "gulp-sourcemaps": "^1.5.2",
     "gulp-util": "^3.0.4",
