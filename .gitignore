@@ -4,6 +4,7 @@ node_modules
 .DS_Store
 npm-debug.log
 .sass-cache
+.scssc
 *.bak
 craft/storage/runtime
 craft/storage/backups
