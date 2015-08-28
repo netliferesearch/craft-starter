@@ -5,10 +5,10 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "assets": "wget -m -nH ftp://{{ftpUser}}:{{ftpPass}}@ftp.prototypes.no/www/images",
-    "test": "./node_modules/standard/bin/cmd.js",
+    "assets": "wget -m -nH ftp://{{ftpUser}}:{{ftpPass}}@ftp.prototypes.no/public/images",
     "init": "node scripts/initialize",
-    "start": "sh start.sh"
+    "start": "sh start.sh",
+    "test": "./node_modules/standard/bin/cmd.js"
   },
   "author": "Netlife Research",
   "license": "",
@@ -33,8 +33,8 @@
   "standard": {
     "ignore": [
       "craft",
-      "public/vendor",
-      "public/js/dist.js"
+      "public/js/dist.js",
+      "public/vendor"
     ]
   }
 }

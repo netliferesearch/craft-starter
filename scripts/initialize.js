@@ -113,7 +113,7 @@ function copyFile (from, to) {
 inq.prompt(questions, function (a, done) {
 
   setPackageName(a.name)
-    .then(copyFile('.templates/gitconfig', '.git/config'))
+    .then(copyFile('./.templates/gitconfig', '.git/config'))
     .then(replaceIntoFiles(a, templatizedFiles))
     .then(function () {
       templatizedFiles.forEach(function (file) {

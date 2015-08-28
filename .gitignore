@@ -1,3 +1,10 @@
-/vendor/
+public/vendor/
+public/images/*
 node_modules
 .DS_Store
+npm-debug.log
+.sass-cache
+*.bak
+craft/storage/runtime
+craft/storage/backups
+craft/storage/userphotos

@@ -15,7 +15,7 @@ return array(
         ),
         'environmentVariables' => array(
             'siteUrl' => 'http://localhost:9091',
-            'basePath' => realpath(getcwd() . '/www/')
+            'basePath' => realpath(getcwd() . '/public/')
         )
     ),
     'prototypes.no' => array(
@@ -26,7 +26,7 @@ return array(
         ),
         'environmentVariables' => array(
             'siteUrl' => 'http://{{name}}.prototypes.no',
-            'basePath' => realpath(getcwd() . '/www/')
+            'basePath' => realpath(getcwd() . '/public/')
         )
     )
 );
