@@ -4,9 +4,9 @@
 	<meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
 
-	<title>{% if title is defined %}{{ title }} - {% endif %}{{ siteName }}</title>
+    <title>{% if title is defined %}{{ title }} - {% endif %}{{ siteName }}</title>
 
-	<link rel="home" href="{{ siteUrl }}" />
+    <link rel="home" href="{{ siteUrl }}" />
     <link rel="stylesheet" href="/style.css">
 
     {% includeJsFile "/vendor/modernizr/modernizr.js" %}
@@ -19,7 +19,7 @@
     {% include 'partials/header' %}
 {% endcache %}
 
-{% if entry is defined and not craft.request.isLivePreview %}
+{% if craft.Adminbar is defined and entry is defined and not craft.request.isLivePreview %}
     {{ craft.Adminbar.show(entry) }}
 {% endif %}
 

@@ -10,8 +10,8 @@ return array(
         'devMode' => true,
         'cache' => false,
         'siteUrl' => array(
-            'no' => 'http://localhost:9091',
-            'en' => 'http://localhost:9091/en'
+            'no' => 'http://localhost:8080',
+            'en' => 'http://localhost:8080/en'
         ),
         'environmentVariables' => array(
             'siteUrl' => 'http://localhost:8080',
