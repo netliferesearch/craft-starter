@@ -60,7 +60,7 @@ gulp.task('prod-sass', function () {
 })
 
 gulp.task('watch', function () {
-  gulp.watch(['style.scss', 'css/*.scss'], ['sass'])
+  gulp.watch(['style.scss', 'scss/*.scss'], ['sass'])
 })
 
 gulp.task('default', ['sass', 'js', 'watch'])
