@@ -119,7 +119,8 @@ inq.prompt(questions, function (a, done) {
   Promise.all([
     copyFile('.templates/gitconfig', '.git/config'),
     copyFile('.templates/README.md', 'README.md')
-  ]).then(setPackageName(a.name))
+  ])
+    //.then(setPackageName(a.name))
     .then(replaceIntoFiles(a, templatizedFiles))
     .error(function (err) {
       console.log('err', err);
