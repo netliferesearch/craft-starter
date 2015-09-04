@@ -10,6 +10,9 @@ The file `public/js/main.js` is built into `public/js/dist.js`, and it uses Brow
 
 Both files are properly included in `craft/templates/_layout.twig`
 
+## Install craft
+Go to [http://localhost:8080/admin](http://localhost:8080/admin) and follow the wizard to install craft.
+
 ## Dependencies
 
 1. `npm i`
