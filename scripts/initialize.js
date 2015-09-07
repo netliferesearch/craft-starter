@@ -1,14 +1,18 @@
 var Promise = require('bluebird')
 var inq = require('inquirer')
+var chalk = require('chalk')
+
+var log = console.log.bind(console)
 
 var fs = Promise.promisifyAll(require('fs'))
 
 var _ = require('lodash')
 _.templateSettings.interpolate = /{{([\s\S]+?)}}/g
 
+var logErr = console.log.bind(console, 'err')
+
 var templatizedFiles = [
   'README.md',
-  '.git/config',
   'package.json',
   'craft/config/general.php',
   'craft/config/db.php'
@@ -82,25 +86,20 @@ function writeFileFn (file) {
   }
 }
 
-function setPackageName (name) {
-  var file = 'package.json'
+function templateFile (context, file) {
   return fs.readFileAsync(file)
-    .then(JSON.parse)
-    .then(function (obj) {
-      obj.name = name
-      return JSON.stringify(obj, null, '  ')
-    })
-    .then(writeFileFn(file))
-}
-
-function replaceIntoFiles (context, files) {
-  return Promise.all(files.map(function (file) {
-    return fs.readFileAsync(file)
     .then(function (tpl) {
       return _.template(tpl)(context)
     })
-    .then(writeFileFn(file))
-  }))
+    .then(function (content) {
+      return writeFileFn(file)(content).then(function () {
+        return content;
+      });
+    });
+}
+
+function replaceIntoFiles (context, files) {
+  return Promise.all(files.map(templateFile.bind(null, context)));
 }
 
 function copyFile (from, to) {
@@ -114,20 +113,25 @@ function copyFile (from, to) {
 // 1. update package.json with name
 // 2. update craft/config/general
 // 3. inform user of changes
-inq.prompt(questions, function (a, done) {
+inq.prompt(questions, function (context, done) {
+  var logWrite = function (text) {
+    log(chalk.bold.green('✓'), text)
+  }
+
+  log(chalk.blue.underline('Setting up configuration files'))
 
   Promise.all([
-    copyFile('.templates/gitconfig', '.git/config'),
     copyFile('.templates/README.md', 'README.md')
   ])
-    //.then(setPackageName(a.name))
-    .then(replaceIntoFiles(a, templatizedFiles))
-    .error(function (err) {
-      console.log('err', err);
-    })
+    .then(replaceIntoFiles(context, templatizedFiles))
+    .error(logErr)
+    .then(function () { templatizedFiles.forEach(logWrite); })
     .then(function () {
-      templatizedFiles.forEach(function (file) {
-        console.log('Updated file:', file)
+      var filename = '.templates/gitftp'
+      return templateFile(context, filename).then(function (gitFtpConfig) {
+        log("\n");
+        log(chalk.blue('Add this to the end of', chalk.underline('.git/config')))
+        log(gitFtpConfig);
       })
     })
 })
