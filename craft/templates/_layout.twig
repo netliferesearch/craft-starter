@@ -15,13 +15,13 @@
 </head>
 
 <body>
+{% if craft.Adminbar is defined and entry is defined and not craft.request.isLivePreview %}
+  {{ craft.Adminbar.show(entry) }}
+{% endif %}  
+  
 {% cache if craft.config.cache %}
   {% include 'partials/header' %}
 {% endcache %}
-
-{% if craft.Adminbar is defined and entry is defined and not craft.request.isLivePreview %}
-  {{ craft.Adminbar.show(entry) }}
-{% endif %}
 
   <main id="top">
     {% block content %}
