@@ -4,6 +4,7 @@ define('BASEPATH', realpath(CRAFT_BASE_PATH . '/../') . '/');
 return array(
     '*' => array(
         'generateTransformsBeforePageLoad' => true,
+        'defaultCpLanguage' => 'en',
         'cache' => true,
     ),
     'localhost' => array(
