@@ -5,5 +5,11 @@
     "authors": [
         { "name": "Raymond Julin", "email": "raymond.julin@gmail.com" }
     ],
-    "require": {}
+    "require": {
+      "ext-mbstring": "*",
+      "ext-imagick": "*"
+    },
+    "requireDev": {
+        "heroku/heroku-buildpack-php": "^82.0"
+    }
 }
