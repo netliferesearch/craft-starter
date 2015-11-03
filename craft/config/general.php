@@ -10,23 +10,17 @@ return array(
     'localhost' => array(
         'devMode' => true,
         'cache' => false,
-        'siteUrl' => array(
-            'no' => 'http://localhost:8080',
-            'en' => 'http://localhost:8080/en'
-        ),
+        'siteUrl' => 'http://localhost:8080/',
         'environmentVariables' => array(
             'siteUrl' => 'http://localhost:8080',
             'basePath' => realpath(getcwd() . '/public/')
         )
     ),
-    'prototypes.no' => array(
+    'herokuapp.com' => array(
         'omitScriptNameInUrls' => true,
-        'siteUrl' => array(
-            'no' => 'http://{{name}}.prototypes.no',
-            'en' => 'http://{{name}}.prototypes.no/en',
-        ),
+        'siteUrl' => 'http://{{name}}.herokuapp.com/',
         'environmentVariables' => array(
-            'siteUrl' => 'http://{{name}}.prototypes.no',
+            'siteUrl' => 'http://{{name}}.herokuapp.com',
             'basePath' => realpath(getcwd() . '/public/')
         )
     )

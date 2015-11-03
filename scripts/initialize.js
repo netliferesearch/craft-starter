@@ -14,8 +14,7 @@ var logErr = console.log.bind(console, 'err')
 var templatizedFiles = [
   'README.md',
   'package.json',
-  'craft/config/general.php',
-  'craft/config/db.php'
+  'craft/config/general.php'
 ]
 
 /**
@@ -39,38 +38,6 @@ var questions = [
     validate: function (val) {
       return (!!val.match(/^[a-zA-Z0-9\-_]+$/) || 'Invalid name')
     }
-  },
-  {
-    type: 'input',
-    name: 'dbUser',
-    message: 'MySQL username',
-    default: function (a) { return 'netlifer_' + a.name }
-  },
-  {
-    type: 'input',
-    name: 'dbPass',
-    message: 'MySQL password',
-    when: answered('dbUser')
-  },
-  {
-    type: 'input',
-    name: 'dbName',
-    message: 'MySQL database',
-    when: answered('dbUser'),
-    default: function (a) { return a.dbUser }
-  },
-  {
-    type: 'input',
-    name: 'ftpUser',
-    message: 'FTP username',
-    default: function (a) { return a.dbUser.replace('netlifer_', '') }
-  },
-  {
-    type: 'input',
-    name: 'ftpPass',
-    message: 'FTP password',
-    when: answered('ftpUser'),
-    default: function (a) { return a.dbPass }
   },
   {
     type: 'input',
