@@ -10,9 +10,9 @@ return array(
     'localhost' => array(
         'devMode' => true,
         'cache' => false,
-        'siteUrl' => 'http://localhost:8080/',
+        'siteUrl' => 'http://localhost:5000/',
         'environmentVariables' => array(
-            'siteUrl' => 'http://localhost:8080',
+            'siteUrl' => 'http://localhost:5000',
             'basePath' => realpath(getcwd() . '/public/')
         )
     ),

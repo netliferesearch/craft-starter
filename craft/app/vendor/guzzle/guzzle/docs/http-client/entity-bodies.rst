@@ -30,7 +30,7 @@ Here's an example of gzip compressing a text file then sending the file to a URL
     $body->rewind();
 
     // Send a request using the body
-    $response = $client->put('http://localhost:8080/uploads', null, $body)->send();
+    $response = $client->put('http://localhost:5000/uploads', null, $body)->send();
 
 The body of the request can be specified in the ``Client::put()`` or ``Client::post()``  method, or, you can specify
 the body of the request by calling the ``setBody()`` method of any

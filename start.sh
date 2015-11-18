@@ -1,6 +1,6 @@
 #!/bin/bash
 
-php -S localhost:8080 -t public & PIDPHP=$!
+php -S localhost:5000 -t public & PIDPHP=$!
 gulp & PIDGULP=$!
 
 function cleanit {

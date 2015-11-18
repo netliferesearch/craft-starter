@@ -13,7 +13,7 @@ To run the test suite for this package, you should serve selenium-1-tests via HT
 ```
 selenium-1-tests/ $ python -m SimpleHTTPServer 8080
 ```
-and configure the constant that you will be asked for accordingly if you do not run the server on localhost:8080.
+and configure the constant that you will be asked for accordingly if you do not run the server on localhost:5000.
 You also need to run a Selenium Server:
 ```
 $ java -jar  selenium-server-standalone-2.x.xjar
