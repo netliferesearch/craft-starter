@@ -1,3 +1,6 @@
+{% if not craft.config.devMode %}
+{% requireLogin %}
+{% endif %}
 <!doctype html>
 
 <head>
