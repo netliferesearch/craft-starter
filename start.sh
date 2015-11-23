@@ -1,6 +1,9 @@
 #!/bin/bash
+# Import database credentials
+DB=`grep DATABASE .env`
+export $DB
 
-php -S localhost:5000 -t public & PIDPHP=$!
+heroku local & PIDPHP=$!
 gulp & PIDGULP=$!
 
 function cleanit {

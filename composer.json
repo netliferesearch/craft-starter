@@ -6,10 +6,11 @@
         { "name": "Raymond Julin", "email": "raymond.julin@gmail.com" }
     ],
     "require": {
+      "php": "~5.6.0",
       "ext-mbstring": "*",
       "ext-imagick": "*"
     },
     "requireDev": {
-        "heroku/heroku-buildpack-php": "^82.0"
+        "heroku/heroku-buildpack-php": "^83.0"
     }
 }

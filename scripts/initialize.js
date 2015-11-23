@@ -12,7 +12,6 @@ _.templateSettings.interpolate = /{{([\s\S]+?)}}/g
 var logErr = console.log.bind(console, 'err')
 
 var templatizedFiles = [
-  'README.md',
   'package.json',
   'craft/config/general.php'
 ]
@@ -69,14 +68,6 @@ function replaceIntoFiles (context, files) {
   return Promise.all(files.map(templateFile.bind(null, context)));
 }
 
-function copyFile (from, to) {
-  return fs.readFileAsync(from)
-    .then(function(content) {
-      return content.toString()
-    })
-    .then(writeFileFn(to))
-}
-
 // 1. update package.json with name
 // 2. update craft/config/general
 // 3. inform user of changes
@@ -87,18 +78,7 @@ inq.prompt(questions, function (context, done) {
 
   log(chalk.blue.underline('Setting up configuration files'))
 
-  Promise.all([
-    copyFile('.templates/README.md', 'README.md')
-  ])
-    .then(replaceIntoFiles(context, templatizedFiles))
+  replaceIntoFiles(context, templatizedFiles)
     .error(logErr)
     .then(function () { templatizedFiles.forEach(logWrite); })
-    .then(function () {
-      var filename = '.templates/gitftp'
-      return templateFile(context, filename).then(function (gitFtpConfig) {
-        log("\n");
-        log(chalk.blue('Add this to the end of', chalk.underline('.git/config')))
-        log(gitFtpConfig);
-      })
-    })
 })

@@ -1,5 +1,0 @@
-[git-ftp]
-	user = foobars
-	url = ftp.prototypes.no
-	syncroot = .
-	password = "barfoo"
