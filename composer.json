@@ -10,7 +10,7 @@
       "ext-mbstring": "*",
       "ext-imagick": "*"
     },
-    "requireDev": {
+    "require-dev": {
         "heroku/heroku-buildpack-php": "^83.0"
     }
 }
