@@ -23,6 +23,14 @@ Go to [http://localhost:5000/admin](http://localhost:5000/admin) and follow the 
 2. `npm i`
 3. `bower install`
 
+## Setting up Heroku
+
+Make sure you install global dependencies first
+
+1. `heroku create <name>`
+2. `heroku addons:create cleardb`
+3. `heroku config | sed 1d > .env`
+
 ## Heroku local configuration
 
 Create a file `.env` with the two variables
