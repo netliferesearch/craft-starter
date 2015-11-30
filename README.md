@@ -5,7 +5,7 @@
 1. Clone this repo
 2. Install global dependencies if not installed already (see bottom of file)
 3. Install dependencies
-4. 
+4. Set up Heroku
 
 ## Start working
 
