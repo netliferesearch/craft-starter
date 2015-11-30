@@ -29,7 +29,7 @@ Make sure you install global dependencies first
 
 1. `heroku create <name>`
 2. `heroku addons:create cleardb`
-3. `heroku config | sed 1d > .env`
+3. `heroku config | sed 1d | sed  -e "s/: /=/" > .env`
 
 ## Heroku local configuration
 
