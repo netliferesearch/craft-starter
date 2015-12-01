@@ -2,7 +2,10 @@
 
 ## Get started
 
-Clone this repo and get a move on
+1. Clone this repo
+2. Install global dependencies if not installed already (see bottom of file)
+3. Install dependencies
+4. Set up Heroku
 
 ## Start working
 
@@ -56,6 +59,6 @@ You only need to do this once per system.
 
 ### Node.js + tools
 
-* `gem install heroku`
+* Install Heroku toolbelt <https://toolbelt.heroku.com/>
 * `brew install nodejs`
 * `npm i -g bower gulp-cli`
