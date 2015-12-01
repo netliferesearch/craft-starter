@@ -3,7 +3,7 @@
 DB=`grep DATABASE .env`
 export $DB
 
-heroku local & PIDPHP=$!
+php -S localhost:8080 -t public & PIDPHP=$!
 gulp & PIDGULP=$!
 
 function cleanit {
