@@ -31,8 +31,9 @@ Go to [http://craft.dev:8080/admin](http://craft.dev:8080/admin) and follow the 
 Make sure you install global dependencies first (this probably happens automagically)
 
 1. `heroku create <name>`
-2. `heroku addons:create cleardb`
-3. `heroku config -s > .env`
+2. `heroku buildpacks:set heroku/php`
+3. `heroku addons:create cleardb`
+4. `heroku config -s > .env`
 
 ## Heroku local configuration
 
