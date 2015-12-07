@@ -6,8 +6,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.etc.plugins
  * @since     1.0
  */
@@ -66,7 +66,47 @@ abstract class BasePlugin extends BaseSavableComponentType implements IPlugin
 	}
 
 	/**
-	 * Returns the plugin's source language
+	 * @inheritDoc IPlugin::getSchemaVersion()
+	 *
+	 * @return string|null
+	 */
+	public function getSchemaVersion()
+	{
+		return null;
+	}
+
+	/**
+	 * @inheritDoc IPlugin::getDescription()
+	 *
+	 * @return string|null
+	 */
+	public function getDescription()
+	{
+		return null;
+	}
+
+	/**
+	 * @inheritDoc IPlugin::getDocumentationUrl()
+	 *
+	 * @return string|null
+	 */
+	public function getDocumentationUrl()
+	{
+		return null;
+	}
+
+	/**
+	 * @inheritDoc IPlugin::getReleaseFeedUrl()
+	 *
+	 * @return string|null
+	 */
+	public function getReleaseFeedUrl()
+	{
+		return null;
+	}
+
+	/**
+	 * @inheritDoc IPlugin::getSourceLanguage()
 	 *
 	 * @return string
 	 */
@@ -76,20 +116,27 @@ abstract class BasePlugin extends BaseSavableComponentType implements IPlugin
 	}
 
 	/**
-	 * Returns the URL to the plugin's settings in the CP.
+	 * @inheritDoc IPlugin::hasSettings()
 	 *
-	 * A full URL is not required -- you can simply return "pluginname/settings".
-	 *
-	 * If this is left blank, a simple settings page will be provided, filled with whatever getSettingsHtml() returns.
+	 * @return bool Whether the plugin has settings
+	 */
+	public function hasSettings()
+	{
+		return $this->getSettingsUrl() || $this->getSettingsHtml();
+	}
+
+	/**
+	 * @inheritDoc IPlugin::getSettingsUrl()
 	 *
 	 * @return string|null
 	 */
 	public function getSettingsUrl()
 	{
+		return null;
 	}
 
 	/**
-	 * Returns whether this plugin has its own section in the CP.
+	 * @inheritDoc IPlugin::hasCpSection()
 	 *
 	 * @return bool
 	 */
@@ -99,9 +146,9 @@ abstract class BasePlugin extends BaseSavableComponentType implements IPlugin
 	}
 
 	/**
-	 * Creates any tables defined by the plugin's records.
+	 * @inheritDoc IPlugin::createTables()
 	 *
-	 * @return null
+	 * @return void
 	 */
 	public function createTables()
 	{
@@ -121,9 +168,9 @@ abstract class BasePlugin extends BaseSavableComponentType implements IPlugin
 	}
 
 	/**
-	 * Drops any tables defined by the plugin's records.
+	 * @inheritDoc IPlugin::dropTables()
 	 *
-	 * @return null
+	 * @return void
 	 */
 	public function dropTables()
 	{
@@ -143,11 +190,11 @@ abstract class BasePlugin extends BaseSavableComponentType implements IPlugin
 	}
 
 	/**
-	 * Returns the record classes provided by this plugin.
+	 * @inheritDoc IPlugin::getRecords()
 	 *
-	 * @param string|null $scenario The scenario to initialize the records with.
+	 * @param string|null $scenario
 	 *
-	 * @return array
+	 * @return BaseRecord[]
 	 */
 	public function getRecords($scenario = null)
 	{
@@ -167,27 +214,27 @@ abstract class BasePlugin extends BaseSavableComponentType implements IPlugin
 	}
 
 	/**
-	 * Perform any actions after the plugin has been installed.
+	 * @inheritDoc IPlugin::onAfterInstall()
 	 *
-	 * @return null
+	 * @return void
 	 */
 	public function onAfterInstall()
 	{
 	}
 
 	/**
-	 * Perform any actions before the plugin has been installed.
+	 * @inheritDoc IPlugin::onBeforeInstall()
 	 *
-	 * @return null
+	 * @return void
 	 */
 	public function onBeforeInstall()
 	{
 	}
 
 	/**
-	 * Perform any actions before the plugin gets uninstalled.
+	 * @inheritDoc IPlugin::onBeforeUninstall()
 	 *
-	 * @return null
+	 * @return void
 	 */
 	public function onBeforeUninstall()
 	{

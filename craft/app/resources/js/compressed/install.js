@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2014, Pixel & Tonic, Inc.
- @license   http://buildwithcraft.com/license Craft License Agreement
- @see       http://buildwithcraft.com
+ @license   http://craftcms.com/license Craft License Agreement
+ @see       http://craftcms.com
  @package   craft.app.resources
 */
 (function(a){Craft.Installer=Garnish.Base.extend({$bg:null,$screens:null,$currentScreen:null,$accountSubmitBtn:null,$siteSubmitBtn:null,loading:!1,init:function(){this.$bg=a("#bg");this.$screens=Garnish.$bod.children(".modal");this.addListener(a("#beginbtn"),"activate","showAccountScreen")},showAccountScreen:function(b){this.showScreen(1,a.proxy(function(){a("#beginbtn").remove();this.$accountSubmitBtn=a("#accountsubmit");this.addListener(this.$accountSubmitBtn,"activate","validateAccount");this.addListener(a("#accountform"),

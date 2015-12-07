@@ -6,8 +6,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.fieldtypes
  * @since     1.0
  */
@@ -147,6 +147,17 @@ interface IFieldType extends ISavableComponentType
 	 * @return string The input HTML.
 	 */
 	public function getInputHtml($name, $value);
+
+	/**
+	 * Returns a static (non-editable) version of the field’s input HTML.
+	 *
+	 * This function is called to output field values when viewing entry drafts.
+	 *
+	 * @param mixed $value
+	 *
+	 * @return string
+	 */
+	public function getStaticHtml($value);
 
 	/**
 	 * Returns the input value as it should be stored in the database.

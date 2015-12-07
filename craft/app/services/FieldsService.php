@@ -6,8 +6,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.services
  * @since     1.0
  */
@@ -242,7 +242,7 @@ class FieldsService extends BaseApplicationComponent
 		if (!empty($missingContexts))
 		{
 			$rows = $this->_createFieldQuery()
-				->where(array('in', 'context', $missingContexts))
+				->where(array('in', 'f.context', $missingContexts))
 				->queryAll();
 
 			foreach ($rows as $row)
@@ -312,7 +312,7 @@ class FieldsService extends BaseApplicationComponent
 		if (!isset($this->_fieldsById) || !array_key_exists($fieldId, $this->_fieldsById))
 		{
 			$result = $this->_createFieldQuery()
-				->where('id = :id', array(':id' => $fieldId))
+				->where('f.id = :id', array(':id' => $fieldId))
 				->queryRow();
 
 			if ($result)
@@ -345,7 +345,7 @@ class FieldsService extends BaseApplicationComponent
 		if (!isset($this->_fieldsByContextAndHandle[$context]) || !array_key_exists($handle, $this->_fieldsByContextAndHandle[$context]))
 		{
 			$result = $this->_createFieldQuery()
-				->where(array('and', 'handle = :handle', 'context = :context'), array(':handle' => $handle, ':context' => $context))
+				->where(array('and', 'f.handle = :handle', 'f.context = :context'), array(':handle' => $handle, ':context' => $context))
 				->queryRow();
 
 			if ($result)
@@ -374,7 +374,42 @@ class FieldsService extends BaseApplicationComponent
 	public function getFieldsByGroupId($groupId, $indexBy = null)
 	{
 		$results = $this->_createFieldQuery()
-			->where('groupId = :groupId', array(':groupId' => $groupId))
+			->where('f.groupId = :groupId', array(':groupId' => $groupId))
+			->queryAll();
+
+		$fields = array();
+
+		foreach ($results as $result)
+		{
+			$field = $this->_populateField($result);
+
+			if ($indexBy)
+			{
+				$fields[$field->$indexBy] = $field;
+			}
+			else
+			{
+				$fields[] = $field;
+			}
+		}
+
+		return $fields;
+	}
+
+	/**
+	 * Returns all of the fields used by a given element type.
+	 *
+	 * @param string      $elementTypeClass
+	 * @param string|null $indexBy
+	 *
+	 * @return FieldModel[]
+	 */
+	public function getFieldsByElementType($elementTypeClass, $indexBy = null)
+	{
+		$results = $this->_createFieldQuery()
+			->join('fieldlayoutfields flf', 'flf.fieldId = f.id')
+			->join('fieldlayouts fl', 'fl.id = flf.layoutId')
+			->where('fl.type = :type', array(':type' => $elementTypeClass))
 			->queryAll();
 
 		$fields = array();
@@ -467,38 +502,8 @@ class FieldsService extends BaseApplicationComponent
 				$fieldRecord = $this->_getFieldRecord($field);
 				$isNewField = $fieldRecord->isNewRecord();
 
-				$fieldRecord->groupId      = $field->groupId;
-				$fieldRecord->name         = $field->name;
-				$fieldRecord->handle       = $field->handle;
-				$fieldRecord->context      = $field->context;
-				$fieldRecord->instructions = $field->instructions;
-				$fieldRecord->translatable = $field->translatable;
-				$fieldRecord->type         = $field->type;
-
 				// Get the field type
 				$fieldType = $field->getFieldType();
-
-				// Give the field type a chance to prep the settings from post
-				$preppedSettings = $fieldType->prepSettings($field->settings);
-
-				// Set the prepped settings on the FieldRecord, FieldModel, and the field type
-				$fieldRecord->settings = $field->settings = $preppedSettings;
-				$fieldType->setSettings($preppedSettings);
-
-				if ($fieldRecord->settings instanceof BaseModel)
-				{
-					// Call getAttributes() without passing 'true' so the __model__ isn't saved
-					$fieldRecord->settings = $fieldRecord->settings->getAttributes();
-				}
-
-				$fieldType->onBeforeSave();
-				$fieldRecord->save(false);
-
-				// Now that we have a field ID, save it on the model
-				if ($isNewField)
-				{
-					$field->id = $fieldRecord->id;
-				}
 
 				// Create/alter the content table column
 				$columnType = $fieldType->defineContentAttribute();
@@ -537,6 +542,36 @@ class FieldsService extends BaseApplicationComponent
 							craft()->db->createCommand()->dropColumn($contentTable, $oldColumnName);
 						}
 					}
+				}
+
+				$fieldRecord->groupId      = $field->groupId;
+				$fieldRecord->name         = $field->name;
+				$fieldRecord->handle       = $field->handle;
+				$fieldRecord->context      = $field->context;
+				$fieldRecord->instructions = $field->instructions;
+				$fieldRecord->translatable = $field->translatable;
+				$fieldRecord->type         = $field->type;
+
+				// Give the field type a chance to prep the settings from post
+				$preppedSettings = $fieldType->prepSettings($field->settings);
+
+				// Set the prepped settings on the FieldRecord, FieldModel, and the field type
+				$fieldRecord->settings = $field->settings = $preppedSettings;
+				$fieldType->setSettings($preppedSettings);
+
+				if ($fieldRecord->settings instanceof BaseModel)
+				{
+					// Call getAttributes() without passing 'true' so the __model__ isn't saved
+					$fieldRecord->settings = $fieldRecord->settings->getAttributes();
+				}
+
+				$fieldType->onBeforeSave();
+				$fieldRecord->save(false);
+
+				// Now that we have a field ID, save it on the model
+				if ($isNewField)
+				{
+					$field->id = $fieldRecord->id;
 				}
 
 				if (!$isNewField)
@@ -743,7 +778,7 @@ class FieldsService extends BaseApplicationComponent
 	}
 
 	/**
-	 * Returns a layout's tabs by its ID.
+	 * Returns a layout's fields by its ID.
 	 *
 	 * @param int $layoutId
 	 *
@@ -751,8 +786,23 @@ class FieldsService extends BaseApplicationComponent
 	 */
 	public function getLayoutFieldsById($layoutId)
 	{
-		$results = $this->_createLayoutFieldQuery()
-			->where('layoutId = :layoutId', array(':layoutId' => $layoutId))
+		$results = $this->_createLayoutFieldQuery($layoutId)->queryAll();
+
+		return FieldLayoutFieldModel::populateModels($results);
+	}
+
+	/**
+	 * Returns a layout's fields by its ID, in the layout-defined sort order.
+	 *
+	 * @param int $layoutId
+	 *
+	 * @return array
+	 */
+	public function getOrderedLayoutFieldsById($layoutId)
+	{
+		$results = $this->_createLayoutFieldQuery($layoutId)
+			->join('fieldlayouttabs fieldlayouttabs', 'fieldlayouttabs.id = fieldlayoutfields.tabId')
+			->order('fieldlayouttabs.sortOrder, fieldlayoutfields.sortOrder')
 			->queryAll();
 
 		return FieldLayoutFieldModel::populateModels($results);
@@ -761,12 +811,15 @@ class FieldsService extends BaseApplicationComponent
 	/**
 	 * Assembles a field layout from post data.
 	 *
+	 * @param string|null $namespace The namespace that the form data was posted in, if any.
+	 *
 	 * @return FieldLayoutModel
 	 */
-	public function assembleLayoutFromPost()
+	public function assembleLayoutFromPost($namespace = null)
 	{
-		$postedFieldLayout = craft()->request->getPost('fieldLayout', array());
-		$requiredFields = craft()->request->getPost('requiredFields', array());
+		$paramPrefix = ($namespace ? rtrim($namespace, '.').'.' : '');
+		$postedFieldLayout = craft()->request->getPost($paramPrefix.'fieldLayout', array());
+		$requiredFields = craft()->request->getPost($paramPrefix.'requiredFields', array());
 
 		return $this->assembleLayout($postedFieldLayout, $requiredFields);
 	}
@@ -774,12 +827,12 @@ class FieldsService extends BaseApplicationComponent
 	/**
 	 * Assembles a field layout.
 	 *
-	 * @param array      $postedFieldLayout
-	 * @param array|null $requiredFields
+	 * @param array $postedFieldLayout
+	 * @param array $requiredFields
 	 *
 	 * @return FieldLayoutModel
 	 */
-	public function assembleLayout($postedFieldLayout, $requiredFields)
+	public function assembleLayout($postedFieldLayout, $requiredFields = array())
 	{
 		$tabs = array();
 		$fields = array();
@@ -981,9 +1034,9 @@ class FieldsService extends BaseApplicationComponent
 	private function _createFieldQuery()
 	{
 		return craft()->db->createCommand()
-			->select('id, groupId, name, handle, context, instructions, translatable, type, settings')
-			->from('fields')
-			->order('name');
+			->select('f.id, f.groupId, f.name, f.handle, f.context, f.instructions, f.translatable, f.type, f.settings')
+			->from('fields f')
+			->order('f.name');
 	}
 
 	/**
@@ -1001,14 +1054,16 @@ class FieldsService extends BaseApplicationComponent
 	/**
 	 * Returns a DbCommand object prepped for retrieving layout fields.
 	 *
+	 * @param int $layoutId
+	 *
 	 * @return DbCommand
 	 */
-	private function _createLayoutFieldQuery()
+	private function _createLayoutFieldQuery($layoutId)
 	{
 		return craft()->db->createCommand()
-			->select('id, layoutId, tabId, fieldId, required, sortOrder')
-			->from('fieldlayoutfields')
-			->order('sortOrder');
+			->select('fieldlayoutfields.id, fieldlayoutfields.layoutId, fieldlayoutfields.tabId, fieldlayoutfields.fieldId, fieldlayoutfields.required, fieldlayoutfields.sortOrder')
+			->from('fieldlayoutfields fieldlayoutfields')
+			->where('fieldlayoutfields.layoutId = :layoutId', array(':layoutId' => $layoutId));
 	}
 
 	/**

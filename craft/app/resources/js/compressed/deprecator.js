@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2014, Pixel & Tonic, Inc.
- @license   http://buildwithcraft.com/license Craft License Agreement
- @see       http://buildwithcraft.com
+ @license   http://craftcms.com/license Craft License Agreement
+ @see       http://craftcms.com
  @package   craft.app.resources
 */
 (function(b){new (Garnish.Base.extend({$clearAllBtn:null,$table:null,tracesModal:null,$tracesModalBody:null,init:function(){this.$clearAllBtn=b("#clearall");this.$table=b("#deprecationerrors");this.$noLogsMessage=b("#nologs");this.addListener(this.$clearAllBtn,"click","clearAllLogs");this.addListener(this.$table.find(".viewtraces"),"click","viewLogTraces");this.addListener(this.$table.find(".delete"),"click","deleteLog")},clearAllLogs:function(){Craft.postActionRequest("utils/deleteAllDeprecationErrors");

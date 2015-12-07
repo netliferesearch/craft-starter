@@ -8,8 +8,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.services
  * @since     1.0
  */
@@ -64,6 +64,18 @@ class PathService extends BaseApplicationComponent
 	public function getStoragePath()
 	{
 		return CRAFT_STORAGE_PATH;
+	}
+
+	/**
+	 * Returns the path to the craft/storage/rebrand/ folder.
+	 *
+	 * @return string
+	 */
+	public function getRebrandPath()
+	{
+		$path = $this->getStoragePath().'rebrand/';
+		IOHelper::ensureFolderExists($path);
+		return $path;
 	}
 
 	/**
@@ -188,6 +200,18 @@ class PathService extends BaseApplicationComponent
 	public function getAssetsIconsPath()
 	{
 		$path = $this->getAssetsPath().'icons/';
+		IOHelper::ensureFolderExists($path);
+		return $path;
+	}
+
+	/**
+	 * Returns the path to the craft/storage/runtime/pluginicons/ folder.
+	 *
+	 * @return string The path to the craft/storage/runtime/pluginicons/ folder.
+	 */
+	public function getPluginIconsPath()
+	{
+		$path = $this->getRuntimePath().'pluginicons/';
 		IOHelper::ensureFolderExists($path);
 		return $path;
 	}

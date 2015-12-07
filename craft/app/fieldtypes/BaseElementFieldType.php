@@ -6,12 +6,12 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.fieldtypes
  * @since     1.0
  */
-abstract class BaseElementFieldType extends BaseFieldType
+abstract class BaseElementFieldType extends BaseFieldType implements IPreviewableFieldType
 {
 	// Properties
 	// =========================================================================
@@ -22,13 +22,6 @@ abstract class BaseElementFieldType extends BaseFieldType
 	 * @var string $elementType
 	 */
 	protected $elementType;
-
-	/**
-	 * The JS class that should be initialized for the input.
-	 *
-	 * @var string|null $inputJsClass
-	 */
-	protected $inputJsClass;
 
 	/**
 	 * Whether to allow multiple source selection in the settings.
@@ -45,11 +38,25 @@ abstract class BaseElementFieldType extends BaseFieldType
 	protected $allowLimit = true;
 
 	/**
+	 * Whether to allow the “Large Thumbnails” view mode.
+	 *
+	 * @var bool $allowLargeThumbsView
+	 */
+	protected $allowLargeThumbsView = false;
+
+	/**
 	 * Template to use for field rendering.
 	 *
 	 * @var string
 	 */
 	protected $inputTemplate = '_includes/forms/elementSelect';
+
+	/**
+	 * The JS class that should be initialized for the input.
+	 *
+	 * @var string|null $inputJsClass
+	 */
+	protected $inputJsClass;
 
 	/**
 	 * Whether the elements have a custom sort order.
@@ -93,23 +100,15 @@ abstract class BaseElementFieldType extends BaseFieldType
 	 */
 	public function getSettingsHtml()
 	{
-		$sources = array();
-
-		foreach ($this->getElementType()->getSources() as $key => $source)
-		{
-			if (!isset($source['heading']))
-			{
-				$sources[] = array('label' => $source['label'], 'value' => $key);
-			}
-		}
-
 		return craft()->templates->render('_components/fieldtypes/elementfieldsettings', array(
-			'allowMultipleSources' => $this->allowMultipleSources,
-			'allowLimit'           => $this->allowLimit,
-			'sources'              => $sources,
-			'targetLocaleField'    => $this->getTargetLocaleFieldHtml(),
-			'settings'             => $this->getSettings(),
-			'type'                 => $this->getName()
+			'allowMultipleSources'  => $this->allowMultipleSources,
+			'allowLimit'            => $this->allowLimit,
+			'sources'               => $this->getSourceOptions(),
+			'targetLocaleFieldHtml' => $this->getTargetLocaleFieldHtml(),
+			'viewModeFieldHtml'     => $this->getViewModeFieldHtml(),
+			'settings'              => $this->getSettings(),
+			'defaultSelectionLabel' => $this->getAddButtonLabel(),
+			'type'                  => $this->getName()
 		));
 	}
 
@@ -178,7 +177,7 @@ abstract class BaseElementFieldType extends BaseFieldType
 
 			if ($this->sortable)
 			{
-				$criteria->order = 'sortOrder';
+				$criteria->order = 'sources1.sortOrder';
 			}
 
 			if (!$this->allowMultipleSources && $this->getSettings()->source)
@@ -207,6 +206,37 @@ abstract class BaseElementFieldType extends BaseFieldType
 		}
 
 		return $criteria;
+	}
+
+	/**
+	 * @inheritDoc IFieldType::modifyElementsQuery()
+	 *
+	 * @param DbCommand $query
+	 * @param mixed     $value
+	 *
+	 * @return null|false
+	 */
+	public function modifyElementsQuery(DbCommand $query, $value)
+	{
+		if ($value == 'not :empty:')
+		{
+			$value = ':notempty:';
+		}
+
+		if ($value == ':notempty:' || $value == ':empty:')
+		{
+			$alias = 'relations_'.$this->model->handle;
+			$operator = ($value == ':notempty:' ? '!=' : '=');
+
+			$query->andWhere(
+				"(select count({$alias}.id) from {{relations}} {$alias} where {$alias}.sourceId = elements.id and {$alias}.fieldId = :fieldId) {$operator} 0",
+				array(':fieldId' => $this->model->id)
+			);
+		}
+		else if ($value !== null)
+		{
+			return false;
+		}
 	}
 
 	/**
@@ -258,7 +288,7 @@ abstract class BaseElementFieldType extends BaseFieldType
 	}
 
 	/**
-	 * @inheritDoc BaseFieldType::getStaticHtml()
+	 * @inheritDoc IFieldType::getStaticHtml()
 	 *
 	 * @param mixed $value
 	 *
@@ -317,6 +347,25 @@ abstract class BaseElementFieldType extends BaseFieldType
 		{
 			craft()->tasks->createTask('LocalizeRelations', null, array(
 				'fieldId' => $this->model->id,
+			));
+		}
+	}
+
+	/**
+	 * @inheritDoc IPreviewableFieldType::getTableAttributeHtml()
+	 *
+	 * @param mixed $value
+	 *
+	 * @return string
+	 */
+	public function getTableAttributeHtml($value)
+	{
+		$element = $value->first();
+
+		if ($element)
+		{
+			return craft()->templates->render('_elements/element', array(
+				'element' => $element,
 			));
 		}
 	}
@@ -391,7 +440,8 @@ abstract class BaseElementFieldType extends BaseFieldType
 			'criteria'           => $selectionCriteria,
 			'sourceElementId'    => (isset($this->element->id) ? $this->element->id : null),
 			'limit'              => ($this->allowLimit ? $settings->limit : null),
-			'selectionLabel'     => Craft::t($this->getSettings()->selectionLabel),
+			'viewMode'           => $this->getViewMode(),
+			'selectionLabel'     => ($settings->selectionLabel ? Craft::t($settings->selectionLabel) : $this->getAddButtonLabel())
 		);
 	}
 
@@ -449,6 +499,50 @@ abstract class BaseElementFieldType extends BaseFieldType
 	}
 
 	/**
+	 * Normalizes the available sources into select input options.
+	 *
+	 * @return array
+	 *
+	 */
+	protected function getSourceOptions()
+	{
+		$options = array();
+		$optionNames = array();
+
+		foreach ($this->getAvailableSources() as $source)
+		{
+			// Make sure it's not a heading
+			if (!isset($source['heading']))
+			{
+				$options[] = array('label' => $source['label'], 'value' => $source['key']);
+				$optionNames[] = $source['label'];
+			}
+		}
+
+		// TODO: Remove this check for Craft 3.
+		if (PHP_VERSION_ID < 50400)
+		{
+			// Sort alphabetically
+			array_multisort($optionNames, $options);
+		}
+		else
+		{
+			// Sort alphabetically
+			array_multisort($optionNames, SORT_NATURAL | SORT_FLAG_CASE, $options);
+		}
+
+		return $options;
+	}
+
+	/**
+	 * Returns the sources that should be available to choose from within the field's settings
+	 */
+	protected function getAvailableSources()
+	{
+		return craft()->elementIndexes->getSources($this->elementType, 'modal');
+	}
+
+	/**
 	 * Returns the HTML for the Target Locale setting.
 	 *
 	 * @return string|null
@@ -480,6 +574,78 @@ abstract class BaseElementFieldType extends BaseFieldType
 	}
 
 	/**
+	 * Returns the HTML for the View Mode setting.
+	 *
+	 * @return string|null
+	 */
+	protected function getViewModeFieldHtml()
+	{
+		$supportedViewModes = $this->getSupportedViewModes();
+
+		if (!$supportedViewModes || count($supportedViewModes) == 1)
+		{
+			return null;
+		}
+
+		$viewModeOptions = array();
+
+		foreach ($supportedViewModes as $key => $label)
+		{
+			$viewModeOptions[] = array('label' => $label, 'value' => $key);
+		}
+
+		return craft()->templates->renderMacro('_includes/forms', 'selectField', array(
+			array(
+				'label' => Craft::t('View Mode'),
+				'instructions' => Craft::t('Choose how the field should look for authors.'),
+				'id' => 'viewMode',
+				'name' => 'viewMode',
+				'options' => $viewModeOptions,
+				'value' => $this->getSettings()->viewMode
+			)
+		));
+	}
+
+	/**
+	 * Returns the field’s supported view modes.
+	 *
+	 * @return array|null
+	 */
+	protected function getSupportedViewModes()
+	{
+		$viewModes = array(
+			'list' => Craft::t('List'),
+		);
+
+		if ($this->allowLargeThumbsView)
+		{
+			$viewModes['large'] = Craft::t('Large Thumbnails');
+		}
+
+		return $viewModes;
+	}
+
+	/**
+	 * Returns the field’s current view mode.
+	 *
+	 * @return string
+	 */
+	protected function getViewMode()
+	{
+		$supportedViewModes = $this->getSupportedViewModes();
+		$viewMode = $this->getSettings()->viewMode;
+
+		if ($viewMode && isset($supportedViewModes[$viewMode]))
+		{
+			return $viewMode;
+		}
+		else
+		{
+			return 'list';
+		}
+	}
+
+	/**
 	 * @inheritDoc BaseSavableComponentType::defineSettings()
 	 *
 	 * @return array
@@ -502,7 +668,8 @@ abstract class BaseElementFieldType extends BaseFieldType
 			$settings['limit'] = array(AttributeType::Number, 'min' => 0);
 		}
 
-		$settings['selectionLabel'] = array(AttributeType::String, 'default' => $this->getAddButtonLabel());
+		$settings['selectionLabel'] = AttributeType::String;
+		$settings['viewMode'] = AttributeType::String;
 
 		return $settings;
 	}

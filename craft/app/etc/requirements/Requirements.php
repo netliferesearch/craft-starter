@@ -6,8 +6,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.etc.requirements
  * @since     1.2
  */
@@ -29,28 +29,28 @@ class Requirements
 				Craft::t('$_SERVER Variable'),
 				($serverMessage = static::_checkServerVar()) === '',
 				true,
-				'<a href="http://buildwithcraft.com">Craft</a>',
+				'<a href="http://craftcms.com">Craft</a>',
 				$serverMessage
 			),
 			new Requirement(
 				Craft::t('Reflection extension'),
 				class_exists('Reflection', false),
 				true,
-				'<a href="http://buildwithcraft.com">Craft</a>',
+				'<a href="http://craftcms.com">Craft</a>',
 				'The <a href="http://php.net/manual/en/class.reflectionextension.php">ReflectionExtension</a> is required.'
 			),
 			new Requirement(
 				Craft::t('PCRE extension'),
 				extension_loaded("pcre"),
 				true,
-				'<a href="http://buildwithcraft.com">Craft</a>',
+				'<a href="http://craftcms.com">Craft</a>',
 				'<a href="http://php.net/manual/en/book.pcre.php">PCRE</a> is required.'
 			),
 			new Requirement(
 				'SPL extension',
 				extension_loaded("SPL"),
 				true,
-				'<a href="http://buildwithcraft.com">Craft</a>',
+				'<a href="http://craftcms.com">Craft</a>',
 				'<a href="http://php.net/manual/en/book.spl.php">SPL</a> is required.'
 			),
 			new Requirement(
@@ -78,42 +78,42 @@ class Requirements
 				Craft::t('GD extension with FreeType support'),
 				extension_loaded('gd'),
 				(!extension_loaded('imagick')), // Only required if ImageMagick isn't installed
-				'<a href="http://buildwithcraft.com">Craft</a>',
+				'<a href="http://craftcms.com">Craft</a>',
 				'<a href="http://php.net/manual/en/book.image.php">GD</a> or <a href="http://php.net/manual/en/book.imagick.php">ImageMagick</a> is required, however ImageMagick is recommended as it adds animated GIF support, and preserves 8-bit and 24-bit PNGs during image transforms.'
 			),
 			new Requirement(
 				Craft::t('ImageMagick extension'),
 				extension_loaded('imagick'),
 				(!extension_loaded('gd')), // Only required if GD isn't installed
-				'<a href="http://buildwithcraft.com">Craft</a>',
+				'<a href="http://craftcms.com">Craft</a>',
 				'<a href="http://php.net/manual/en/book.image.php">GD</a> or <a href="http://php.net/manual/en/book.imagick.php">ImageMagick</a> is required, however ImageMagick is recommended as it adds animated GIF support, and preserves 8-bit and 24-bit PNGs during image transforms.'
 			),
 			new Requirement(
 				Craft::t('MySQL version'),
 				version_compare(craft()->db->getServerVersion(), $requiredMysqlVersion, ">="),
 				true,
-				'<a href="http://buildwithcraft.com">Craft</a>',
+				'<a href="http://craftcms.com">Craft</a>',
 				Craft::t('MySQL {version} or higher is required to run Craft.', array('version' => $requiredMysqlVersion))
 			),
 			new Requirement(
 				Craft::t('MySQL InnoDB support'),
 				static::_isInnoDbEnabled(),
 				true,
-				'<a href="http://buildwithcraft.com">Craft</a>',
+				'<a href="http://craftcms.com">Craft</a>',
 				Craft::t('Craft requires the MySQL InnoDB storage engine to run.')
 			),
 			new Requirement(
 				Craft::t('SSL support'),
 				extension_loaded('openssl'),
 				true,
-				'<a href="http://buildwithcraft.com">Craft</a>',
+				'<a href="http://craftcms.com">Craft</a>',
 				Craft::t('Craft requires <a href="http://php.net/manual/en/book.openssl.php">OpenSSL</a> in order to run.')
 			),
 			new Requirement(
 				Craft::t('cURL support'),
 				extension_loaded('curl'),
 				true,
-				'<a href="http://buildwithcraft.com">Craft</a>',
+				'<a href="http://craftcms.com">Craft</a>',
 				Craft::t('Craft requires <a href="http://php.net/manual/en/book.curl.php">cURL</a> in order to run.')
 			),
 			new Requirement(
@@ -127,14 +127,14 @@ class Requirements
 				Craft::t('PCRE UTF-8 support'),
 				preg_match('/./u', 'Ü') === 1,
 				true,
-				'<a href="http://buildwithcraft.com">Craft</a>',
+				'<a href="http://craftcms.com">Craft</a>',
 				Craft::t('<a href="http://php.net/manual/en/book.pcre.php">PCRE</a> must be compiled to support UTF-8.')
 			),
 			new Requirement(
 				Craft::t('Multibyte String support'),
 				(extension_loaded('mbstring') && ini_get('mbstring.func_overload') != 1),
 				true,
-				'<a href="http://buildwithcraft.com">Craft</a>',
+				'<a href="http://craftcms.com">Craft</a>',
 				Craft::t('Craft requires the <a href="http://www.php.net/manual/en/book.mbstring.php">Multibyte String extension</a> with <a href="http://php.net/manual/en/mbstring.overload.php">Function Overloading</a> disabled in order to run.')
 			),
 			new IconvRequirement(),
@@ -210,7 +210,7 @@ class Requirements
 	 *
 	 * @return bool
 	 */
-	private function _isInnoDbEnabled()
+	private static function _isInnoDbEnabled()
 	{
 		$results = craft()->db->createCommand()->setText('SHOW ENGINES')->queryAll();
 
@@ -383,7 +383,7 @@ class PhpVersionRequirement extends Requirement
 			Craft::t('PHP Version'),
 			null,
 			true,
-			'<a href="http://buildwithcraft.com">Craft</a>'
+			'<a href="http://craftcms.com">Craft</a>'
 		);
 	}
 
@@ -482,7 +482,7 @@ class IconvRequirement extends Requirement
 			Craft::t('iconv support'),
 			null,
 			false,
-			'<a href="http://buildwithcraft.com">Craft</a>'
+			'<a href="http://craftcms.com">Craft</a>'
 		);
 	}
 

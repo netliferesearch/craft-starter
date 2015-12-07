@@ -1,8 +1,8 @@
 /**
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.resources
  */
 
@@ -23,7 +23,7 @@
 
 		areaToolOptions:
 		{
-			aspectRatio: "1:1",
+			aspectRatio: "1",
 			initialRectangle: {
 				mode: "auto"
 			}
@@ -43,9 +43,8 @@
 	function refreshImage(response) {
 		if (typeof response.html != "undefined") {
 			$('.user-photo').replaceWith(response.html);
-			var newImage = $('.user-photo>.current-photo').css('background-image').replace(/^url\(/, '').replace(/\)$/, '');
+			$('#user-photo > img').replaceWith($('#current-photo > img').clone());
 
-			$('#account-menu').find('img').attr('src', newImage);
 			initImageUpload();
 		}
 

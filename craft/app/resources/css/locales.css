@@ -1,4 +1,6 @@
 @charset "UTF-8";
+/* Flexbox stuff */
+/* Other */
 /* RTL stuff */
 body.ltr #addlocale .text { padding-right: 30px; }
 body.rtl #addlocale .text { padding-left: 30px; }

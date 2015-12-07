@@ -6,8 +6,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.models
  * @since     1.0
  */
@@ -244,9 +244,10 @@ class UserModel extends BaseElementModel
 	public function getThumbUrl($size = 100)
 	{
 		$url = $this->getPhotoUrl($size);
+
 		if (!$url)
 		{
-			$url = UrlHelper::getResourceUrl('defaultuserphoto/'.$size);
+			$url = UrlHelper::getResourceUrl('defaultuserphoto');
 		}
 
 		return $url;
@@ -467,7 +468,7 @@ class UserModel extends BaseElementModel
 			'email'                      => array(AttributeType::Email, 'required' => !$requireUsername),
 			'password'                   => AttributeType::String,
 			'preferredLocale'            => AttributeType::Locale,
-			'weekStartDay'               => array(AttributeType::Number, 'default' => 0),
+			'weekStartDay'               => array(AttributeType::Number, 'default' => craft()->config->get('defaultWeekStartDay')),
 			'admin'                      => AttributeType::Bool,
 			'client'                     => AttributeType::Bool,
 			'locked'                     => AttributeType::Bool,

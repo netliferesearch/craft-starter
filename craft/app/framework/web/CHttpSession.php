@@ -112,7 +112,7 @@ class CHttpSession extends CApplicationComponent implements IteratorAggregate,Ar
 			@session_set_save_handler(array($this,'openSession'),array($this,'closeSession'),array($this,'readSession'),array($this,'writeSession'),array($this,'destroySession'),array($this,'gcSession'));
 
 		// CORE HACK - Only start session if it has not been set.
-		if (!isset($_SESSION))
+		if (!$this->getIsStarted())
 			@session_start();
 
 		if(YII_DEBUG && session_id()=='')

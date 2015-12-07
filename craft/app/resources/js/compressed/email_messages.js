@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2014, Pixel & Tonic, Inc.
- @license   http://buildwithcraft.com/license Craft License Agreement
- @see       http://buildwithcraft.com
+ @license   http://craftcms.com/license Craft License Agreement
+ @see       http://craftcms.com
  @package   craft.app.resources
 */
 (function(c){var f=Garnish.Base.extend({messages:null,init:function(){this.messages=[];for(var a=c("#messages").find(".message"),b=0;b<a.length;b++){var d=new e(a[b]);this.messages.push(d)}}}),e=Garnish.Base.extend({$container:null,key:null,$subject:null,$body:null,modal:null,init:function(a){this.$container=c(a);this.key=this.$container.attr("data-key");this.$subject=this.$container.find(".subject:first");this.$body=this.$container.find(".body:first");this.addListener(this.$container,"click","edit")},

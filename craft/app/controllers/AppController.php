@@ -9,8 +9,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.controllers
  * @since     1.0
  */
@@ -115,9 +115,14 @@ class AppController extends BaseController
 	public function actionGetUpgradeModal()
 	{
 		$this->requireAjaxRequest();
-		craft()->userSession->requireAdmin();
 
-		$etResponse = craft()->et->fetchEditionInfo();
+		// Make it so Craft Client accounts can perform the upgrade.
+		if (craft()->getEdition() == Craft::Pro)
+		{
+			craft()->userSession->requireAdmin();
+		}
+
+		$etResponse = craft()->et->fetchUpgradeInfo();
 
 		if (!$etResponse)
 		{
@@ -138,7 +143,7 @@ class AppController extends BaseController
 
 		$editions = array();
 
-		foreach ($etResponse->data as $edition => $info)
+		foreach ($etResponse->data->editions as $edition => $info)
 		{
 			$editions[$edition]['price']          = $info['price'];
 			$editions[$edition]['formattedPrice'] = craft()->numberFormatter->formatCurrency($info['price'], 'USD', true);
@@ -167,8 +172,51 @@ class AppController extends BaseController
 			'editions'        => $editions,
 			'licensedEdition' => $etResponse->licensedEdition,
 			'canTestEditions' => $canTestEditions,
-			'modalHtml'       => $modalHtml
+			'modalHtml'       => $modalHtml,
+			'stripePublicKey' => $etResponse->data->stripePublicKey,
+			'countries'       => $etResponse->data->countries,
+			'states'          => $etResponse->data->states,
 		));
+	}
+
+	/**
+	 * Returns the price of an upgrade with a coupon applied to it.
+	 *
+	 * @return void
+	 */
+	public function actionGetCouponPrice()
+	{
+		$this->requirePostRequest();
+		$this->requireAjaxRequest();
+
+		// Make it so Craft Client accounts can perform the upgrade.
+		if (craft()->getEdition() == Craft::Pro)
+		{
+			craft()->userSession->requireAdmin();
+		}
+
+		$edition = craft()->request->getRequiredPost('edition');
+		$couponCode = craft()->request->getRequiredPost('couponCode');
+
+		$etResponse = craft()->et->fetchCouponPrice($edition, $couponCode);
+
+		if (!empty($etResponse->data['success']))
+		{
+			$couponPrice = $etResponse->data['couponPrice'];
+			$formattedCouponPrice = craft()->numberFormatter->formatCurrency($couponPrice, 'USD', true);
+
+			$this->returnJson(array(
+				'success' => true,
+				'couponPrice' => $couponPrice,
+				'formattedCouponPrice' => $formattedCouponPrice
+			));
+		}
+		else
+		{
+			$this->returnJson(array(
+				'success' => false
+			));
+		}
 	}
 
 	/**
@@ -180,12 +228,31 @@ class AppController extends BaseController
 	{
 		$this->requirePostRequest();
 		$this->requireAjaxRequest();
-		craft()->userSession->requireAdmin();
+
+		// Make it so Craft Client accounts can perform the upgrade.
+		if (craft()->getEdition() == Craft::Pro)
+		{
+			craft()->userSession->requireAdmin();
+		}
 
 		$model = new UpgradePurchaseModel(array(
-			'ccTokenId'     => craft()->request->getRequiredPost('ccTokenId'),
-			'edition'       => craft()->request->getRequiredPost('edition'),
-			'expectedPrice' => craft()->request->getRequiredPost('expectedPrice'),
+			'ccTokenId'        => craft()->request->getRequiredPost('ccTokenId'),
+			'expMonth'         => craft()->request->getRequiredPost('expMonth'),
+			'expYear'          => craft()->request->getRequiredPost('expYear'),
+			'edition'          => craft()->request->getRequiredPost('edition'),
+			'expectedPrice'    => craft()->request->getRequiredPost('expectedPrice'),
+			'name'             => craft()->request->getRequiredPost('name'),
+			'email'            => craft()->request->getRequiredPost('email'),
+			'businessName'     => craft()->request->getPost('businessName'),
+			'businessAddress1' => craft()->request->getPost('businessAddress1'),
+			'businessAddress2' => craft()->request->getPost('businessAddress2'),
+			'businessCity'     => craft()->request->getPost('businessCity'),
+			'businessState'    => craft()->request->getPost('businessState'),
+			'businessCountry'  => craft()->request->getPost('businessCountry'),
+			'businessZip'      => craft()->request->getPost('businessZip'),
+			'businessTaxId'    => craft()->request->getPost('businessTaxId'),
+			'purchaseNotes'    => craft()->request->getPost('purchaseNotes'),
+			'couponCode'       => craft()->request->getPost('couponCode'),
 		));
 
 		if (craft()->et->purchaseUpgrade($model))

@@ -6,8 +6,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.fieldtypes
  * @since     2.0
  */
@@ -31,18 +31,18 @@ class CategoriesFieldType extends BaseElementFieldType
 	protected $allowMultipleSources = false;
 
 	/**
-	 * The JS class that should be initialized for the input.
-	 *
-	 * @var string|null $inputJsClass
-	 */
-	protected $inputJsClass = 'Craft.CategorySelectInput';
-
-	/**
 	 * Template to use for field rendering
 	 *
 	 * @var string
 	 */
 	protected $inputTemplate = '_components/fieldtypes/Categories/input';
+
+	/**
+	 * The JS class that should be initialized for the input.
+	 *
+	 * @var string|null $inputJsClass
+	 */
+	protected $inputJsClass = 'Craft.CategorySelectInput';
 
 	/**
 	 * Whether the elements have a custom sort order.

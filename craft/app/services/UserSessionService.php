@@ -9,8 +9,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.services
  * @since     1.0
  */
@@ -509,9 +509,9 @@ class UserSessionService extends \CWebUser
 	 * Logs a user in.
 	 *
 	 * If $rememberMe is set to `true`, the user will be logged in for the duration specified by the
-	 * [rememberedUserSessionDuration](http://buildwithcraft.com/docs/config-settings#rememberedUserSessionDuration)
+	 * [rememberedUserSessionDuration](http://craftcms.com/docs/config-settings#rememberedUserSessionDuration)
 	 * config setting. Otherwise it will last for the duration specified by the
-	 * [userSessionDuration](http://buildwithcraft.com/docs/config-settings#userSessionDuration)
+	 * [userSessionDuration](http://craftcms.com/docs/config-settings#userSessionDuration)
 	 * config setting.
 	 *
 	 * @param string $username   The user’s username.
@@ -558,7 +558,7 @@ class UserSessionService extends \CWebUser
 	 * Logs a user in for solely by their user ID.
 	 *
 	 * This method doesn’t have any sort of credential verification, so use it at your own peril.
-     *
+	 *
 	 * @param int  $userId            The user ID of the person to log in.
 	 * @param bool $rememberMe        Whether the user should be remembered.
 	 * @param bool $setUsernameCookie Whether to set the username cookie or not.
@@ -791,6 +791,11 @@ class UserSessionService extends \CWebUser
 			case UserIdentity::ERROR_NO_CP_OFFLINE_ACCESS:
 			{
 				$error = Craft::t('You cannot access the CP while the system is offline with that account.');
+				break;
+			}
+			case UserIdentity::ERROR_NO_SITE_OFFLINE_ACCESS:
+			{
+				$error = Craft::t('You cannot access the site while the system is offline with that account.');
 				break;
 			}
 			case UserIdentity::ERROR_PENDING_VERIFICATION:
@@ -1203,7 +1208,7 @@ class UserSessionService extends \CWebUser
 	 * Updates the authentication status according to {@link authTimeout}.
 	 *
 	 * Based on the parts of {@link \CWebUser::updateAuthStatus()} that are relevant to Craft, but this version also
-	 * enforces the [requireUserAgentAndIpForSession](http://buildwithcraft.com/docs/config-settings#requireUserAgentAndIpForSession)
+	 * enforces the [requireUserAgentAndIpForSession](http://craftcms.com/docs/config-settings#requireUserAgentAndIpForSession)
 	 * config setting, and it won't update the timeout state if the 'dontExtendSession' param is set.
 	 *
 	 * @return null
@@ -1249,8 +1254,8 @@ class UserSessionService extends \CWebUser
 	 * Renews the user’s identity cookie.
 	 *
 	 * This function extends the identity cookie's expiration time based on either the
-	 * [userSessionDuration](http://buildwithcraft.com/docs/config-settings#userSessionDuration) or
-	 * [rememberedUserSessionDuration](http://buildwithcraft.com/docs/config-settings#rememberedUserSessionDuration)
+	 * [userSessionDuration](http://craftcms.com/docs/config-settings#userSessionDuration) or
+	 * [rememberedUserSessionDuration](http://craftcms.com/docs/config-settings#rememberedUserSessionDuration)
 	 * config setting, depending on whether Remember Me was checked when they logged in.
 	 *
 	 * @return null
@@ -1476,11 +1481,11 @@ class UserSessionService extends \CWebUser
 	private function _findSessionToken($loginName, $uid)
 	{
 		$result = craft()->db->createCommand()
-		    ->select('s.token, s.userId')
-		    ->from('sessions s')
-		    ->join('users u', 's.userId = u.id')
-		    ->where('(u.username=:username OR u.email=:email) AND s.uid=:uid', array(':username' => $loginName, ':email' => $loginName, 'uid' => $uid))
-		    ->queryRow();
+			->select('s.token, s.userId')
+			->from('sessions s')
+			->join('users u', 's.userId = u.id')
+			->where('(u.username=:username OR u.email=:email) AND s.uid=:uid', array(':username' => $loginName, ':email' => $loginName, 'uid' => $uid))
+			->queryRow();
 
 		if (is_array($result) && count($result) > 0)
 		{
@@ -1529,10 +1534,10 @@ class UserSessionService extends \CWebUser
 			if ($id)
 			{
 				$userRow = craft()->db->createCommand()
-				    ->select('*')
-				    ->from('users')
-				    ->where('id=:id', array(':id' => $id))
-				    ->queryRow();
+					->select('*')
+					->from('users')
+					->where('id=:id', array(':id' => $id))
+					->queryRow();
 
 				if ($userRow)
 				{

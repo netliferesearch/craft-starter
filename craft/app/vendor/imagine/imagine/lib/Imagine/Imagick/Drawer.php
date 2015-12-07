@@ -31,9 +31,9 @@ final class Drawer implements DrawerInterface
     private $imagick;
 
     /**
-     * @param \Imagick $imagick
+     * @param Imagick $imagick
      */
-    public function __construct(\Imagick $imagick)
+    public function __construct(Imagick $imagick)
     {
         $this->imagick = $imagick;
     }
@@ -375,7 +375,7 @@ final class Drawer implements DrawerInterface
     private function getColor(ColorInterface $color)
     {
         $pixel = new \ImagickPixel((string) $color);
-        $pixel->setColorValue(\Imagick::COLOR_ALPHA, $color->getAlpha() / 100);
+        $pixel->setColorValue(Imagick::COLOR_ALPHA, $color->getAlpha() / 100);
 
         return $pixel;
     }

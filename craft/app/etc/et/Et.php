@@ -6,8 +6,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.etc.et
  * @since     1.0
  */
@@ -56,7 +56,7 @@ class Et
 	 *
 	 * @return Et
 	 */
-	public function __construct($endpoint, $timeout = 30, $connectTimeout = 2)
+	public function __construct($endpoint, $timeout = 30, $connectTimeout = 30)
 	{
 		$endpoint .= craft()->config->get('endpointSuffix');
 
@@ -64,8 +64,13 @@ class Et
 		$this->_timeout = $timeout;
 		$this->_connectTimeout = $connectTimeout;
 
+		// There can be a race condition after an update from older Craft versions where they lose session
+		// and another call to elliott is made during cleanup.
+		$userEmail = craft()->userSession->getUser() ? craft()->userSession->getUser()->email : '';
+
 		$this->_model = new EtModel(array(
 			'licenseKey'        => $this->_getLicenseKey(),
+			'pluginLicenseKeys' => $this->_getPluginLicenseKeys(),
 			'requestUrl'        => craft()->request->getHostInfo().craft()->request->getUrl(),
 			'requestIp'         => craft()->request->getIpAddress(),
 			'requestTime'       => DateTimeHelper::currentTimeStamp(),
@@ -73,8 +78,9 @@ class Et
 			'localBuild'        => CRAFT_BUILD,
 			'localVersion'      => CRAFT_VERSION,
 			'localEdition'      => craft()->getEdition(),
-			'userEmail'         => craft()->userSession->getUser()->email,
+			'userEmail'         => $userEmail,
 			'track'             => CRAFT_TRACK,
+			'showBeta'          => craft()->config->get('showBetaUpdates'),
 			'serverInfo'        => array(
 				'extensions'    => get_loaded_extensions(),
 				'phpVersion'    => PHP_VERSION,
@@ -158,6 +164,14 @@ class Et
 	}
 
 	/**
+	 * @param $handle
+	 */
+	public function setHandle($handle)
+	{
+		$this->_model->handle = $handle;
+	}
+
+	/**
 	 * @throws EtException|\Exception
 	 * @return EtModel|null
 	 */
@@ -186,7 +200,7 @@ class Et
 					'allow_redirects' => $this->getAllowRedirects(),
 				);
 
-				$request = $client->post($this->_endpoint, $options);
+				$request = $client->post($this->_endpoint, null, null, $options);
 				$request->setBody($data, 'application/json');
 
 				// Potentially long-running request, so close session to prevent session blocking on subsequent requests.
@@ -227,14 +241,22 @@ class Et
 							$this->_setLicenseKey($etModel->licenseKey);
 						}
 
-						// Cache the license key status and which edition it has
+						// Cache the Craft/plugin license key statuses, and which edition Craft is licensed for
 						craft()->cache->set('licenseKeyStatus', $etModel->licenseKeyStatus);
 						craft()->cache->set('licensedEdition', $etModel->licensedEdition);
 						craft()->cache->set('editionTestableDomain@'.craft()->request->getHostName(), $etModel->editionTestableDomain ? 1 : 0);
 
-						if ($etModel->licenseKeyStatus == LicenseKeyStatus::MismatchedDomain)
+						if ($etModel->licenseKeyStatus == LicenseKeyStatus::Mismatched)
 						{
 							craft()->cache->set('licensedDomain', $etModel->licensedDomain);
+						}
+
+						if (is_array($etModel->pluginLicenseKeyStatuses))
+						{
+							foreach ($etModel->pluginLicenseKeyStatuses as $pluginHandle => $licenseKeyStatus)
+							{
+								craft()->plugins->setPluginLicenseKeyStatus($pluginHandle, $licenseKeyStatus);
+							}
 						}
 
 						return $etModel;
@@ -302,6 +324,23 @@ class Et
 		}
 
 		return null;
+	}
+
+	/**
+	 * @return array
+	 */
+	private function _getPluginLicenseKeys()
+	{
+		$pluginLicenseKeys = array();
+		$pluginsService = craft()->plugins;
+
+		foreach ($pluginsService->getPlugins() as $plugin)
+		{
+			$pluginHandle = $plugin->getClassHandle();
+			$pluginLicenseKeys[$pluginHandle] = $pluginsService->getPluginLicenseKey($pluginHandle);
+		}
+
+		return $pluginLicenseKeys;
 	}
 
 	/**

@@ -6,8 +6,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.helpers
  * @since     1.0
  */
@@ -225,7 +225,11 @@ class StringHelper
 				311 => 'kj', 316 => 'lj', 326 => 'nj', 353 => 'sh', 363 => 'uu',
 				382 => 'zh', 256 => 'aa', 268 => 'ch', 274 => 'ee', 290 => 'gj',
 				298 => 'ii', 310 => 'kj', 315 => 'lj', 325 => 'nj', 337 => 'o',
-				352 => 'sh', 362 => 'uu', 369 => 'u',  381 => 'zh'
+				352 => 'sh', 362 => 'uu', 369 => 'u',  381 => 'zh', 260 => 'A',
+				261 => 'a',  262 => 'C',  263 => 'c',  280 => 'E',  281 => 'e',
+				321 => 'L',  322 => 'l',  323 => 'N',  324 => 'n',  211 => 'O',
+				346 => 'S',  347 => 's',  379 => 'Z',  380 => 'z',  377 => 'Z',
+				388 => 'z',
 			);
 
 			foreach (craft()->config->get('customAsciiCharMappings') as $ascii => $char)
@@ -349,7 +353,7 @@ class StringHelper
 		$str = str_replace(array('&nbsp;', '&#160;', '&#xa0;') , ' ', $str);
 
 		// Get rid of entities
-		$str = html_entity_decode($str, ENT_QUOTES, static::UTF8);
+		$str = preg_replace("/&#?[a-z0-9]{2,8};/i", "", $str);
 
 		// Remove punctuation and diacritics
 		$str = strtr($str, static::_getCharMap());
@@ -394,6 +398,27 @@ class StringHelper
 	}
 
 	/**
+	 * Runs a string through Markdown, but remoes any paragraph tags that get removed
+	 *
+	 * @param string $str
+	 *
+	 * @return string
+	 */
+	public static function parseMarkdownLine($str)
+	{
+		// Prevent line breaks from getting treated as paragraphs
+		$str = preg_replace('/[\r\n]/', '  $0', $str);
+
+		// Parse with Markdown
+		$str = self::parseMarkdown($str);
+
+		// Return without the <p> and </p>
+		$str = trim(str_replace(array('<p>', '</p>'), '', $str));
+
+		return $str;
+	}
+
+	/**
 	 * Attempts to convert a string to UTF-8 and clean any non-valid UTF-8 characters.
 	 *
 	 * @param      $string
@@ -428,6 +453,41 @@ class StringHelper
 		{
 			$encoding = static::getEncoding($string);
 			$string = mb_convert_encoding($string, 'utf-8', $encoding);
+		}
+
+		return $string;
+	}
+
+	/**
+	 * HTML-encodes any 4-byte UTF-8 characters.
+	 *
+	 * @param string $string The string
+	 *
+	 * @return string The string with converted 4-byte UTF-8 characters
+	 *
+	 * @see http://stackoverflow.com/a/16496730/1688568
+	 */
+	public static function encodeMb4($string)
+	{
+		// Does this string have any 4+ byte Unicode chars?
+		if (max(array_map('ord', str_split($string))) >= 240)
+		{
+			$string = preg_replace_callback('/./u', function(array $match)
+			{
+				if (strlen($match[0]) >= 4)
+				{
+					// (Logic pulled from WP's wp_encode_emoji() function)
+					// UTF-32's hex encoding is the same as HTML's hex encoding.
+					// So, by converting from UTF-8 to UTF-32, we magically
+					// get the correct hex encoding.
+					$unpacked = unpack('H*', mb_convert_encoding($match[0], 'UTF-32', 'UTF-8'));
+					return isset($unpacked[1]) ? '&#x'.ltrim($unpacked[1], '0').';' : '';
+				}
+				else
+				{
+					return $match[0];
+				}
+			}, $string);
 		}
 
 		return $string;
@@ -538,7 +598,7 @@ class StringHelper
 	}
 
 	/**
-	 * Kebab-cases a string.
+	 * kebab-cases a string.
 	 *
 	 * @param string $string The string
 	 * @param string $glue The string used to glue the words together (default is a hyphen)
@@ -546,26 +606,78 @@ class StringHelper
 	 * @param boolean $removePunctuation Whether punctuation marks should be removed (default is true)
 	 *
 	 * @return string
+	 *
+	 * @see toCamelCase()
+	 * @see toPascalCase()
+	 * @see toSnakeCase()
 	 */
 	public static function toKebabCase($string, $glue = '-', $lower = true, $removePunctuation = true)
 	{
-		if ($removePunctuation)
-		{
-			$string = str_replace(array('.', '_', '-'), ' ', $string);
-		}
-
-		// Remove inner-word punctuation.
-		$string = preg_replace('/[\'"‘’“”\[\]\(\)\{\}:]/u', '', $string);
-
-		// Split on the words and then glue it back together
-		$words = self::splitOnWords($string);
+		$words = self::_prepStringForCasing($string, $lower, $removePunctuation);
 		$string = implode($glue, $words);
 
-		if ($lower)
+		return $string;
+	}
+
+	/**
+	 * camelCases a string.
+	 *
+	 * @param string $string The string
+	 *
+	 * @return string
+	 *
+	 * @see toKebabCase()
+	 * @see toPascalCase()
+	 * @see toSnakeCase()
+	 */
+	public static function toCamelCase($string)
+	{
+		$words = self::_prepStringForCasing($string);
+
+		if (!$words)
 		{
-			// Make it lowercase
-			$string = self::toLowerCase($string);
+			return '';
 		}
+
+		$string = array_shift($words).implode('', array_map(array(get_called_class(), 'uppercaseFirst'), $words));
+
+		return $string;
+	}
+
+	/**
+	 * PascalCases a string.
+	 *
+	 * @param string $string The string
+	 *
+	 * @return string
+	 *
+	 * @see toKebabCase()
+	 * @see toCamelCase()
+	 * @see toSnakeCase()
+	 */
+	public static function toPascalCase($string)
+	{
+		$words = self::_prepStringForCasing($string);
+		$string = implode('', array_map(array(get_called_class(), 'uppercaseFirst'), $words));
+
+		return $string;
+	}
+
+	/**
+	 * snake_cases a string.
+	 *
+	 * @param string $string The string
+	 *
+	 * @return string
+	 *
+	 * @see toKebabCase()
+	 * @see toCamelCase()
+	 * @see toPascalCase()
+	 */
+	public static function toSnakeCase($string)
+	{
+		$words = self::_prepStringForCasing($string);
+		$string = implode('_', $words);
 
 		return $string;
 	}
@@ -650,5 +762,39 @@ class StringHelper
 	private static function _chr($int)
 	{
 		return html_entity_decode("&#{$int};", ENT_QUOTES, static::UTF8);
+	}
+
+	/**
+	 * Prepares a string for casing routines.
+	 *
+	 * @param string $string The string
+	 * @param
+	 * @param boolean $removePunctuation Whether punctuation marks should be removed (default is true)
+	 *
+	 * @return array The prepped words in the string
+	 *
+	 * @see toKebabCase()
+	 * @see toCamelCase()
+	 * @see toPascalCase()
+	 * @see toSnakeCase()
+	 */
+	private static function _prepStringForCasing($string, $lower = true, $removePunctuation = true)
+	{
+		if ($lower)
+		{
+			// Make it lowercase
+			$string = self::toLowerCase($string);
+		}
+
+		if ($removePunctuation)
+		{
+			$string = str_replace(array('.', '_', '-'), ' ', $string);
+		}
+
+		// Remove inner-word punctuation.
+		$string = preg_replace('/[\'"‘’“”\[\]\(\)\{\}:]/u', '', $string);
+
+		// Split on the words and return
+		return self::splitOnWords($string);
 	}
 }

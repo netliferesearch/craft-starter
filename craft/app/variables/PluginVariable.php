@@ -6,8 +6,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.variables
  * @since     1.0
  */
@@ -24,6 +24,16 @@ class PluginVariable extends BaseComponentTypeVariable
 	public function getName()
 	{
 		return $this->component->getName();
+	}
+
+	/**
+	 * Returns the plugin’s description.
+	 *
+	 * @return string
+	 */
+	public function getDescription()
+	{
+		return $this->component->getDescription();
 	}
 
 	/**
@@ -57,28 +67,37 @@ class PluginVariable extends BaseComponentTypeVariable
 	}
 
 	/**
+	 * Returns the plugin documentation's URL.
+	 *
+	 * @return string
+	 */
+	public function getDocumentationUrl()
+	{
+		return $this->component->getDocumentationUrl();
+	}
+
+	/**
 	 * Returns the URL to the plugin's settings in the CP.
 	 *
 	 * @return string|null
 	 */
 	public function getSettingsUrl()
 	{
+		// Make sure the plugin actually has settings
+		if (!$this->component->hasSettings())
+		{
+			return null;
+		}
+
 		// Is this plugin managing its own settings?
 		$url = $this->component->getSettingsUrl();
 
 		if (!$url)
 		{
-			// Check to see if they're using getSettingsHtml(), etc.
-			if ($this->component->getSettingsHtml())
-			{
-				$url = 'settings/plugins/'.mb_strtolower($this->component->getClassHandle());
-			}
+			$url = 'settings/plugins/'.StringHelper::toLowerCase($this->component->getClassHandle());
 		}
 
-		if ($url)
-		{
-			return UrlHelper::getCpUrl($url);
-		}
+		return UrlHelper::getCpUrl($url);
 	}
 
 	/**

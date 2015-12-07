@@ -1,8 +1,8 @@
 /**
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.resources
  */
 
@@ -204,7 +204,7 @@ Craft.Locales = Garnish.Base.extend(
 		{
 			if (!this.$resultsSheet)
 			{
-				this.$resultsSheet = $('<div id="addlocaleresults" class="menu" style="position: relative; margin: 0 1px;"/>').appendTo(this.$addLocaleField);
+				this.$resultsSheet = $('<div id="addlocaleresults" class="menu" style="position: relative;"/>').appendTo(this.$addLocaleField);
 				this.$resultsList = $('<ul/>').appendTo(this.$resultsSheet);
 
 				this.addListener(this.$resultsList, 'mousedown', 'addSelectedLocale');

@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2014, Pixel & Tonic, Inc.
- @license   http://buildwithcraft.com/license Craft License Agreement
- @see       http://buildwithcraft.com
+ @license   http://craftcms.com/license Craft License Agreement
+ @see       http://craftcms.com
  @package   craft.app.resources
 */
 test("Craft.getUrl()",function(){Craft.baseUrl="http://craft.dev/admin";Craft.baseCpUrl="http://craft.dev/admin";Craft.baseSiteUrl="http://craft.dev/";Craft.actionUrl="http://craft.dev/index.php/admin/actions";Craft.resourceUrl="http://craft.dev/admin/resources";Craft.omitScriptNameInUrls=!0;Craft.usePathInfo=!0;Craft.resourceTrigger="resources";Craft.actionTrigger="actions";Craft.path="";Craft.locale="en_us";Craft.translations=[];Craft.maxUploadSize=33554432;equal(Craft.getUrl("http://example.com/"),

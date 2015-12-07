@@ -6,8 +6,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.helpers
  * @since     1.1
  */
@@ -19,11 +19,6 @@ class ImageHelper
 	const EXIF_IFD0_ROTATE_180 = 3;
 	const EXIF_IFD0_ROTATE_90  = 6;
 	const EXIF_IFD0_ROTATE_270 = 8;
-
-	const SVG_WIDTH_RE = '/(.*<svg[^>]* width=")([\d\.]+)([a-z]*)"/si';
-	const SVG_HEIGHT_RE = '/(.*<svg[^>]* height=")([\d\.]+)([a-z]*)"/si';
-    const SVG_VIEWBOX_RE = '/.*<svg[^>].* viewbox="\d+(?:,|\s)\d+(?:,|\s)(\d+)(?:,|\s)(\d+)"/si';
-    const SVG_TAG_RE = '/(.*<svg)([^>].*)/si';
 
 	// Public Methods
 	// =========================================================================
@@ -44,11 +39,11 @@ class ImageHelper
 
 		if (empty($targetHeight))
 		{
-			$targetHeight = round($targetWidth / $factor);
+			$targetHeight = ceil($targetWidth / $factor);
 		}
 		else if (empty($targetWidth))
 		{
-			$targetWidth = round($targetHeight * $factor);
+			$targetWidth = ceil($targetHeight * $factor);
 		}
 
 		return array($targetWidth, $targetHeight);
@@ -63,15 +58,18 @@ class ImageHelper
 	 */
 	public static function isImageManipulatable($extension)
 	{
-		$extensions = array('jpg', 'jpeg', 'gif', 'png', 'wbmp', 'xbm');
+		$path = craft()->path->getResourcesPath();
+		$file = $path."images/samples/sample.".StringHelper::toLowerCase($extension);
 
-		if (craft()->images->isImagick())
+		try
 		{
-			$extensions[] = 'svg';
+			craft()->images->loadImage($file);
+			return true;
 		}
-
-		return in_array(mb_strtolower($extension), $extensions);
-
+		catch(\Exception $e)
+		{
+			return false;
+		}
 	}
 
 	/**
@@ -81,7 +79,7 @@ class ImageHelper
 	 */
 	public static function getWebSafeFormats()
 	{
-		return array('jpg', 'jpeg', 'gif', 'png');
+		return array('jpg', 'jpeg', 'gif', 'png', 'svg');
 	}
 
 	/**
@@ -203,20 +201,20 @@ class ImageHelper
 	public static function parseSvgSize($svg)
 	{
 		if (
-			preg_match(self::SVG_WIDTH_RE, $svg, $widthMatch) &&
-			preg_match(self::SVG_HEIGHT_RE, $svg, $heightMatch) &&
+			preg_match(SvgImage::SVG_WIDTH_RE, $svg, $widthMatch) &&
+			preg_match(SvgImage::SVG_HEIGHT_RE, $svg, $heightMatch) &&
 			($matchedWidth = floatval($widthMatch[2])) &&
 			($matchedHeight = floatval($heightMatch[2]))
 		)
 		{
 			$width = round($matchedWidth * self::_getSizeUnitMultiplier($widthMatch[3]));
 			$height = round($matchedHeight * self::_getSizeUnitMultiplier($heightMatch[3]));
-        }
-		elseif (preg_match(self::SVG_VIEWBOX_RE, $svg, $viewboxMatch))
-        {
-            $width = round($viewboxMatch[1]);
-            $height = round($viewboxMatch[2]);
-        }
+		}
+		elseif (preg_match(SvgImage::SVG_VIEWBOX_RE, $svg, $viewboxMatch))
+		{
+			$width = round($viewboxMatch[3]);
+			$height = round($viewboxMatch[4]);
+		}
 		else
 		{
 			$width = null;

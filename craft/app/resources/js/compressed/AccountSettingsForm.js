@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2014, Pixel & Tonic, Inc.
- @license   http://buildwithcraft.com/license Craft License Agreement
- @see       http://buildwithcraft.com
+ @license   http://craftcms.com/license Craft License Agreement
+ @see       http://craftcms.com
  @package   craft.app.resources
 */
 (function(a){Craft.AccountSettingsForm=Garnish.Base.extend({userId:null,isCurrent:null,$copyPasswordResetUrlBtn:null,$actionSpinner:null,currentPasswordModal:null,$lockBtns:null,$currentPasswordInput:null,$currentPasswordSpinner:null,afterVerifyPassword:null,currentPassword:null,confirmDeleteModal:null,$deleteBtn:null,init:function(d,b){this.userId=d;this.isCurrent=b;this.$lockBtns=a(".btn.lock");this.$copyPasswordResetUrlBtn=a("#copy-passwordreset-url");this.$actionSpinner=a("#action-spinner");this.$deleteBtn=

@@ -6,8 +6,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.etc.templating
  * @since     2.0
  */
@@ -15,6 +15,29 @@ abstract class BaseTemplate extends \Twig_Template
 {
 	// Protected Methods
 	// =========================================================================
+
+	/**
+	 * Displays the template.
+	 */
+	protected function displayWithErrorHandling(array $context, array $blocks = array())
+	{
+		try
+		{
+			parent::displayWithErrorHandling($context, $blocks);
+		}
+		catch (\Twig_Error_Runtime $e)
+		{
+			if (craft()->config->get('suppressTemplateErrors'))
+			{
+				// Just log it and move on
+				craft()->errorHandler->logException($e);
+			}
+			else
+			{
+				throw $e;
+			}
+		}
+	}
 
 	/**
 	 * Returns the attribute value for a given array/object.

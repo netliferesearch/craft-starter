@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2014, Pixel & Tonic, Inc.
- @license   http://buildwithcraft.com/license Craft License Agreement
- @see       http://buildwithcraft.com
+ @license   http://craftcms.com/license Craft License Agreement
+ @see       http://craftcms.com
  @package   craft.app.resources
 */
 (function(d){var h=Garnish.Base.extend({tokens:null,routes:null,$container:null,$addRouteBtn:null,sorter:null,init:function(){this.tokens={};this.routes=[];this.$container=d("#routes");for(var a=this.getRoutes(),b=0;b<a.length;b++){var c=new f(a[b]);this.routes.push(c)}this.sorter=new Garnish.DragSort(a,{axis:Garnish.Y_AXIS,onSortChange:d.proxy(this,"updateRouteOrder")});this.$addRouteBtn=d("#add-route-btn");this.addListener(this.$addRouteBtn,"click","addRoute")},getRoutes:function(){return this.$container.children()},

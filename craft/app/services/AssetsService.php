@@ -6,8 +6,8 @@ namespace Craft;
  *
  * @author     Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright  Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license    http://buildwithcraft.com/license Craft License Agreement
- * @see        http://buildwithcraft.com
+ * @license    http://craftcms.com/license Craft License Agreement
+ * @see        http://craftcms.com
  * @package    craft.app.services
  * @since      1.0
  * @deprecated This class will have several breaking changes in Craft 3.0.
@@ -152,7 +152,7 @@ class AssetsService extends BaseApplicationComponent
 		if ($isNewFile && !$file->getContent()->title)
 		{
 			// Give it a default title based on the file name
-			$file->getContent()->title = str_replace('_', ' ', IOHelper::getFileName($file->filename, false));
+			$file->getContent()->title = $file->generateAttributeLabel(IOHelper::getFileName($file->filename, false));
 		}
 
 		$transaction = craft()->db->getCurrentTransaction() === null ? craft()->db->beginTransaction() : null;
@@ -621,6 +621,21 @@ class AssetsService extends BaseApplicationComponent
 		}
 
 		return null;
+	}
+
+	/**
+	 * Returns the root folder for a given source ID.
+	 *
+	 * @param int $sourceId
+	 *
+	 * @return AssetFolderModel|null
+	 */
+	public function getRootFolderBySourceId($sourceId)
+	{
+		return $this->findFolder(array(
+			'sourceId' => $sourceId,
+			'parentId' => ':empty:'
+		));
 	}
 
 	/**

@@ -1,8 +1,8 @@
 /**
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.resources
  */
 
@@ -42,18 +42,18 @@ Craft.Tool = Garnish.Base.extend(
 
 		if (!this.hud)
 		{
-			this.$form = $('<form/>').html(this.optionsHtml +
+			this.$form = $('<div class="form"/>').html(this.optionsHtml +
 				'<div class="buttons">' +
 					'<input type="submit" class="btn submit" value="'+this.buttonLabel+'">' +
 				'</div>');
 
 			this.hud = new Garnish.HUD(this.$trigger, this.$form, {
-				positions: ['top', 'bottom', 'right', 'left'],
-				hudClass: 'hud toolhud'
+				orientations: ['top', 'bottom', 'right', 'left'],
+				hudClass: 'hud toolhud',
+				onSubmit: $.proxy(this, 'onSubmit')
 			});
 
 			Craft.initUiElements(this.$form);
-			this.addListener(this.$form, 'submit', 'onSubmit');
 		}
 		else
 		{
@@ -63,11 +63,9 @@ Craft.Tool = Garnish.Base.extend(
 
 	onSubmit: function(ev)
 	{
-		ev.preventDefault();
-
 		if (!this.progressBar)
 		{
-			this.progressBar = new Craft.ProgressBar(this.hud.$body);
+			this.progressBar = new Craft.ProgressBar(this.hud.$main);
 		}
 		else
 		{
@@ -83,7 +81,7 @@ Craft.Tool = Garnish.Base.extend(
 
 
 		this.progressBar.$progressBar.css({
-			top: Math.round(this.hud.$body.outerHeight() / 2) - 6
+			top: Math.round(this.hud.$main.outerHeight() / 2) - 6
 		})
 			.removeClass('hidden');
 
@@ -232,11 +230,11 @@ Craft.Tool = Garnish.Base.extend(
 	{
 		if (!this.$allDone)
 		{
-			this.$allDone = $('<div class="alldone" data-icon="done" />').appendTo(this.hud.$body);
+			this.$allDone = $('<div class="alldone" data-icon="done" />').appendTo(this.hud.$main);
 		}
 
 		this.$allDone.css({
-			top: Math.round(this.hud.$body.outerHeight() / 2) - 30
+			top: Math.round(this.hud.$main.outerHeight() / 2) - 30
 		});
 
 		this.progressBar.$progressBar.animateLeft(-170, 'fast');

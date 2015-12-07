@@ -6,8 +6,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.etc.elements
  * @since     1.3
  */
@@ -178,12 +178,18 @@ class ElementRelationParamParser
 
 		// Get the element IDs, wherever they are
 		$relElementIds = array();
+		$glue = 'or';
 
 		foreach (array('element', 'sourceElement', 'targetElement') as $elementParam)
 		{
 			if (isset($relCriteria[$elementParam]))
 			{
 				$elements = ArrayHelper::stringToArray($relCriteria[$elementParam]);
+
+				if (isset($elements[0]) && ($elements[0] == 'and' || $elements[0] == 'or'))
+				{
+					$glue = array_shift($elements);
+				}
 
 				foreach ($elements as $element)
 				{
@@ -218,10 +224,25 @@ class ElementRelationParamParser
 				$relCriteria['field'] = null;
 			}
 
+			array_unshift($relElementIds, $glue);
+
 			return $this->parseRelationParam(array('or',
 				array('sourceElement' => $relElementIds, 'field' => $relCriteria['field']),
 				array('targetElement' => $relElementIds, 'field' => $relCriteria['field'])
 			), $query);
+		}
+		// Do we need to check for *all* of the element IDs?
+		else if ($glue == 'and')
+		{
+			// Srpead it across multiple relation sub-params
+			$newRelatedToParam = array('and');
+
+			foreach ($relElementIds as $elementId)
+			{
+				$newRelatedToParam[] = array($elementParam => array($elementId));
+			}
+
+			return $this->parseRelationParam($newRelatedToParam, $query);
 		}
 
 		$conditions = array();

@@ -2,45 +2,68 @@
 
 {% extends "_layouts/cp" %}
 {% set title = "Plugins"|t %}
+{% includecssresource "css/plugins.css" %}
 
 {% set crumbs = [
 	{ label: "Settings"|t, url: url('settings') }
 ] %}
 
-{% set docsUrl = 'http://buildwithcraft.com/docs/plugins/introduction' %}
+{% set docsUrl = 'http://craftcms.com/docs/plugins/introduction' %}
 
 
 {% set plugins = craft.plugins.getPlugins(false) %}
 
 
-{% set content %}
+{% block content %}
 	{% if plugins|length %}
 		<table id="plugins" class="data fullwidth collapsible">
 			<thead>
 				<th scope="col">{{ "Plugin"|t }}</th>
 				<th scope="col">{{ "Developer"|t }}</th>
+				<th scope="col">{{ "Documentation"|t }}</th>
 				<th scope="col">{{ "Status"|t }}</th>
+				<th class="thin"></th>
 				<td class="thin"></td>
 			</thead>
 			<tbody>
 				{% for plugin in plugins %}
 					{% set name = plugin.getName() -%}
+					{% set description = plugin.getDescription() -%}
 					{% set classHandle = plugin.getClassHandle() -%}
 					{% set isInstalled = plugin.isInstalled() -%}
 					{% set isEnabled = plugin.isEnabled() -%}
 					{% set settingsUrl = isEnabled ? plugin.getSettingsUrl() -%}
 					{% set developerUrl = plugin.getDeveloperUrl() -%}
+					{% set documentationUrl = plugin.getDocumentationUrl() -%}
 
 					<tr data-name="{{ name }}">
 						<th data-title="{{ 'Name'|t }}">
-							{% if settingsUrl %}
-								<a href="{{ settingsUrl }}">{{ name }}</a>
-							{% else %}
-								{{ name }}
-							{% endif %}
-							<span class="light">{{ plugin.getVersion() }}</span>
+
+							<div class="plugin-infos">
+								<div class="icon">
+									<img src="{{ craft.plugins.getPluginIconUrl(classHandle, 72) }}" width="36" height="36">
+								</div>
+
+								<div class="details">
+									<div class="name">
+										{{ name }}
+										<span class="light">{{ plugin.getVersion() }}</span>
+									</div>
+
+									{% if description %}
+										<div class="description">{{ description }}</div>
+									{% endif %}
+								</div>
+							</div>
 						</th>
 						<td data-title="{{ 'Developer'|t }}"><a{% if developerUrl %} href="{{ developerUrl }}" target="_blank"{% endif %}>{{ plugin.getDeveloper() }}</a></td>
+						<td data-title="{{ 'Documentation'|t }}">
+							{% if documentationUrl %}
+								<a href="{{ documentationUrl }}" title="{{ "{name} Documentation"|t({ name:plugin.name }) }}" target="_blank">{{ "View Documentation"|t }}</a>
+							{% else %}
+							    <span class="light">—</span>
+							{% endif %}
+						</td>
 						<td data-title="{{ 'Status'|t }}">
 							{% if isInstalled %}
 								<form method="post" accept-charset="UTF-8">
@@ -57,6 +80,11 @@
 								</form>
 							{% else %}
 								<span class="status"></span> <span class="light">{{ "Not installed"|t }}</span>
+							{% endif %}
+						</td>
+						<td>
+							{% if settingsUrl %}
+								<a href="{{ settingsUrl }}" title="{{ "{name} Settings"|t({ name:plugin.name }) }}" data-icon="settings"></a>
 							{% endif %}
 						</td>
 						<td class="thin rightalign nowrap">
@@ -78,4 +106,4 @@
 	{% else %}
 		<p>{{ "There are no available plugins."|t }}
 	{% endif %}
-{% endset %}
+{% endblock %}

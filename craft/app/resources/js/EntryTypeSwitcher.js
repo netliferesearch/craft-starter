@@ -1,8 +1,8 @@
 /**
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.resources
  */
 
@@ -11,16 +11,14 @@
 
 Craft.EntryTypeSwitcher = Garnish.Base.extend(
 {
-	$form: null,
 	$typeSelect: null,
 	$spinner: null,
 	$fields: null,
 
 	init: function()
 	{
-		this.$form = $('#entry-form');
 		this.$typeSelect = $('#entryType');
-		this.$spinner = $('<div class="spinner hidden" style="position: absolute; margin-'+Craft.left+': 2px;"/>').insertAfter(this.$typeSelect.parent());
+		this.$spinner = $('<div class="spinner hidden"/>').insertAfter(this.$typeSelect.parent());
 		this.$fields = $('#fields');
 
 		this.addListener(this.$typeSelect, 'change', 'onTypeChange');
@@ -30,7 +28,7 @@ Craft.EntryTypeSwitcher = Garnish.Base.extend(
 	{
 		this.$spinner.removeClass('hidden');
 
-		Craft.postActionRequest('entries/switchEntryType', this.$form.serialize(), $.proxy(function(response, textStatus) {
+		Craft.postActionRequest('entries/switchEntryType', Craft.cp.$container.serialize(), $.proxy(function(response, textStatus) {
 			this.$spinner.addClass('hidden');
 
 			if (textStatus == 'success')
@@ -50,9 +48,6 @@ Craft.EntryTypeSwitcher = Garnish.Base.extend(
 				{
 					slugGenerator.setNewSource('#title');
 				}
-
-				// Trigger a resize event to force a grid update
-				Garnish.$win.trigger('resize');
 			}
 		}, this));
 	}

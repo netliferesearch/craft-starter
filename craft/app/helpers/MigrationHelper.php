@@ -6,8 +6,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.helpers
  * @since     1.1
  */
@@ -112,6 +112,12 @@ class MigrationHelper
 
 		foreach ($fks as $fk)
 		{
+			// Skip if this FK is from *and* to this table
+			if ($fk->table->name == $oldName)
+			{
+				continue;
+			}
+
 			static::dropForeignKey($fk->fk);
 		}
 
@@ -128,14 +134,24 @@ class MigrationHelper
 		static::$_tables[$newName]->name = $newName;
 		unset(static::$_tables[$oldName]);
 
-		static::restoreAllIndexesOnTable($table);
-		static::restoreAllForeignKeysOnTable($table);
-
+		// Restore FKs to this table
 		foreach ($fks as $fk)
 		{
+			// Update the FK ref table name
 			$fk->fk->refTable = $newName;
+
+			// Skip if this FK is from *and* to this table
+			if ($fk->table->name == $newName)
+			{
+				continue;
+			}
+
 			static::restoreForeignKey($fk->fk);
 		}
+
+		// Restore this table's indexes and FKs
+		static::restoreAllIndexesOnTable($table);
+		static::restoreAllForeignKeysOnTable($table);
 	}
 
 	/**

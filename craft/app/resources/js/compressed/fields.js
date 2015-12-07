@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2014, Pixel & Tonic, Inc.
- @license   http://buildwithcraft.com/license Craft License Agreement
- @see       http://buildwithcraft.com
+ @license   http://craftcms.com/license Craft License Agreement
+ @see       http://craftcms.com
  @package   craft.app.resources
 */
 (function(b){var e=Garnish.Base.extend({$groups:null,$selectedGroup:null,init:function(){this.$groups=b("#groups");this.$selectedGroup=this.$groups.find("a.sel:first");this.addListener(b("#newgroupbtn"),"activate","addNewGroup");var a=b("#groupsettingsbtn");a.length&&(a.data("menubtn").settings.onOptionSelect=b.proxy(function(a){switch(b(a).data("action")){case "rename":this.renameSelectedGroup();break;case "delete":this.deleteSelectedGroup()}},this))},addNewGroup:function(){var a=this.promptForGroupName("");

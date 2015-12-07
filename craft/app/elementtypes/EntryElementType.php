@@ -6,8 +6,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.elementtypes
  * @since     1.0
  */
@@ -342,10 +342,12 @@ class EntryElementType extends BaseElementType
 	public function defineSortableAttributes()
 	{
 		$attributes = array(
-			'title'      => Craft::t('Title'),
-			'uri'        => Craft::t('URI'),
-			'postDate'   => Craft::t('Post Date'),
-			'expiryDate' => Craft::t('Expiry Date'),
+			'title'       => Craft::t('Title'),
+			'uri'         => Craft::t('URI'),
+			'postDate'    => Craft::t('Post Date'),
+			'expiryDate'  => Craft::t('Expiry Date'),
+			'dateCreated' => Craft::t('Date Created'),
+			'dateUpdated' => Craft::t('Date Updated'),
 		);
 
 		// Allow plugins to modify the attributes
@@ -355,32 +357,68 @@ class EntryElementType extends BaseElementType
 	}
 
 	/**
-	 * @inheritDoc IElementType::defineTableAttributes()
+	 * @inheritDoc IElementType::defineAvailableTableAttributes()
+	 *
+	 * @return array
+	 */
+	public function defineAvailableTableAttributes()
+	{
+		$attributes = array(
+			'title'       => array('label' => Craft::t('Title')),
+			'section'     => array('label' => Craft::t('Section')),
+			'type'        => array('label' => Craft::t('Entry Type')),
+			'author'      => array('label' => Craft::t('Author')),
+			'slug'        => array('label' => Craft::t('Slug')),
+			'uri'         => array('label' => Craft::t('URI')),
+			'postDate'    => array('label' => Craft::t('Post Date')),
+			'expiryDate'  => array('label' => Craft::t('Expiry Date')),
+			'link'        => array('label' => Craft::t('Link'), 'icon' => 'world'),
+			'id'          => array('label' => Craft::t('ID')),
+			'dateCreated' => array('label' => Craft::t('Date Created')),
+			'dateUpdated' => array('label' => Craft::t('Date Updated')),
+		);
+
+		// Hide Author from Craft Personal/Client
+		if (craft()->getEdition() != Craft::Pro)
+		{
+			unset($attributes['author']);
+		}
+
+		// Allow plugins to modify the attributes
+		$pluginAttributes = craft()->plugins->call('defineAdditionalEntryTableAttributes', array(), true);
+
+		foreach ($pluginAttributes as $thisPluginAttributes)
+		{
+			$attributes = array_merge($attributes, $thisPluginAttributes);
+		}
+
+		return $attributes;
+	}
+
+	/**
+	 * @inheritDoc IElementType::getDefaultTableAttributes()
 	 *
 	 * @param string|null $source
 	 *
 	 * @return array
 	 */
-	public function defineTableAttributes($source = null)
+	public function getDefaultTableAttributes($source = null)
 	{
-		$attributes = array(
-			'title' => Craft::t('Title'),
-			'uri'   => Craft::t('URI'),
-		);
+		$attributes = array();
 
 		if ($source == '*')
 		{
-			$attributes['section'] = Craft::t('Section');
+			$attributes[] = 'section';
 		}
 
 		if ($source != 'singles')
 		{
-			$attributes['postDate']   = Craft::t('Post Date');
-			$attributes['expiryDate'] = Craft::t('Expiry Date');
+			$attributes[] = 'postDate';
+			$attributes[] = 'expiryDate';
 		}
 
-		// Allow plugins to modify the attributes
-		craft()->plugins->call('modifyEntryTableAttributes', array(&$attributes, $source));
+		$attributes[] = 'author';
+		$attributes[] = 'link';
 
 		return $attributes;
 	}
@@ -405,9 +443,34 @@ class EntryElementType extends BaseElementType
 
 		switch ($attribute)
 		{
+			case 'author':
+			{
+				$author = $element->getAuthor();
+
+				if ($author)
+				{
+					return craft()->templates->render('_elements/element', array(
+						'element' => $author
+					));
+				}
+				else
+				{
+					return '';
+				}
+			}
+
 			case 'section':
 			{
-				return Craft::t($element->getSection()->name);
+				$section = $element->getSection();
+
+				return ($section ? Craft::t($section->name) : '');
+			}
+
+			case 'type':
+			{
+				$entryType = $element->getType();
+
+				return ($entryType ? Craft::t($entryType->name) : '');
 			}
 
 			default:
@@ -706,15 +769,51 @@ class EntryElementType extends BaseElementType
 	 */
 	public function getEditorHtml(BaseElementModel $element)
 	{
+		$html = '';
+
+		// Show the Entry Type field?
+		if (!$element->id)
+		{
+			$entryTypes = $element->getSection()->getEntryTypes();
+
+			if (count($entryTypes) > 1)
+			{
+				$entryTypeOptions = array();
+
+				foreach ($entryTypes as $entryType)
+				{
+					$entryTypeOptions[] = array('label' => Craft::t($entryType->name), 'value' => Craft::t($entryType->id));
+				}
+
+				$html .= craft()->templates->renderMacro('_includes/forms', 'selectField', array(
+					array(
+						'label' => Craft::t('Entry Type'),
+						'id' => 'entryType',
+						'value' => $element->typeId,
+						'options' => $entryTypeOptions,
+					)
+				));
+
+				$typeInputId = craft()->templates->namespaceInputId('entryType');
+				$js = <<<EOD
+$('#{$typeInputId}').on('change', function(ev) {
+	var \$typeInput = $(this),
+		editor = \$typeInput.closest('.hud').data('elementEditor');
+	if (editor) {
+		editor.setElementAttribute('typeId', \$typeInput.val());
+		editor.loadHud();
+	}
+});
+EOD;
+				craft()->templates->includeJs($js);
+			}
+		}
+
 		if ($element->getType()->hasTitleField)
 		{
-			$html = craft()->templates->render('entries/_titlefield', array(
+			$html .= craft()->templates->render('entries/_titlefield', array(
 				'entry' => $element
 			));
-		}
-		else
-		{
-			$html = '';
 		}
 
 		$html .= parent::getEditorHtml($element);

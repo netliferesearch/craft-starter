@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2014, Pixel & Tonic, Inc.
- @license   http://buildwithcraft.com/license Craft License Agreement
- @see       http://buildwithcraft.com
+ @license   http://craftcms.com/license Craft License Agreement
+ @see       http://craftcms.com
  @package   craft.app.resources
 */
 (function(d){Craft.TableFieldSettings=Garnish.Base.extend({columnsTableName:null,defaultsTableName:null,columnsTableId:null,defaultsTableId:null,columnsTableInputPath:null,defaultsTableInputPath:null,defaults:null,columnSettings:null,columnsTable:null,defaultsTable:null,init:function(a,c,b,e,f){this.columnsTableName=a;this.defaultsTableName=c;this.columnsTableId=Craft.formatInputId(this.columnsTableName);this.defaultsTableId=Craft.formatInputId(this.defaultsTableName);this.columnsTableInputPath=this.columnsTableId.split("-");

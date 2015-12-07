@@ -6,8 +6,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.services
  * @since     1.0
  */
@@ -15,11 +15,6 @@ class SectionsService extends BaseApplicationComponent
 {
 	// Properties
 	// =========================================================================
-
-	/**
-	 * @var
-	 */
-	public $typeLimits;
 
 	/**
 	 * @var
@@ -111,22 +106,10 @@ class SectionsService extends BaseApplicationComponent
 
 			$this->_sectionsById = array();
 
-			$typeCounts = array(
-				SectionType::Single => 0,
-				SectionType::Channel => 0,
-				SectionType::Structure => 0
-			);
-
 			foreach ($results as $result)
 			{
-				$type = $result['type'];
-
-				if (craft()->getEdition() >= Craft::Client || $typeCounts[$type] < $this->typeLimits[$type])
-				{
-					$section = new SectionModel($result);
-					$this->_sectionsById[$section->id] = $section;
-					$typeCounts[$type]++;
-				}
+				$section = new SectionModel($result);
+				$this->_sectionsById[$section->id] = $section;
 			}
 
 			$this->_fetchedAllSections = true;
@@ -338,11 +321,6 @@ class SectionsService extends BaseApplicationComponent
 		$sectionRecord->type             = $section->type;
 		$sectionRecord->enableVersioning = $section->enableVersioning;
 
-		if (($isNewSection || $section->type != $oldSection->type) && !$this->canHaveMore($section->type))
-		{
-			$section->addError('type', Craft::t('You can’t add any more {type} sections.', array('type' => Craft::t(ucfirst($section->type)))));
-		}
-
 		// Type-specific attributes
 		if ($section->type == SectionType::Single)
 		{
@@ -373,8 +351,16 @@ class SectionsService extends BaseApplicationComponent
 			$section->addError('localeErrors', Craft::t('At least one locale must be selected for the section.'));
 		}
 
+		$firstSectionLocale = null;
+
 		foreach ($sectionLocales as $localeId => $sectionLocale)
 		{
+			// Is this the first one?
+			if ($firstSectionLocale === null)
+			{
+				$firstSectionLocale = $sectionLocale;
+			}
+
 			if ($section->type == SectionType::Single)
 			{
 				$errorKey = 'urlFormat-'.$localeId;
@@ -662,6 +648,7 @@ class SectionsService extends BaseApplicationComponent
 							{
 								// Create it, baby
 								$singleEntry = new EntryModel();
+								$singleEntry->locale = $firstSectionLocale->locale;
 								$singleEntry->sectionId = $section->id;
 								$singleEntry->typeId = $entryTypeId;
 								$singleEntry->getContent()->title = $section->name;
@@ -677,7 +664,7 @@ class SectionsService extends BaseApplicationComponent
 							{
 								// Add all of the entries to the structure
 								$criteria = craft()->elements->getCriteria(ElementType::Entry);
-								$criteria->locale = array_shift(array_keys($oldSectionLocales));
+								$criteria->locale = ArrayHelper::getFirstKey($oldSectionLocales);
 								$criteria->sectionId = $section->id;
 								$criteria->status = null;
 								$criteria->localeEnabled = null;
@@ -1200,37 +1187,6 @@ class SectionsService extends BaseApplicationComponent
 			->count('sections.id');
 
 		return (bool) $count;
-	}
-
-	/**
-	 * Returns whether another section can be added of a given type.
-	 *
-	 * @param string $type
-	 *
-	 * @return bool
-	 */
-	public function canHaveMore($type)
-	{
-		if (craft()->getEdition() >= Craft::Client)
-		{
-			return true;
-		}
-		else
-		{
-			if (isset($this->typeLimits[$type]))
-			{
-				$count = craft()->db->createCommand()
-					->from('sections')
-					->where('type = :type', array(':type' => $type))
-					->count('id');
-
-				return $count < $this->typeLimits[$type];
-			}
-			else
-			{
-				return false;
-			}
-		}
 	}
 
 	// Events

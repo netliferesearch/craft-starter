@@ -10,8 +10,8 @@ namespace Craft;
  *
  * @author     Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright  Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license    http://buildwithcraft.com/license Craft License Agreement
- * @see        http://buildwithcraft.com
+ * @license    http://craftcms.com/license Craft License Agreement
+ * @see        http://craftcms.com
  * @package    craft.app.controllers
  * @since      1.0
  * @deprecated This class will have several breaking changes in Craft 3.0.
@@ -220,6 +220,7 @@ class AssetsController extends BaseController
 			}
 			else
 			{
+				IOHelper::deleteFile($fileLocation, true);
 				throw new Exception(Craft::t('Something went wrong with the replace operation.'));
 			}
 		}

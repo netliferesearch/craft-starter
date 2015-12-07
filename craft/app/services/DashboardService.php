@@ -6,8 +6,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.services
  * @since     1.0
  */
@@ -233,6 +233,27 @@ class DashboardService extends BaseApplicationComponent
 		return true;
 	}
 
+
+	/**
+	 * Changes the colspan of a widget.
+	 *
+	 * @param int $widgetId
+	 * @param int $colspan
+	 *
+	 * @throws \Exception
+	 * @return bool
+	 */
+	public function changeWidgetColspan($widgetId, $colspan)
+	{
+		$widgetRecord = $this->_getUserWidgetRecordById($widgetId);
+		$widgetRecord->colspan = $colspan;
+		$widgetRecord->save();
+
+		return true;
+	}
+
+
+
 	// Private Methods
 	// =========================================================================
 
@@ -270,8 +291,8 @@ class DashboardService extends BaseApplicationComponent
 		$widget = new WidgetModel();
 		$widget->type = 'Feed';
 		$widget->settings = array(
-			'url'   => 'http://feeds.feedburner.com/blogandtonic',
-			'title' => 'Blog & Tonic'
+			'url'   => 'https://craftcms.com/news.rss',
+			'title' => 'Craft News'
 		);
 
 		$this->saveUserWidget($widget);

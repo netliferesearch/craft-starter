@@ -6,8 +6,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.elementtypes
  * @since     1.0
  */
@@ -85,8 +85,7 @@ interface IElementType extends IComponentType
 	 * - **`defaultSort` – A string identifying the sort attribute that should be selected by default, or an array where
 	 *   the first value identifies the sort attribute, and the second determines which direction to sort by. (Optional)
 	 * - **`hasThumbs`** – A boolean that defines whether this source supports Thumbs View. (Use your element model’s
-	 *   {@link BaseElementModel::getThumbUrl() getThumbUrl()} or {@link BaseElementModel::getIconUrl() getIconUrl()}
-	 *   methods to define your elements’ thumb/icon URLs.) (Optional)
+	 *   {@link BaseElementModel::getThumbUrl() getThumbUrl()} method to define your elements’ thumb URL.) (Optional)
 	 * - **`structureId`** – The ID of the Structure that contains the elements in this source. If set, Structure View
 	 *   will be available to this source. (Optional)
 	 * - **`newChildUrl`** – The URL that should be loaded when a usel select’s the “New child” menu option on an
@@ -198,7 +197,7 @@ interface IElementType extends IComponentType
 	public function defineSortableAttributes();
 
 	/**
-	 * Defines the columns that can be shown in table views.
+	 * Defines all of the available columns that can be shown in table views.
 	 *
 	 * This method should return an array whose keys map to attribute names and database columns that can be sorted
 	 * against when querying for elements, and whose values make up the table’s column headers.
@@ -211,11 +210,21 @@ interface IElementType extends IComponentType
 	 * All other items besides the first one will also define which element attribute should be shown within the data
 	 * cells. (The actual HTML to be shown can be customized with {@link getTableAttributeHtml()}.)
 	 *
-	 * @param string|null $source The selected source’s key, if any.
-	 *
 	 * @return array The table attributes.
 	 */
-	public function defineTableAttributes($source = null);
+	public function defineAvailableTableAttributes();
+
+	/**
+	 * Returns the list of table attribute keys that should be shown by default.
+	 *
+	 * This method should return an array where each element in the array maps to one of the keys of the array returned
+	 * by {@link defineAvailableTableAttributes()}.
+	 *
+	 * @param string|null $source The selected source’s key, if any.
+	 *
+	 * @return array The table attribute keys.
+	 */
+	public function getDefaultTableAttributes($source = null);
 
 	/**
 	 * Returns the HTML that should be shown for a given element’s attribute in Table View.

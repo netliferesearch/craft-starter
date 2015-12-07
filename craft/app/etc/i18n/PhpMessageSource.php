@@ -6,8 +6,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.etc.i18n
  * @since     1.0
  */
@@ -178,10 +178,10 @@ class PhpMessageSource extends \CPhpMessageSource
 		$amName = $locale->getAMName();
 		$pmName = $locale->getPMName();
 
-		$formattedFrameworkData['AM'] = $amName;
-		$formattedFrameworkData['am'] = $amName;
-		$formattedFrameworkData['PM'] = $pmName;
-		$formattedFrameworkData['pm'] = $pmName;
+		$formattedFrameworkData['AM'] = StringHelper::toUpperCase($amName);
+		$formattedFrameworkData['am'] = StringHelper::toLowerCase($amName);
+		$formattedFrameworkData['PM'] = StringHelper::toUpperCase($pmName);
+		$formattedFrameworkData['pm'] = StringHelper::toLowerCase($pmName);
 
 		return $formattedFrameworkData;
 	}

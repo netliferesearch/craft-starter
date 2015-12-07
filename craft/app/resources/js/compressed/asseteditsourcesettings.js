@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2014, Pixel & Tonic, Inc.
- @license   http://buildwithcraft.com/license Craft License Agreement
- @see       http://buildwithcraft.com
+ @license   http://craftcms.com/license Craft License Agreement
+ @see       http://craftcms.com
  @package   craft.app.resources
 */
 (function(a){var s=a(".s3-key-id"),t=a(".s3-secret-key");$s3BucketSelect=a(".s3-bucket-select > select");$s3RefreshBucketsBtn=a(".s3-refresh-buckets");$s3RefreshBucketsSpinner=$s3RefreshBucketsBtn.parent().next().children();$s3UrlPrefixInput=a(".s3-url-prefix");$s3BucketLocationInput=a(".s3-bucket-location");refreshingS3Buckets=!1;$s3RefreshBucketsBtn.click(function(){if(!$s3RefreshBucketsBtn.hasClass("disabled")){$s3RefreshBucketsBtn.addClass("disabled");$s3RefreshBucketsSpinner.removeClass("hidden");

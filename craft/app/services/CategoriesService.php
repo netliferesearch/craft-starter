@@ -6,8 +6,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.services
  * @since     2.0
  */
@@ -1042,6 +1042,7 @@ class CategoriesService extends BaseApplicationComponent
 		$criteria->ancestorOf = $category;
 		$criteria->ancestorDist = 1;
 		$criteria->status = null;
+		$criteria->locale = $category->locale;
 		$criteria->localeEnabled = null;
 
 		$oldParent = $criteria->first();

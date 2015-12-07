@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2014, Pixel & Tonic, Inc.
- @license   http://buildwithcraft.com/license Craft License Agreement
- @see       http://buildwithcraft.com
+ @license   http://craftcms.com/license Craft License Agreement
+ @see       http://craftcms.com
  @package   craft.app.resources
 */
 (function(b){Craft.UserPermissions=Garnish.Base.extend({$wrapper:null,$selectAllBtn:null,$allCheckboxes:null,$rootCheckboxes:null,init:function(a){this.$wrapper=a;this.$selectAllBtn=b(".select-all",this.$wrapper);this.$allCheckboxes=b("input[type=checkbox]",this.$wrapper);this.$rootCheckboxes=b(this.$wrapper).find("> ul > li > input[type=checkbox]");this.addListener(this.$selectAllBtn,"click","toggleSelectAll");this.addListener(this.$allCheckboxes,"click","toggleCheckbox");this.updateSelectAllBtn()},

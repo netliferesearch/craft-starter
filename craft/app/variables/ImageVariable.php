@@ -6,8 +6,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.variables
  * @since     1.0
  */
@@ -20,6 +20,11 @@ class ImageVariable
 	 * @var string
 	 */
 	protected $path;
+
+	/**
+	 * @var string
+	 */
+	protected $url;
 
 	/**
 	 * @var
@@ -36,9 +41,10 @@ class ImageVariable
 	 *
 	 * @return ImageVariable
 	 */
-	public function __construct($path)
+	public function __construct($path, $url = "")
 	{
 		$this->path = $path;
+		$this->url = $url;
 	}
 
 	/**
@@ -50,7 +56,7 @@ class ImageVariable
 	{
 		if (!isset($this->size))
 		{
-			$size = getimagesize($this->path);
+			$size = ImageHelper::getImageSize($this->path);
 			$this->size = array($size[0], $size[1]);
 		}
 
@@ -77,5 +83,15 @@ class ImageVariable
 	{
 		$size = $this->getSize();
 		return $size[1];
+	}
+
+	/**
+	 * Returns the image's URL.
+	 *
+	 * @return string
+	 */
+	public function getUrl()
+	{
+		return $this->url;
 	}
 }

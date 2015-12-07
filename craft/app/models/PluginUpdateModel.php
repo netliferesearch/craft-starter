@@ -6,8 +6,8 @@ namespace Craft;
  *
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.models
  * @since     1.0
  */
@@ -28,7 +28,7 @@ class PluginUpdateModel extends BaseModel
 	{
 		if ($name == 'releases')
 		{
-			$value = PluginUpdateModel::populateModels($value);
+			$value = PluginNewReleaseModel::populateModels($value);
 		}
 
 		parent::setAttribute($name, $value);
@@ -48,10 +48,12 @@ class PluginUpdateModel extends BaseModel
 		$attributes['localVersion']            = AttributeType::String;
 		$attributes['latestVersion']           = AttributeType::String;
 		$attributes['latestDate']              = AttributeType::DateTime;
-		$attributes['status']                  = AttributeType::Bool;
 		$attributes['displayName']             = AttributeType::String;
 		$attributes['criticalUpdateAvailable'] = AttributeType::Bool;
-		$attributes['releases']                = AttributeType::Mixed;;
+		$attributes['manualUpdateRequired']    = AttributeType::Bool;
+		$attributes['manualDownloadEndpoint']  = AttributeType::String;
+		$attributes['releases']                = AttributeType::Mixed;
+		$attributes['status']                  = array(AttributeType::Enum, 'values' => array(PluginUpdateStatus::UpToDate, PluginUpdateStatus::UpdateAvailable, PluginUpdateStatus::Unknown, PluginUpdateStatus::Deleted), 'default' => PluginUpdateStatus::Unknown);
 
 		return $attributes;
 	}

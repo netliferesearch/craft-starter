@@ -36,8 +36,10 @@ final class Imagine extends AbstractImagine
             throw new RuntimeException('Imagick not installed');
         }
 
-        if (version_compare('6.2.9', $this->getVersion(new \Imagick())) > 0) {
-            throw new RuntimeException('ImageMagick version 6.2.9 or higher is required');
+        $version = $this->getVersion(new Imagick());
+
+        if (version_compare('6.2.9', $version) > 0) {
+            throw new RuntimeException(sprintf('ImageMagick version 6.2.9 or higher is required, %s provided', $version));
         }
     }
 
@@ -49,7 +51,7 @@ final class Imagine extends AbstractImagine
         $path = $this->checkPath($path);
 
         try {
-            $imagick = new \Imagick($path);
+            $imagick = new Imagick($path);
             $image = new Image($imagick, $this->createPalette($imagick), $this->getMetadataReader()->readFile($path));
         } catch (\Exception $e) {
             throw new RuntimeException(sprintf('Unable to open image %s', $path), $e->getCode(), $e);
@@ -71,15 +73,15 @@ final class Imagine extends AbstractImagine
 
         try {
             $pixel = new \ImagickPixel((string) $color);
-            $pixel->setColorValue(\Imagick::COLOR_ALPHA, $color->getAlpha() / 100);
+            $pixel->setColorValue(Imagick::COLOR_ALPHA, $color->getAlpha() / 100);
 
-            $imagick = new \Imagick();
+            $imagick = new Imagick();
             $imagick->newImage($width, $height, $pixel);
             $imagick->setImageMatte(true);
             $imagick->setImageBackgroundColor($pixel);
 
             if (version_compare('6.3.1', $this->getVersion($imagick)) < 0) {
-                $imagick->setImageOpacity($pixel->getColorValue(\Imagick::COLOR_ALPHA));
+                $imagick->setImageOpacity($pixel->getColorValue(Imagick::COLOR_ALPHA));
             }
 
             $pixel->clear();
@@ -97,7 +99,7 @@ final class Imagine extends AbstractImagine
     public function load($string)
     {
         try {
-            $imagick = new \Imagick();
+            $imagick = new Imagick();
 
             $imagick->readImageBlob($string);
             $imagick->setImageMatte(true);
@@ -117,14 +119,16 @@ final class Imagine extends AbstractImagine
             throw new InvalidArgumentException('Variable does not contain a stream resource');
         }
 
+        $content = stream_get_contents($resource);
+
         try {
-            $imagick = new \Imagick();
-            $imagick->readImageFile($resource);
+            $imagick = new Imagick();
+            $imagick->readImageBlob($content);
         } catch (\ImagickException $e) {
             throw new RuntimeException('Could not read image from resource', $e->getCode(), $e);
         }
 
-        return new Image($imagick, $this->createPalette($imagick), $this->getMetadataReader()->readStream($resource));
+        return new Image($imagick, $this->createPalette($imagick), $this->getMetadataReader()->readData($content, $resource));
     }
 
     /**
@@ -132,27 +136,27 @@ final class Imagine extends AbstractImagine
      */
     public function font($file, $size, ColorInterface $color)
     {
-        return new Font(new \Imagick(), $file, $size, $color);
+        return new Font(new Imagick(), $file, $size, $color);
     }
 
     /**
-     * Returns the palette corresponding to an \Imagick resource colorspace
+     * Returns the palette corresponding to an Imagick resource colorspace
      *
-     * @param \Imagick $imagick
+     * @param Imagick $imagick
      *
      * @return CMYK|Grayscale|RGB
      *
      * @throws NotSupportedException
      */
-    private function createPalette(\Imagick $imagick)
+    private function createPalette(Imagick $imagick)
     {
         switch ($imagick->getImageColorspace()) {
-            case \Imagick::COLORSPACE_RGB:
-            case \Imagick::COLORSPACE_SRGB:
+            case Imagick::COLORSPACE_RGB:
+            case Imagick::COLORSPACE_SRGB:
                 return new RGB();
-            case \Imagick::COLORSPACE_CMYK:
+            case Imagick::COLORSPACE_CMYK:
                 return new CMYK();
-            case \Imagick::COLORSPACE_GRAY:
+            case Imagick::COLORSPACE_GRAY:
                 return new Grayscale();
             default:
                 throw new NotSupportedException('Only RGB and CMYK colorspace are currently supported');
@@ -162,11 +166,11 @@ final class Imagine extends AbstractImagine
     /**
      * Returns ImageMagick version
      *
-     * @param \Imagick $imagick
+     * @param Imagick $imagick
      *
      * @return string
      */
-    private function getVersion(\Imagick $imagick)
+    private function getVersion(Imagick $imagick)
     {
         $v = $imagick->getVersion();
         list($version) = sscanf($v['versionString'], 'ImageMagick %s %04d-%02d-%02d %s %s');

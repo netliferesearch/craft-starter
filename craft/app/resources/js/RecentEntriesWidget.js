@@ -1,8 +1,8 @@
 /**
  * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
  * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://buildwithcraft.com/license Craft License Agreement
- * @see       http://buildwithcraft.com
+ * @license   http://craftcms.com/license Craft License Agreement
+ * @see       http://craftcms.com
  * @package   craft.app.resources
  */
 
@@ -26,6 +26,8 @@ Craft.RecentEntriesWidget = Garnish.Base.extend(
 		this.$container = this.$widget.find('.recententries-container:first');
 		this.$tbody = this.$container.find('tbody:first');
 		this.hasEntries = !!this.$tbody.length;
+
+		this.$widget.data('widget').on('destroy', $.proxy(this, 'destroy'));
 
 		Craft.RecentEntriesWidget.instances.push(this);
 	},
@@ -70,6 +72,12 @@ Craft.RecentEntriesWidget = Garnish.Base.extend(
 		}
 
 		this.$container.velocity(props);
+	},
+
+	destroy: function()
+	{
+		Craft.RecentEntriesWidget.instances.splice($.inArray(this, Craft.RecentEntriesWidget.instances), 1);
+		this.base();
 	}
 }, {
 	instances: []
