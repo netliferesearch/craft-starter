@@ -12,6 +12,7 @@ var minify = require('gulp-minify-css')
 var sourcemaps = require('gulp-sourcemaps')
 var autoprefixer = require('gulp-autoprefixer')
 var inlineAssets = require('gulp-inline-base64')
+var browserSync = require('browser-sync').create()
 
 var dir = {
   dist: 'public'
@@ -57,6 +58,12 @@ gulp.task('prod-sass', function () {
     .pipe(minify())
     .pipe(sourcemaps.write())
     .pipe(gulp.dest(dir.dist))
+})
+
+gulp.task('browser-sync', function() {
+    browserSync.init({
+        proxy: "craft.dev:8080"
+    })
 })
 
 gulp.task('watch', function () {
