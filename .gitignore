@@ -9,3 +9,4 @@ npm-debug.log
 craft/storage/runtime
 craft/storage/backups
 craft/storage/userphotos
+vendor
