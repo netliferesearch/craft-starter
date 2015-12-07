@@ -18,7 +18,7 @@ The file `public/js/main.js` is built into `public/js/dist.js`, and it uses Brow
 Both files are properly included in `craft/templates/_layout.twig`
 
 ## Install craft
-Go to [http://localhost:8080/admin](http://localhost:8080/admin) and follow the wizard to install craft.
+Go to [http://craft.dev:8080/admin](http://craft.dev:8080/admin) and follow the wizard to install craft.
 
 ## Dependencies
 
@@ -28,7 +28,7 @@ Go to [http://localhost:8080/admin](http://localhost:8080/admin) and follow the 
 
 ## Setting up Heroku
 
-Make sure you install global dependencies first
+Make sure you install global dependencies first (this probably happens automagically)
 
 1. `heroku create <name>`
 2. `heroku addons:create cleardb`
