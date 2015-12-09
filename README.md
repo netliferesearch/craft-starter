@@ -20,6 +20,8 @@ Both files are properly included in `craft/templates/_layout.twig`
 ## Install craft
 Go to [http://craft.dev:8080/admin](http://craft.dev:8080/admin) and follow the wizard to install craft.
 
+If you want to change this URL, you'll have to change it in `start.sh`. If you want to use browser-sync, you'll have to change it in `Gulpfile.js` (line 65) as well.
+
 ## Dependencies
 
 1. `composer install`
@@ -50,7 +52,7 @@ Perform the following steps in a terminal:
 You only need to do this once per system.
 
 ### PHP
-
+* Install Composer: `curl -sS https://getcomposer.org/installer | php`
 * Install homebrew: `ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"`
 * `brew tap homebrew/dupes`
 * `brew tap homebrew/versions`
