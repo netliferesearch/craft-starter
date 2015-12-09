@@ -1,5 +1,8 @@
 <?php
 define('CRAFT_LOCALE', 'nb');
+if (!empty($_SERVER['HTTP_HOST'])) {
+  define('CRAFT_ENVIRONMENT', $_SERVER['HTTP_HOST']);
+}
 
 if (php_sapi_name() === 'cli-server') {
     $file = realpath(getcwd() . $_SERVER['REQUEST_URI']);
