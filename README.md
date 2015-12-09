@@ -39,12 +39,7 @@ Make sure you install global dependencies first (this probably happens automagic
 
 ## Heroku local configuration
 
-Create a file `.env` with the two variables
-
-```bash
-BUILDPACK_URL=https://github.com/heroku/heroku-buildpack-php
-CLEARDB_DATABASE_URL=<same as in heroku>|<local mysql connectino string>
-```
+`heroku config -s > .env`
 
 ## Global dependencies for the starter-pack
 
@@ -63,5 +58,6 @@ You only need to do this once per system.
 ### Node.js + tools
 
 * Install Heroku toolbelt <https://toolbelt.heroku.com/>
+  * `brew install heroku-toolbelt`
 * `brew install nodejs`
 * `npm i -g bower gulp-cli`
