@@ -52,7 +52,7 @@ You only need to do this once per system.
 * `brew tap homebrew/dupes`
 * `brew tap homebrew/versions`
 * `brew tap homebrew/homebrew-php`
-* `brew install php56 php56-mcrypt`
+* `brew install php56 php56-mcrypt php56-imagick`
 * `brew link php56`
 
 ### Node.js + tools
