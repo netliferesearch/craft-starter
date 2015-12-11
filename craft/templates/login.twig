@@ -1,0 +1,42 @@
+<style>
+  label {
+    display: block;
+    padding: 2px 0;
+  }
+  label span {
+    display: inline-block;
+    width: 100px;
+  }
+</style>
+<section style="margin: 0 auto; width: 500px; margin-top: 100px;">
+  <form method="post" accept-charset="UTF-8">
+      {{ getCsrfInput() }}
+      <input type="hidden" name="action" value="users/login">
+
+      <div>
+        <label><span>Login</span>
+          <input type="text" name="loginName" autofocus
+              value="{{ craft.session.rememberedUsername }}">
+        </label>
+      </div>
+
+      <div>
+        <label><span>Password</span>
+          <input type="password" name="password">
+        </label>
+      </div>
+
+      <label>
+          <input type="checkbox" name="rememberMe" value="1">
+          Remember me
+      </label>
+
+      <input type="submit" value="Login">
+
+      {% if errorMessage is defined %}
+          <p>{{ errorMessage }}</p>
+      {% endif %}
+  </form>
+
+  <p><a href="{{ url('forgotpassword') }}">Forgotten password?</a></p>
+</section>

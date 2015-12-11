@@ -1,0 +1,57 @@
+{% import "_includes/forms" as forms %}
+
+{{ forms.lightswitchField({
+'label': 'Auto Embed', 'instructions': 'Add the Admin Bar to your front-end template without using the Twig embed tag.', 'id': 'autoEmbed', 'name': 'autoEmbed', 'on': autoEmbedValue}) }}
+
+{{ forms.colorField({
+'label': 'Default Color', 'instructions': 'Color used for highlights and rollovers. This can be overridden if color value is added to the Twig embed tag.', 'id': 'defaultColor', 'name': 'defaultColor', 'value': defaultColorValue}) }}
+
+{{ customLinksTable }}
+
+<div class="field">
+  <label>Plugins Links</label>
+	{% if pluginLinks|length %}
+    <div class="instructions"><p>Enable links provided by other plugins that you&rsquo;ve installed.</p></div>
+    <table class="data fullwidth">
+    	<thead>
+    		<th>Link Title</th>
+    		<th>Plugin</th>
+    		<th>Enable Link</th>
+    	</thead>
+      {% for link in pluginLinks %}
+        {% set linkRendered = '<a href="' ~ link.url ~ '">' ~ link.title ~ '</a>' %}
+    		<tr>
+          <input type="hidden" name="enabledLinks[{{ link.id }}][linkId]"value="{{ link.id }}">
+          <input type="hidden" name="enabledLinks[{{ link.id }}][linkTitle]"value="{{ link.title }}">
+          <input type="hidden" name="enabledLinks[{{ link.id }}][linkUrl]"value="{{ link.url }}">
+          {% if link.params is defined %}
+	          <input type="hidden" name="enabledLinks[{{ link.id }}][linkParams]"value="{{ link.params }}">
+          {% endif %}
+          {% if link.protocol is defined %}
+	          <input type="hidden" name="enabledLinks[{{ link.id }}][linkProtocol]"value="{{ link.protocol }}">
+          {% endif %}
+          {% if link.mustShowScriptName is defined %}
+	          <input type="hidden" name="enabledLinks[{{ link.id }}][linkMustShowScriptName]"value="{{ link.mustShowScriptName }}">
+          {% endif %}
+          {% if link.permissions is defined and link.permissions|length %}
+          	{% for permission in link.permissions %}
+							<input type="hidden" name="enabledLinks[{{ link.id }}][linkPermissions][{{ loop.index }}]"value="{{ permission }}">
+							{{ permission }}
+          	{% endfor %}
+          {% endif %}
+          <input type="hidden" name="enabledLinks[{{ link.id }}][linkType]"value="{{ link.type }}">
+    			<td>{{ link.title }}</td>
+    			<td class="light">{{ link.originator }}</td>
+    			<td>
+    				{{ forms.lightswitch({
+    					name: "enabledLinks[" ~ link.id ~ "][linkStatus]",
+    					on: (enabledLinks[link.id]["linkStatus"] is defined and enabledLinks[link.id]["linkStatus"] is not empty ? enabledLinks[link.id]["linkStatus"] : false),
+    				}) }}
+    			</td>
+    		</tr>
+      {% endfor %}
+    </table>
+	{% else %}
+    <p>Other plugins can add links to the Admin Bar. After installing supporting plugins, come back here to enable new links.</p>
+	{% endif %}
+</div>

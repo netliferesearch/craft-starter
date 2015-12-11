@@ -1,0 +1,49 @@
+{% import "_includes/forms" as forms %}
+
+<h2>Settings</h2>
+
+<p>Aviary Image Editor uses the <strong>Adobe Creative SDK</strong>, please <a href="https://creativesdk.adobe.com/" target="_blank">register for your API key</a></p>
+
+{{ forms.textField({
+	label: "Aviary API Key"|t,
+	id: 'aviaryApiKey',
+	name: 'aviaryApiKey',
+	instructions: "Get your API key and enter it here."|t,
+	value: settings.aviaryApiKey,
+	errors: settings.getErrors('aviaryApiKey')
+}) }}
+
+{{ forms.lightswitchField({
+	label: "Enable CORS?"|t,
+	id: 'enableCORS',
+	name: 'enableCORS',
+	instructions: "Enabling CORS lets the Editor load your images instantaneously. Otherwise we have to work some magic (by using JSONP image laundering service) to get the image data into the client's browser across domains. We highly encourage you to enable this for a better user experience.
+Note: You must setup & add the appropriate CORS headers on the server endpoint that hosts your images. Please see: <a href='http://enable-cors.org/' target='_blank'>http://enable-cors.org/</a> for more information and how to set it up on your server."|t,
+	on: settings.enableCORS,
+}) }}
+
+{{ forms.lightswitchField({
+	label: "Image Overwrite"|t,
+	id: 'imageOverwrite',
+	name: 'imageOverwrite',
+	instructions: "Overwrite existing image on save?"|t,
+	on: settings.imageOverwrite,
+}) }}
+
+{{ forms.checkboxSelectField({
+	label: "Aviary Tools"|t,
+	instructions: "Select the tools that you would like to make available in your Aviary editor.",
+	id: 'aviaryTools',
+	name: 'aviaryTools',
+	options: aviaryTools,
+	values: settings.aviaryTools
+})}}
+
+{{ forms.selectField({
+	label: "Aviary Theme"|t,
+	instructions: "Select the theme you would like Aviary to use.",
+	id: 'aviaryTheme',
+	name: 'aviaryTheme',
+	options: {'minimum' : 'Craft', 'dark': 'Dark', 'light': 'Light'},
+	value: settings.aviaryTheme
+})}}
