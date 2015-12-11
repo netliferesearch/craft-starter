@@ -18,9 +18,10 @@ return array(
     ),
     'herokuapp.com' => array(
         'omitScriptNameInUrls' => true,
-        'siteUrl' => 'http://{{name}}.herokuapp.com/',
+        'siteUrl' => 'http://myapp.herokuapp.com/',
+        'postLoginRedirect' => '/',
         'environmentVariables' => array(
-            'siteUrl' => 'http://{{name}}.herokuapp.com',
+            'siteUrl' => 'http://myapp.herokuapp.com',
             'basePath' => realpath(getcwd() . '/public/')
         )
     )
