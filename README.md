@@ -47,12 +47,11 @@ Perform the following steps in a terminal:
 You only need to do this once per system.
 
 ### PHP
-* Install Composer: `curl -sS https://getcomposer.org/installer | php`
 * Install homebrew: `ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"`
 * `brew tap homebrew/dupes`
 * `brew tap homebrew/versions`
 * `brew tap homebrew/homebrew-php`
-* `brew install php56 php56-mcrypt php56-imagick`
+* `brew install php56 php56-mcrypt php56-imagick composer`
 * `brew link php56`
 
 ### Node.js + tools
