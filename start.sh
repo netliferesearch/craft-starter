@@ -3,7 +3,7 @@
 DB=`grep DATABASE .env`
 export $DB
 
-php -S craft.dev:8080 -t public & PIDPHP=$!
+php -S localhost:5000 -t public & PIDPHP=$!
 gulp & PIDGULP=$!
 
 function cleanit {
