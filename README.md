@@ -9,7 +9,7 @@
 
 ## Start working
 
-`npm start` starts the web server + Gulp. Gulp processes SASS + JS
+`npm start` starts the web server + Gulp. Gulp processes SASS + JS. This craft-starter comes ready with [Browser-Sync](http://www.browsersync.io/) – that means that you don't *need* CodeKit.
 
 The `styles.scss` is built into `public/style.css` and it injects vendor prefixes and inlines smaller static resources (icon fonts for example).
 
@@ -18,7 +18,7 @@ The file `public/js/main.js` is built into `public/js/dist.js`, and it uses Brow
 Both files are properly included in `craft/templates/_layout.twig`
 
 ## Install craft
-Go to [http://craft.dev:8080/admin](http://craft.dev:8080/admin) and follow the wizard to install craft.
+Go to [http://localhost:5000/admin](http://localhost:5000/admin) and follow the wizard to install craft.
 
 If you want to change this URL, you'll have to change it in `start.sh`. If you want to use browser-sync, you'll have to change it in `Gulpfile.js` (line 65) as well.
 
