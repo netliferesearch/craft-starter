@@ -49,6 +49,7 @@ gulp.task('sass', function () {
       cascade: true
     }))
     .pipe(gulp.dest(dir.dist))
+    .pipe(browserSync.stream())
 })
 
 gulp.task('prod-sass', function () {
@@ -62,12 +63,13 @@ gulp.task('prod-sass', function () {
 
 gulp.task('browser-sync', function() {
     browserSync.init({
-        proxy: "craft.dev:8080"
+        proxy: "localhost:5000"
     })
 })
 
 gulp.task('watch', function () {
   gulp.watch(['style.scss', 'scss/*.scss'], ['sass'])
+  gulp.watch(['craft/templates/**/*.twig']).on('change',
 })
 
 gulp.task('default', ['sass', 'js', 'watch'])
