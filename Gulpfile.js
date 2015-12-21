@@ -68,8 +68,7 @@ gulp.task('browser-sync', function() {
 })
 
 gulp.task('watch', function () {
-  gulp.watch(['style.scss', 'scss/*.scss'], ['sass'])
-  gulp.watch(['craft/templates/**/*.twig']).on('change',
-})
+  gulp.watch(['style.scss', 'scss/*.scss', 'craft/templates/**/*.twig'], ['sass'])
+});
 
 gulp.task('default', ['sass', 'js', 'watch'])
