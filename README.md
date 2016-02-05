@@ -28,7 +28,7 @@ If you want to change this URL, you'll have to change it in `start.sh`. If you w
 2. `npm i`
 3. `bower install`
 
-## Setting up Heroku
+## Setting up the project on Heroku for the first time
 
 Make sure you install global dependencies first (this probably happens automagically)
 
@@ -39,7 +39,8 @@ Make sure you install global dependencies first (this probably happens automagic
 
 ## Heroku local configuration
 
-`heroku config -s > .env`
+1. Make sure that you've logged in, and have access to the project on Heroku: `heroku login`
+2. Run `heroku config -s > .env` i terminal
 
 ## Global dependencies for the starter-pack
 
