@@ -35,12 +35,14 @@ Make sure you install global dependencies first (this probably happens automagic
 1. `heroku create <name>`
 2. `heroku buildpacks:set heroku/php`
 3. `heroku addons:create cleardb`
-4. `heroku config -s > .env`
+4. `heroku config -s | tr -d "'" > .env`
 
 ## Heroku local configuration
 
 1. Make sure that you've logged in, and have access to the project on Heroku: `heroku login`
-2. Run `heroku config -s > .env` i terminal
+2. Run `heroku config --app <name> -s > | tr -d "'" > .env` in terminal
+
+`<name>` is the name of your app. E.g `https://<name>.herokuapp.com/`
 
 ## Global dependencies for the starter-pack
 
