@@ -40,7 +40,7 @@ Make sure you install global dependencies first (this probably happens automagic
 ## Heroku local configuration
 
 1. Make sure that you've logged in, and have access to the project on Heroku: `heroku login`
-2. Run `heroku config --app <name> -s > | tr -d "'" > .env` in terminal
+2. Run `heroku config --app <name> -s | tr -d "'" > .env` in terminal
 
 `<name>` is the name of your app. E.g `https://<name>.herokuapp.com/`
 
