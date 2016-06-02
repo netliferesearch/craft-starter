@@ -32,7 +32,7 @@ If you want to change this URL, you'll have to change it in `start.sh`. If you w
 
 Make sure you install global dependencies first (this probably happens automagically)
 
-1. `heroku create <name>`
+1. `heroku create <name> --region eu`
 2. `heroku buildpacks:set heroku/php`
 3. `heroku addons:create cleardb`
 4. `heroku config -s | tr -d "'" > .env`
