@@ -9,18 +9,18 @@
 
 ## Start working
 
-`npm start` starts the web server + Gulp. Gulp processes SASS + JS. This craft-starter comes ready with [Browser-Sync](http://www.browsersync.io/) – that means that you don't *need* CodeKit.
+`npm start` starts the web server + webpack. Webpack processes SASS + JS. This craft-starter comes ready with [Browser-Sync](http://www.browsersync.io/) – that means that you don't *need* CodeKit.
 
 The `styles.scss` is built into `public/style.css` and it injects vendor prefixes and inlines smaller static resources (icon fonts for example).
 
-The file `public/js/main.js` is built into `public/js/dist.js`, and it uses Browserify + Babelify, allowing you to both write ES6 as well as using a Node.js style if you prefer.
+The file `resources/js/main.js` is built into `public/js/min/main.min.js`, and it uses Browserify + Babel, allowing you to both write ES6 as well as using a Node.js style if you prefer.
 
 Both files are properly included in `craft/templates/_layout.twig`
 
 ## Install craft
 Go to [http://localhost:5000/admin](http://localhost:5000/admin) and follow the wizard to install craft.
 
-If you want to change this URL, you'll have to change it in `start.sh`. If you want to use browser-sync, you'll have to change it in `Gulpfile.js` (line 65) as well.
+If you want to change this URL, you'll have to change it in `start.sh`. If you want to use browser-sync, you'll have to change it in `webpack.config.js` (line 58) as well.
 
 ## Dependencies
 
@@ -60,6 +60,5 @@ You only need to do this once per system.
 ### Node.js + tools
 
 * Install Heroku toolbelt <https://toolbelt.heroku.com/>
-  * `brew install heroku-toolbelt`
+  * `brew install heroku`
 * `brew install nodejs`
-* `npm i -g bower gulp-cli`
