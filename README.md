@@ -13,7 +13,7 @@
 
 The `styles.scss` is built into `public/style.css` and it injects vendor prefixes and inlines smaller static resources (icon fonts for example).
 
-The file `resources/js/main.js` is built into `public/js/min/main.min.js`, and it uses Browserify + Babel, allowing you to both write ES6 as well as using a Node.js style if you prefer.
+The file `resources/js/app.js` is built into `public/js/min/app.min.js`, and it uses Browserify + Babel, allowing you to both write ES6 as well as using a Node.js style if you prefer.
 
 Both files are properly included in `craft/templates/_layout.twig`
 
