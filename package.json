@@ -1,5 +1,5 @@
 {
-  "name": "Netlife Research Craft Starter",
+  "name": "netlife-research-craft-starter",
   "version": "2.0.0",
   "description": "",
   "main": "index.js",
@@ -19,12 +19,16 @@
     "babel-polyfill": "^6.13.0",
     "bluebird": "^2.9.34",
     "browser-sync": "^2.10.0",
+    "browser-sync-webpack-plugin": "^1.1.2",
     "browserify": "^10.1.3",
     "chalk": "^1.1.1",
+    "css-loader": "^0.25.0",
     "dotenv": "^2.0.0",
+    "extract-text-webpack-plugin": "^1.0.1",
     "inquirer": "^0.9.0",
     "lodash": "^3.10.1",
     "mysqldump": "^1.0.2",
+    "node-sass": "^3.10.0",
     "path": "^0.12.7",
     "sass": "^0.5.0",
     "sass-loader": "^4.0.0",
@@ -34,7 +38,9 @@
     "svg-url-loader": "^1.1.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.2.1",
-    "webpack": "^1.13.2"  },
+    "webpack": "^1.13.2",
+    "webpack-hot-middleware": "^2.12.2"
+  },
   "standard": {
     "ignore": [
       "craft",
