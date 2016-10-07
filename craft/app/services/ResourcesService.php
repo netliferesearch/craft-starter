@@ -56,7 +56,7 @@ class ResourcesService extends BaseApplicationComponent
 			$realPath = ':(';
 		}
 
-		craft()->cache->set('resourcePath:'.$path, $realPath);
+		craft()->cache->set('resourcePath:'.$path, $realPath, null, new AppPathCacheDependency());
 	}
 
 	/**
@@ -111,15 +111,15 @@ class ResourcesService extends BaseApplicationComponent
 							return false;
 						}
 
-						$size = AssetsHelper::cleanAssetName($segs[2], false);
+						$size = AssetsHelper::cleanAssetName($segs[2], false, true);
 						// Looking for either a numeric size or "original" keyword
 						if (!is_numeric($size) && $size != "original")
 						{
 							return false;
 						}
 
-						$username = AssetsHelper::cleanAssetName($segs[1], false);
-						$filename = AssetsHelper::cleanAssetName($segs[3]);
+						$username = AssetsHelper::cleanAssetName($segs[1], false, true);
+						$filename = AssetsHelper::cleanAssetName($segs[3], true, true);
 
 						$userPhotosPath = craft()->path->getUserPhotosPath().$username.'/';
 						$sizedPhotoFolder = $userPhotosPath.$size.'/';
@@ -240,6 +240,11 @@ class ResourcesService extends BaseApplicationComponent
 					}
 					craft()->request->redirect($url, true, 302);
 					craft()->end();
+				}
+
+				case '404':
+				{
+					throw new HttpException(404);
 				}
 			}
 		}

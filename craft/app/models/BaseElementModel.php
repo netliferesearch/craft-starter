@@ -98,6 +98,11 @@ abstract class BaseElementModel extends BaseModel
 	 */
 	private $_siblingsCriteria;
 
+	/**
+	 * @var
+	 */
+	private $_eagerLoadedElements;
+
 	// Public Methods
 	// =========================================================================
 
@@ -110,7 +115,7 @@ abstract class BaseElementModel extends BaseModel
 	 */
 	public function __isset($name)
 	{
-		if ($name == 'title' || parent::__isset($name) || $this->getFieldByHandle($name))
+		if ($name == 'title' || $this->hasEagerLoadedElements($name) || parent::__isset($name) || $this->getFieldByHandle($name))
 		{
 			return true;
 		}
@@ -137,6 +142,12 @@ abstract class BaseElementModel extends BaseModel
 		}
 		catch (\Exception $e)
 		{
+			// Is $name a set of eager-loaded elements?
+			if ($this->hasEagerLoadedElements($name))
+			{
+				return $this->getEagerLoadedElements($name);
+			}
+
 			// Is $name a field handle?
 			if ($this->getFieldByHandle($name))
 			{
@@ -472,6 +483,12 @@ abstract class BaseElementModel extends BaseModel
 	 */
 	public function getDescendants($dist = null)
 	{
+		// Eager-loaded?
+		if ($this->hasEagerLoadedElements('descendants'))
+		{
+			return $this->getEagerLoadedElements('descendants');
+		}
+
 		if (!isset($this->_descendantsCriteria))
 		{
 			$this->_descendantsCriteria = craft()->elements->getCriteria($this->elementType);
@@ -499,6 +516,12 @@ abstract class BaseElementModel extends BaseModel
 	 */
 	public function getChildren($field = null)
 	{
+		// Eager-loaded?
+		if ($this->hasEagerLoadedElements('children'))
+		{
+			return $this->getEagerLoadedElements('children');
+		}
+
 		// TODO: deprecated
 		// Maintain support for the deprecated relationship-focussed getChildren() function for the element types that
 		// were around before Craft 1.3
@@ -724,7 +747,7 @@ abstract class BaseElementModel extends BaseModel
 	 */
 	public function offsetExists($offset)
 	{
-		if ($offset == 'title' || parent::offsetExists($offset) || $this->getFieldByHandle($offset))
+		if ($offset == 'title' || $this->hasEagerLoadedElements($offset) || parent::offsetExists($offset) || $this->getFieldByHandle($offset))
 		{
 			return true;
 		}
@@ -1038,6 +1061,56 @@ abstract class BaseElementModel extends BaseModel
 		$criteria->parentOf    = $this;
 		$criteria->parentField = $field;
 		return $criteria;
+	}
+
+	/**
+	 * Returns whether elements have been eager-loaded with a given handle.
+	 *
+	 * @param string $handle The handle of the eager-loaded elements
+	 *
+	 * @return bool Whether elements have been eager-loaded with the given handle
+	 */
+	public function hasEagerLoadedElements($handle)
+	{
+		return isset($this->_eagerLoadedElements[$handle]);
+	}
+
+	/**
+	 * Returns some eager-loaded elements on a given handle.
+	 *
+	 * @param string $handle The handle of the eager-loaded elements
+	 *
+	 * @return BaseElementModel[]|null The eager-loaded elements, or null
+	 */
+	public function getEagerLoadedElements($handle)
+	{
+		if (isset($this->_eagerLoadedElements[$handle]))
+		{
+			return $this->_eagerLoadedElements[$handle];
+		}
+
+		return null;
+	}
+
+	/**
+	 * Sets some eager-loaded elements on a given handle.
+	 *
+	 * @param string             $handle   The handle to load the elements with in the future
+	 * @param BaseElementModel[] $elements The eager-loaded elements
+	 */
+	public function setEagerLoadedElements($handle, $elements)
+	{
+		$this->_eagerLoadedElements[$handle] = $elements;
+	}
+
+	/**
+	 * Returns whether the element’s content is "fresh" (unsaved and without validation errors).
+	 *
+	 * @return bool Whether the element’s content is fresh
+	 */
+	public function getHasFreshContent()
+	{
+		return (empty($this->getContent()->id) && !$this->hasErrors());
 	}
 
 	// Protected Methods

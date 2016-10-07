@@ -35,12 +35,15 @@ class CacheService extends BaseApplicationComponent
 		{
 			case CacheMethod::APC:
 			{
+				/** @var _cacheComponent ApcCache */
 				$this->_cacheComponent = new ApcCache();
+				$this->_cacheComponent->useApcu = craft()->config->get('useApcu', ConfigFile::ApcCache);
 				break;
 			}
 
 			case CacheMethod::Db:
 			{
+				/** @var _cacheComponent DbCache */
 				$this->_cacheComponent = new DbCache();
 				$this->_cacheComponent->gCProbability = craft()->config->get('gcProbability', ConfigFile::DbCache);
 				$this->_cacheComponent->cacheTableName = craft()->db->getNormalizedTablePrefix().craft()->config->get('cacheTableName', ConfigFile::DbCache);
@@ -50,12 +53,14 @@ class CacheService extends BaseApplicationComponent
 
 			case CacheMethod::EAccelerator:
 			{
+				/** @var _cacheComponent EAcceleratorCache */
 				$this->_cacheComponent = new EAcceleratorCache();
 				break;
 			}
 
 			case CacheMethod::File:
 			{
+				/** @var _cacheComponent FileCache */
 				$this->_cacheComponent = new FileCache();
 				$this->_cacheComponent->cachePath = craft()->config->get('cachePath', ConfigFile::FileCache);
 				$this->_cacheComponent->gCProbability = craft()->config->get('gcProbability', ConfigFile::FileCache);
@@ -64,6 +69,7 @@ class CacheService extends BaseApplicationComponent
 
 			case CacheMethod::MemCache:
 			{
+				/** @var _cacheComponent MemCache */
 				$this->_cacheComponent = new MemCache();
 				$this->_cacheComponent->servers = craft()->config->get('servers', ConfigFile::Memcache);
 				$this->_cacheComponent->useMemcached = craft()->config->get('useMemcached', ConfigFile::Memcache);
@@ -72,6 +78,7 @@ class CacheService extends BaseApplicationComponent
 
 			case CacheMethod::Redis:
 			{
+				/** @var _cacheComponent RedisCache */
 				$this->_cacheComponent = new RedisCache();
 				$this->_cacheComponent->hostname = craft()->config->get('hostname', ConfigFile::RedisCache);
 				$this->_cacheComponent->port = craft()->config->get('port', ConfigFile::RedisCache);
@@ -83,18 +90,21 @@ class CacheService extends BaseApplicationComponent
 
 			case CacheMethod::WinCache:
 			{
+				/** @var _cacheComponent WinCache */
 				$this->_cacheComponent = new WinCache();
 				break;
 			}
 
 			case CacheMethod::XCache:
 			{
+				/** @var _cacheComponent XCache */
 				$this->_cacheComponent = new XCache();
 				break;
 			}
 
 			case CacheMethod::ZendData:
 			{
+				/** @var _cacheComponent ZendDataCache */
 				$this->_cacheComponent = new ZendDataCache();
 				break;
 			}
@@ -113,8 +123,9 @@ class CacheService extends BaseApplicationComponent
 	 *
 	 * @param string            $id         The key identifying the value to be cached.
 	 * @param mixed             $value      The value to be cached.
-	 * @param int $expire                   The number of seconds in which the cached value will expire. 0 means never
-	 *                                      expire.
+	 * @param int $expire                   The number of seconds in which the cached value will expire. Pass `0` to
+	 *                                      have the value never expire, and `null` to use the ‘cacheDuration’ config setting.
+	 *                                      (Default value is `null`.)
 	 * @param \ICacheDependency $dependency Dependency of the cached item. If the dependency changes, the item is
 	 *                                      labeled invalid.
 	 *

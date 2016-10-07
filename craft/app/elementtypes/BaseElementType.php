@@ -224,6 +224,12 @@ abstract class BaseElementType extends BaseComponentType implements IElementType
 				// Get the table columns
 				$variables['attributes'] = $this->getTableAttributesForSource($sourceKey);
 
+				// Give each attribute a chance to modify the criteria
+				foreach ($variables['attributes'] as $attribute)
+				{
+					$this->prepElementCriteriaForTableAttribute($criteria, $attribute[0]);
+				}
+
 				break;
 			}
 		}
@@ -237,7 +243,7 @@ abstract class BaseElementType extends BaseComponentType implements IElementType
 	/**
 	 * @inheritDoc IElementType::defineSortableAttributes()
 	 *
-	 * @retrun array
+	 * @return array
 	 */
 	public function defineSortableAttributes()
 	{
@@ -356,9 +362,9 @@ abstract class BaseElementType extends BaseComponentType implements IElementType
 			default:
 			{
 				// Is this a custom field?
-				if (strncmp($attribute, 'field:', 6) === 0)
+				if (preg_match('/^field:(\d+)$/', $attribute, $matches))
 				{
-					$fieldId = substr($attribute, 6);
+					$fieldId = $matches[1];
 					$field = craft()->fields->getFieldById($fieldId);
 
 					if ($field)
@@ -367,7 +373,16 @@ abstract class BaseElementType extends BaseComponentType implements IElementType
 
 						if ($fieldType && $fieldType instanceof IPreviewableFieldType)
 						{
-							$value = $element->getFieldValue($field->handle);
+							// Was this field value eager-loaded?
+							if ($fieldType instanceof IEagerLoadingFieldType && $element->hasEagerLoadedElements($field->handle))
+							{
+								$value = $element->getEagerLoadedElements($field->handle);
+							}
+							else
+							{
+								$value = $element->getFieldValue($field->handle);
+							}
+
 							$fieldType->setElement($element);
 
 							return $fieldType->getTableAttributeHtml($value);
@@ -502,6 +517,97 @@ abstract class BaseElementType extends BaseComponentType implements IElementType
 	}
 
 	/**
+	 * @inheritDoc IElementType::getEagerLoadingMap()
+	 *
+	 * @param BaseElementModel[]  $sourceElements
+	 * @param string $handle
+	 *
+	 * @return array|false
+	 */
+	public function getEagerLoadingMap($sourceElements, $handle)
+	{
+		// Eager-loading descendants or direct children?
+		if ($handle == 'descendants' || $handle == 'children')
+		{
+			// Get the source element IDs
+			$sourceElementIds = array();
+
+			foreach ($sourceElements as $sourceElement)
+			{
+				$sourceElementIds[] = $sourceElement->id;
+			}
+
+			// Get the structure data for these elements
+			// @todo: case sql is MySQL-specific
+			$selectSql = 'structureId, elementId, lft, rgt';
+
+			if ($handle == 'children')
+			{
+				$selectSql .= ', level';
+			}
+
+			$structureData = craft()->db->createCommand()
+				->select($selectSql)
+				->from('structureelements')
+				->where(array('in', 'elementId', $sourceElementIds))
+				->queryAll();
+
+			$conditions = array('or');
+			$params = array();
+			$sourceSelectSql = '(CASE';
+
+			foreach ($structureData as $i => $elementStructureData)
+			{
+				$thisElementConditions = array('and', 'structureId=:structureId'.$i, 'lft>:lft'.$i, 'rgt<:rgt'.$i);
+
+				if ($handle == 'children')
+				{
+					$thisElementConditions[] = 'level=:level'.$i;
+					$params[':level'.$i] = $elementStructureData['level'] + 1;
+				}
+
+				$conditions[] = $thisElementConditions;
+				$sourceSelectSql .= " WHEN structureId=:structureId{$i} AND lft>:lft{$i} AND rgt<:rgt{$i} THEN :sourceId{$i}";
+				$params[':structureId'.$i] = $elementStructureData['structureId'];
+				$params[':lft'.$i] = $elementStructureData['lft'];
+				$params[':rgt'.$i] = $elementStructureData['rgt'];
+				$params[':sourceId'.$i] = $elementStructureData['elementId'];
+			}
+
+			$sourceSelectSql .= ' END) as source';
+
+			// Return any child elements
+			$map = craft()->db->createCommand()
+				->select($sourceSelectSql.', elementId as target')
+				->from('structureelements')
+				->where($conditions, $params)
+				->order('structureId, lft')
+				->queryAll();
+
+			return array(
+				'elementType' => $this->getClassHandle(),
+				'map' => $map
+			);
+		}
+
+		// Is $handle a custom field handle?
+		// (Leave it up to the extended class to set the field context, if it shouldn't be 'global')
+		$field = craft()->fields->getFieldByHandle($handle);
+
+		if ($field)
+		{
+			$fieldType = $field->getFieldType();
+
+			if ($fieldType && $fieldType instanceof IEagerLoadingFieldType)
+			{
+				return $fieldType->getEagerLoadingMap($sourceElements);
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * @inheritDoc IElementType::getEditorHtml()
 	 *
 	 * @param BaseElementModel $element
@@ -586,7 +692,47 @@ abstract class BaseElementType extends BaseComponentType implements IElementType
 	 */
 	protected function getTableAttributesForSource($sourceKey)
 	{
-		return craft()->elementIndexes->getTableAttributes($this->getClassHandle(), $sourceKey);
+		$elementType = $this->getClassHandle();
+
+		// Give plugins a chance to customize them
+		$pluginAttributes = craft()->plugins->callFirst('getTableAttributesForSource', array($elementType, $sourceKey), true);
+
+		if ($pluginAttributes !== null)
+		{
+			return $pluginAttributes;
+		}
+
+		return craft()->elementIndexes->getTableAttributes($elementType, $sourceKey);
+	}
+
+	/**
+	 * Preps the element criteria for a given table attribute
+	 *
+	 * @param ElementCriteriaModel $criteria
+	 * @param string               $attribute
+	 *
+	 * @return void
+	 */
+	protected function prepElementCriteriaForTableAttribute(ElementCriteriaModel $criteria, $attribute)
+	{
+		// Is this a custom field?
+		if (preg_match('/^field:(\d+)$/', $attribute, $matches))
+		{
+			$fieldId = $matches[1];
+			$field = craft()->fields->getFieldById($fieldId);
+
+			if ($field)
+			{
+				$fieldType = $field->getFieldType();
+
+				if ($fieldType && $fieldType instanceof IEagerLoadingFieldType)
+				{
+					$with = $criteria->with ?: array();
+					$with[] = $field->handle;
+					$criteria->with = $with;
+				}
+			}
+		}
 	}
 
 	// Private Methods

@@ -48,6 +48,12 @@ return array(
 	'allowedFileExtensions' => '7z,aiff,asf,avi,bmp,csv,doc,docx,fla,flv,gif,gz,gzip,htm,html,jpeg,jpg,js,mid,mov,mp3,mp4,m4a,m4v,mpc,mpeg,mpg,ods,odt,ogg,ogv,pdf,png,potx,pps,ppsm,ppsx,ppt,pptm,pptx,ppz,pxd,qt,ram,rar,rm,rmi,rmvb,rtf,sdc,sitd,svg,swf,sxc,sxw,tar,tgz,tif,tiff,txt,vob,vsd,wav,webm,wma,wmv,xls,xlsx,zip',
 
 	/**
+	 * If this is set to true, then a tag name of "Proteines" will also match a tag name of "Protéines". Otherwise,
+	 * they are treated as the same tag. Note that this
+	 */
+	'allowSimilarTags' => false,
+
+	/**
 	 * Whether or not to allow uppercase letters in the slug. Defaults to false.
 	 */
 	'allowUppercaseInSlug' => false,
@@ -226,9 +232,26 @@ return array(
 	'defaultWeekStartDay' => 0,
 
 	/**
+	 * By default, Craft will require a 'password' field to be submitted on front-end, public
+	 * user registrations. Setting this to `true` will no longer require it on the initial registration form.
+	 * If you have email verification enabled, the will set their password once they've clicked on the
+	 * verification link in the email. If you don't, the only way they can set their password is to go
+	 * through your "forgot password" workflow.
+	 */
+	'deferPublicRegistrationPassword' => false,
+
+	/**
 	 * Determines whether the system is in Dev Mode or not.
 	 */
 	'devMode' => false,
+
+	/**
+	 * The amount of time a user’s elevated session will last, which is required for some sensitive actions (e.g. user group/permission assignment).
+	 * Set to `false` to disable elevated session support.
+	 *
+	 * @see http://www.php.net/manual/en/dateinterval.construct.php
+	 */
+	'elevatedSessionDuration' => 'PT5M',
 
 	/**
 	 * Whether to enable CSRF protection via hidden form inputs for all forms submitted via Craft. Defaults to false,
@@ -427,17 +450,20 @@ return array(
 	'postLoginRedirect' => '',
 
 	/**
-	 * Whether the X-Powered-By header should be sent on each request, helping clients identify that the site is powered by Craft.
-	 */
-	'sendPoweredByHeader' => true,
-
-	/**
 	 * Whether the embedded Image Color Profile (ICC) should be preserved when manipulating images.
 	 *
-	 * Setting this to true results in a slightly increased filesize and more accurate colors,
-	 * if a color profile was embedded on image export. This will only have effect if Imagick is in use.
+	 * Setting this to false will reduce the image size a little bit, but on some Imagick versions can cause images to be saved with
+	 * an incorrect gamma value, which causes the images to become very dark. This will only have effect if Imagick is in use.
 	 */
-	'preserveImageColorProfiles' => false,
+	'preserveImageColorProfiles' => true,
+
+	/**
+	 * When set to `false` and you go through the "forgot password" workflow on the control panel login page, for example,
+	 * you get distinct messages saying if the username/email didn't exist or the email was successfully sent and to check
+	 * your email for further instructions. This can allow for username/email enumeration based on the response. If set
+	 * `true`, you will always get a successful response even if there was an error making it difficult to enumerate users.
+	 */
+	'preventUserEnumeration' => false,
 
 	/**
 	 * The template path segment prefix that should be used to identify "private" templates -- templates that aren't
@@ -447,7 +473,8 @@ return array(
 
 	/**
 	 * The amount of time to wait before Craft purges pending users from the system that have not activated. Set to
-	 * false to disable this feature.
+	 * false to disable this feature. Note that if you set this to a time interval, then any content assigned to
+     * a pending user will be deleted as well when the given time interval passes.
 	 *
 	 * @see http://www.php.net/manual/en/dateinterval.construct.php
 	 */
@@ -482,7 +509,6 @@ return array(
 	 */
 	'requireUserAgentAndIpForSession' => true,
 
-
 	/**
 	 * The URI segment Craft should use for resource URLs on the front end.
 	 */
@@ -515,6 +541,11 @@ return array(
 	 * keyword index.
 	 */
 	'searchIgnoreWords' => array('the', 'and'),
+
+	/**
+	 * Whether the X-Powered-By header should be sent on each request, helping clients identify that the site is powered by Craft.
+	 */
+	'sendPoweredByHeader' => true,
 
 	/**
 	 * The URI Craft should use for user password resetting. Note that this only affects front-end site requests.
@@ -559,6 +590,12 @@ return array(
 	 * The character(s) that should be used to separate words in slugs.
 	 */
 	'slugWordSeparator' => '-',
+
+	/**
+	 * Controls whether or not to show or hide any Twig template runtime errors that occur on the site in the browser.
+	 * If it is set to `true`, the errors will still be logged to Craft’s log files.
+	 */
+	'suppressTemplateErrors' => false,
 
 	/**
 	 * Configures Craft to send all system emails to a single email address, or an array of email addresses for testing
@@ -616,6 +653,15 @@ return array(
 	'useSecureCookies' => 'auto',
 
 	/**
+	 * Determines what protocol/schema Craft will use when generating tokenized URLs. If set to 'auto',
+	 * Craft will check the siteUrl and the protocol of the current request and if either of them are https
+	 * will use https in the tokenized URL. If not, will use http.
+	 *
+	 * If set to `false`, the Craft will always use http. If set to `true`, then, Craft will always use `https`.
+	 */
+	'useSslOnTokenizedUrls' => 'auto',
+
+	/**
 	 * The amount of time a user stays logged in.
 	 *
 	 * Set to false if you want users to stay logged in as long as their browser is open rather than a predetermined
@@ -643,6 +689,23 @@ return array(
 	 * Whether Craft should use XSendFile to serve files when possible.
 	 */
 	'useXSendFile' => false,
+
+	/**
+	 * If set to `true`, the following request parameters will need to be hashed to ensure they weren’t tampered with:
+	 *
+	 * - all `redirect` parameters
+	 * - possibly 3rd party plugin parameters
+	 *
+	 * To hash a value from a Twig template, you can pass it through the |hash filter. For example:
+	 *
+	 * ```twig
+	 * <input type="hidden" name="redirect" value="{{ 'my-page'|hash }}">
+	 * ```
+	 *
+	 * Enabling this will prevent certain Denial of Service (DoS) attack vectors. As an added benefit, Twig will no
+	 * longer operate in Safe Mode when processing the input values.
+	 */
+	'validateUnsafeRequestParams' => false,
 
 	/**
 	 * If set, should be a private, random, cryptographically secure key that is used to generate HMAC

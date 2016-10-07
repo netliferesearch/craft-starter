@@ -17,31 +17,42 @@ class FieldRecord extends BaseRecord
 	// =========================================================================
 
 	/**
-	 * @var array
+	 * @var array Reserved field handles.
+	 *
+	 * Some of these are element type-specific, but necessary to prevent 'order' criteria param conflicts
 	 */
 	protected $reservedHandleWords = array(
 		'archived',
+		'attributeLabel',
 		'children',
+		'contentTable',
 		'dateCreated',
 		'dateUpdated',
 		'enabled',
 		'id',
+		'level',
+		'lft',
 		'link',
 		'locale',
+		'localeEnabled',
+		'name',             // global set-specific
+		'next',
 		'parents',
+		'postDate',         // entry-specific
+		'prev',
+		'ref',
+		'rgt',
+		'root',
+		'searchScore',
 		'siblings',
+		'slug',
 		'sortOrder',
+		'status',
+		'title',
 		'uid',
 		'uri',
 		'url',
-		'ref',
-		'status',
-		'title',
-		'searchScore',
-		'slug',
-		'prev',
-		'next',
-		'contentTable'
+		'username',         // user-specific
 	);
 
 	/**

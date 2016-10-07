@@ -124,6 +124,7 @@ class SearchService extends BaseApplicationComponent
 			$options = $query;
 			$query = $options['query'];
 			unset($options['query']);
+			$options = array_merge(craft()->config->get('defaultSearchTermOptions'), $options);
 			$query = new SearchQuery($query, $options);
 		}
 
@@ -146,7 +147,7 @@ class SearchService extends BaseApplicationComponent
 		}
 
 		// Get where clause from tokens, bail out if no valid query is there
-		$where = $this->_getWhereClause();
+		$where = $this->_getWhereClause($localeId);
 
 		if (!$where)
 		{
@@ -392,18 +393,18 @@ class SearchService extends BaseApplicationComponent
 		}
 
 		// Account for substrings
-		if ($term->subLeft)
-		{
-			$keywords = $keywords.' ';
-		}
-
-		if ($term->subRight)
+		if (!$term->subLeft)
 		{
 			$keywords = ' '.$keywords;
 		}
 
+		if (!$term->subRight)
+		{
+			$keywords = $keywords.' ';
+		}
+
 		// Get haystack and safe word count
-		$haystack  = $this->_removePadding($row['keywords'], true);
+		$haystack  = $row['keywords'];
 		$wordCount = count(array_filter(explode(' ', $haystack)));
 
 		// Get number of matches
@@ -443,14 +444,14 @@ class SearchService extends BaseApplicationComponent
 	 *
 	 * @return string|false
 	 */
-	private function _getWhereClause()
+	private function _getWhereClause($localeId = null)
 	{
 		$where  = array();
 
 		// Add the regular terms to the WHERE clause
 		if ($this->_terms)
 		{
-			$condition = $this->_processTokens($this->_terms);
+			$condition = $this->_processTokens($this->_terms, true, $localeId);
 
 			if ($condition === false)
 			{
@@ -463,7 +464,7 @@ class SearchService extends BaseApplicationComponent
 		// Add each group to the where clause
 		foreach ($this->_groups as $group)
 		{
-			$condition = $this->_processTokens($group, false);
+			$condition = $this->_processTokens($group, false, $localeId);
 
 			if ($condition === false)
 			{
@@ -485,7 +486,7 @@ class SearchService extends BaseApplicationComponent
 	 *
 	 * @return string|false
 	 */
-	private function _processTokens($tokens = array(), $inclusive = true)
+	private function _processTokens($tokens = array(), $inclusive = true, $localeId = null)
 	{
 		$andor = $inclusive ? ' AND ' : ' OR ';
 		$where = array();
@@ -494,7 +495,7 @@ class SearchService extends BaseApplicationComponent
 		foreach ($tokens as $obj)
 		{
 			// Get SQL and/or keywords
-			list($sql, $keywords) = $this->_getSqlFromTerm($obj);
+			list($sql, $keywords) = $this->_getSqlFromTerm($obj, $localeId);
 
 			if ($sql === false && $inclusive)
 			{
@@ -554,7 +555,7 @@ class SearchService extends BaseApplicationComponent
 	 *
 	 * @return array
 	 */
-	private function _getSqlFromTerm(SearchQueryTerm $term)
+	private function _getSqlFromTerm(SearchQueryTerm $term, $localeId = null)
 	{
 		// Initiate return value
 		$sql = null;
@@ -662,7 +663,7 @@ class SearchService extends BaseApplicationComponent
 		// If we have a where clause in the subselect, add the keyword bit to it.
 		if ($subSelect && $sql)
 		{
-			$sql = $this->_sqlSubSelect($subSelect.' AND '.$sql);
+			$sql = $this->_sqlSubSelect($subSelect.' AND '.$sql, $localeId);
 
 			// We need to reset keywords even if the subselect ended up in no results.
 			$keywords = null;
@@ -789,14 +790,20 @@ class SearchService extends BaseApplicationComponent
 	 *
 	 * @return string|false
 	 */
-	private function _sqlSubSelect($where)
+	private function _sqlSubSelect($where, $localeId = null)
 	{
 		// FULLTEXT indexes are not used in queries with subselects, so let's do this as its own query.
-		$elementIds = craft()->db->createCommand()
+		$query = craft()->db->createCommand()
 			->select('elementId')
 			->from('searchindex')
-			->where($where)
-			->queryColumn();
+			->where($where);
+
+		if ($localeId)
+		{
+			$query->andWhere('locale=:locale', array(':locale' => $localeId));
+		}
+
+		$elementIds = $query->queryColumn();
 
 		if ($elementIds)
 		{

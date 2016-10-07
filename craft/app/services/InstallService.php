@@ -38,7 +38,7 @@ class InstallService extends BaseApplicationComponent
 
 		if (craft()->isInstalled())
 		{
-			throw new Exception(Craft::t('Craft is already installed.'));
+			throw new Exception(Craft::t('Craft CMS is already installed.'));
 		}
 
 		// Set the language to the desired locale
@@ -59,7 +59,6 @@ class InstallService extends BaseApplicationComponent
 			$this->_createContentTable();
 			$this->_createRelationsTable();
 			$this->_createShunnedMessagesTable();
-			$this->_createSearchIndexTable();
 			$this->_createTemplateCacheTables();
 			$this->_createAndPopulateInfoTable($inputs);
 
@@ -74,6 +73,9 @@ class InstallService extends BaseApplicationComponent
 			{
 				$transaction->commit();
 			}
+
+			Craft::log('Creating search index table.');
+			$this->_createSearchIndexTable();
 		}
 		catch (\Exception $e)
 		{
@@ -114,35 +116,38 @@ class InstallService extends BaseApplicationComponent
 		$recordsFolder = craft()->path->getAppPath().'records/';
 		$recordFiles = IOHelper::getFolderContents($recordsFolder, false, ".*Record\.php$");
 
-		foreach ($recordFiles as $file)
+		if ($recordFiles)
 		{
-			if (IOHelper::fileExists($file))
+			foreach ($recordFiles as $file)
 			{
-				$fileName = IOHelper::getFileName($file, false);
-				$class = __NAMESPACE__.'\\'.$fileName;
-
-				// Ignore abstract classes and interfaces
-				$ref = new \ReflectionClass($class);
-				if ($ref->isAbstract() || $ref->isInterface())
+				if (IOHelper::fileExists($file))
 				{
-					Craft::log("Skipping record {$file} because it’s abstract or an interface.", LogLevel::Warning);
-					continue;
-				}
+					$fileName = IOHelper::getFileName($file, false);
+					$class = __NAMESPACE__.'\\'.$fileName;
 
-				$obj = new $class('install');
+					// Ignore abstract classes and interfaces
+					$ref = new \ReflectionClass($class);
+					if ($ref->isAbstract() || $ref->isInterface())
+					{
+						Craft::log("Skipping record {$file} because it’s abstract or an interface.", LogLevel::Warning);
+						continue;
+					}
 
-				if (method_exists($obj, 'createTable'))
-				{
-					$records[] = $obj;
+					$obj = new $class('install');
+
+					if (method_exists($obj, 'createTable'))
+					{
+						$records[] = $obj;
+					}
+					else
+					{
+						Craft::log("Skipping record {$file} because it doesn’t have a createTable() method.", LogLevel::Warning);
+					}
 				}
 				else
 				{
-					Craft::log("Skipping record {$file} because it doesn’t have a createTable() method.", LogLevel::Warning);
+					Craft::log("Skipping record {$file} because it doesn’t exist.", LogLevel::Warning);
 				}
-			}
-			else
-			{
-				Craft::log("Skipping record {$file} because it doesn’t exist.", LogLevel::Warning);
 			}
 		}
 

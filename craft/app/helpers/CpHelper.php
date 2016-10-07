@@ -38,7 +38,15 @@ class CpHelper
 			// relying on cached Elliott info
 			$updateModel = craft()->updates->getUpdates();
 
-			if (craft()->hasWrongEdition())
+			// Get the license key status
+			$licenseKeyStatus = craft()->et->getLicenseKeyStatus();
+
+			// Invalid license?
+			if ($licenseKeyStatus == LicenseKeyStatus::Invalid)
+			{
+				$alerts[] = Craft::t('Your license key is invalid.');
+			}
+			else if (craft()->hasWrongEdition())
 			{
 				$alerts[] = Craft::t('You’re running Craft {edition} with a Craft {licensedEdition} license.', array(
 						'edition' => craft()->getEditionName(),
@@ -53,15 +61,13 @@ class CpHelper
 				{
 					if (craft()->updates->criticalCraftUpdateAvailable($updateModel->app->releases))
 					{
-						$alerts[] = Craft::t('There’s a critical Craft update available.') .
+						$alerts[] = Craft::t('There’s a critical Craft CMS update available.') .
 							' <a class="go nowrap" href="'.UrlHelper::getUrl('updates').'">'.Craft::t('Go to Updates').'</a>';
 					}
 				}
 			}
 
 			// Domain mismatch?
-			$licenseKeyStatus = craft()->et->getLicenseKeyStatus();
-
 			if ($licenseKeyStatus == LicenseKeyStatus::Mismatched)
 			{
 				$licensedDomain = craft()->et->getLicensedDomain();

@@ -34,7 +34,7 @@ Craft.Dashboard = Garnish.Base.extend(
         this.addListener(this.$widgetManagerBtn, 'click', 'showWidgetManager');
 
         Garnish.$doc.ready($.proxy(function() {
-            this.$grid = $('#main > .grid');
+            this.$grid = $('#main > .padded > .grid');
             this.grid = this.$grid.data('grid');
             $('#newwidgetmenubtn').data('menubtn').menu.on('optionselect', $.proxy(this, 'handleNewWidgetOptionSelect'));
         }, this));
@@ -343,8 +343,11 @@ Craft.Widget = Garnish.Base.extend(
     refreshSettings: function()
     {
         this.$settingsContainer.html(this.settingsHtml);
-        Craft.initUiElements(this.$settingsContainer);
-        this.initSettingsFn();
+
+        Garnish.requestAnimationFrame($.proxy(function() {
+            Craft.initUiElements(this.$settingsContainer);
+            this.initSettingsFn();
+        }, this));
     },
 
     showSettings: function()

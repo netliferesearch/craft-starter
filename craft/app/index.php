@@ -5,13 +5,13 @@
 
 if (!defined('PHP_VERSION_ID') || PHP_VERSION_ID < 50300)
 {
-	exit('Craft requires PHP 5.3.0 or later, but you&rsquo;re running '.PHP_VERSION.'. Please talk to your host/IT department about upgrading PHP or your server.');
+	exit('Craft CMS requires PHP 5.3.0 or later, but you&rsquo;re running '.PHP_VERSION.'. Please talk to your host/IT department about upgrading PHP or your server.');
 }
 
 // Check for this early because Craft uses it before the requirements checker gets a chance to run.
 if (!extension_loaded('mbstring') || (extension_loaded('mbstring') && ini_get('mbstring.func_overload') == 1))
 {
-	exit('Craft requires the <a href="http://php.net/manual/en/book.mbstring.php" target="_blank">PHP multibyte string</a> extension in order to run. Please talk to your host/IT department about enabling it on your server.');
+	exit('Craft CMS requires the <a href="http://php.net/manual/en/book.mbstring.php" target="_blank">PHP multibyte string</a> extension in order to run. Please talk to your host/IT department about enabling it on your server.');
 }
 
 // omitScriptNameInUrls and usePathInfo tests
@@ -31,9 +31,9 @@ if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO'] == '/testPathInfo')
 // PHP environment normalization
 // -----------------------------------------------------------------------------
 
-// These have been deprecated in PHP 6 in favor of default_charset, which defaults to 'UTF-8'
+// These have been deprecated in PHP 5.6 in favor of default_charset, which defaults to 'UTF-8'
 // http://php.net/manual/en/migration56.deprecated.php
-if (PHP_VERSION_ID < 60000)
+if (PHP_VERSION_ID < 50600)
 {
 	// Set MB to use UTF-8
 	mb_internal_encoding('UTF-8');

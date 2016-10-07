@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: andris
- * Date: 09/07/15
- * Time: 08:43
- */
 
 namespace Imagine\Imagick;
 
@@ -28,34 +22,18 @@ class Imagick extends \Imagick {
     /**
      * Resizes the image using smart defaults for high quality and low file size.
      *
-     * This function is basically equivalent to:
-     *
-     * $optim == true: `mogrify -path OUTPUT_PATH -filter Triangle -define filter:support=2.0 -thumbnail OUTPUT_WIDTH -unsharp 0.25x0.08+8.3+0.045 -dither None -posterize 136 -quality 82 -define jpeg:fancy-upsampling=off -define png:compression-filter=5 -define png:compression-level=9 -define png:compression-strategy=1 -define png:exclude-chunk=all -interlace none -colorspace sRGB INPUT_PATH`
-     *
-     * $optim == false: `mogrify -path OUTPUT_PATH -filter Triangle -define filter:support=2.0 -thumbnail OUTPUT_WIDTH -unsharp 0.25x0.25+8+0.065 -dither None -posterize 136 -quality 82 -define jpeg:fancy-upsampling=off -define png:compression-filter=5 -define png:compression-level=9 -define png:compression-strategy=1 -define png:exclude-chunk=all -interlace none -colorspace sRGB -strip INPUT_PATH`
-     *
-     * @access	public
-     *
-     * @param	integer	$columns		The number of columns in the output image. 0 = maintain aspect ratio based on $rows.
-     * @param	integer	$rows			The number of rows in the output image. 0 = maintain aspect ratio based on $columns.
-     * @param	bool	$optim			Whether you intend to perform optimization on the resulting image. Note that setting this to `true` doesn’t actually perform any optimization.
-     * @param   integer $quality        Defaults to 82 which produces a very similar image.
+     * @param	integer	$columns		    The number of columns in the output image. 0 = maintain aspect ratio based on $rows.
+     * @param	integer	$rows			    The number of rows in the output image. 0 = maintain aspect ratio based on $columns.
+     * @param	bool	$preserveColorInfo  Whether the color information should be preserved
+     * @param   integer $quality            Defaults to 82 which produces a very similar image.
      */
-    public function smartResize($columns, $rows, $optim = false, $quality = 82)
+    public function smartResize($columns, $rows, $preserveColorInfo = false, $quality = 82)
     {
 
         $this->setOption('filter:support', '2.0');
         $this->thumbnailImage($columns, $rows, false, false, \Imagick::FILTER_TRIANGLE);
 
-        if ($optim)
-        {
-            $this->unsharpMaskImage(0.25, 0.08, 8.3, 0.045);
-        }
-        else
-        {
-            $this->unsharpMaskImage(0.25, 0.25, 8, 0.065);
-        }
-
+        $this->unsharpMaskImage(0.25, 0.25, 8, 0.065);
 
         // Image posterizing can cause serious performance issues on some systems / Imagick configs.
         // It also does not serve that much in reducing filesize, so we're leaving it out.
@@ -70,11 +48,12 @@ class Imagick extends \Imagick {
         $this->setOption('png:compression-strategy', '1');
         $this->setOption('png:exclude-chunk', 'all');
         $this->setInterlaceScheme(\Imagick::INTERLACE_NO);
-        $this->setColorspace(\Imagick::COLORSPACE_SRGB);
 
-        if (!$optim)
+        // Older Imagick versions might not have this. Better make sure.
+        if (!$preserveColorInfo &&  method_exists($this, 'transformimagecolorspace'))
         {
             $this->stripImage();
+            $this->transformimagecolorspace(\Imagick::COLORSPACE_SRGB);
         }
     }
 
@@ -211,7 +190,7 @@ class Imagick extends \Imagick {
         // if the alpha channel is not defined, make it opaque
         if ($this->getImageAlphaChannel() == \Imagick::ALPHACHANNEL_UNDEFINED)
         {
-            $this->setImageAlphaChannel(\Imagick::ALPHACHANNEL_OPAQUE);
+            $this->setImageAlphaChannel(defined('\\Imagick::ALPHACHANNEL_OPAQUE') ? Imagick::ALPHACHANNEL_OPAQUE : Imagick::ALPHACHANNEL_OFF);
         }
 
         // set the image’s bit depth to 8 bits

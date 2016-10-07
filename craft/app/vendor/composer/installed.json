@@ -1,5 +1,67 @@
 [
     {
+        "name": "symfony/event-dispatcher",
+        "version": "v2.8.11",
+        "version_normalized": "2.8.11.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/event-dispatcher.git",
+            "reference": "889983a79a043dfda68f38c38b6dba092dd49cd8"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/889983a79a043dfda68f38c38b6dba092dd49cd8",
+            "reference": "889983a79a043dfda68f38c38b6dba092dd49cd8",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.9"
+        },
+        "require-dev": {
+            "psr/log": "~1.0",
+            "symfony/config": "~2.0,>=2.0.5|~3.0.0",
+            "symfony/dependency-injection": "~2.6|~3.0.0",
+            "symfony/expression-language": "~2.6|~3.0.0",
+            "symfony/stopwatch": "~2.3|~3.0.0"
+        },
+        "suggest": {
+            "symfony/dependency-injection": "",
+            "symfony/http-kernel": ""
+        },
+        "time": "2016-07-28 16:56:28",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.8-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Symfony\\Component\\EventDispatcher\\": ""
+            },
+            "exclude-from-classmap": [
+                "/Tests/"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
+            }
+        ],
+        "description": "Symfony EventDispatcher Component",
+        "homepage": "https://symfony.com"
+    },
+    {
         "name": "guzzle/guzzle",
         "version": "3.9.4",
         "version_normalized": "3.9.4.0",
@@ -96,12 +158,12 @@
     },
     {
         "name": "imagine/imagine",
-        "version": "0.6.7",
-        "version_normalized": "0.6.7.0",
+        "version": "0.6.14.1",
+        "version_normalized": "0.6.14.1",
         "source": {
             "type": "git",
             "url": "https://github.com/pixelandtonic/Imagine",
-            "reference": "8bdbfe6310430cb770a2df77ee951f2fb4738db1"
+            "reference": "44e54d22b968850df86985047c1488b10a8f2c5f"
         },
         "archive": {
             "exclude": [
@@ -126,7 +188,7 @@
             "ext-gmagick": "to use the Gmagick implementation",
             "ext-imagick": "to use the Imagick implementation"
         },
-        "time": "2015-11-27 08:55:24",
+        "time": "2016-09-22 21:53:27",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -160,20 +222,21 @@
     },
     {
         "name": "lsolesen/pel",
-        "version": "0.9.4",
-        "version_normalized": "0.9.4.0",
+        "version": "0.9.4.1",
+        "version_normalized": "0.9.4.1",
         "source": {
             "type": "git",
             "url": "https://github.com/pixelandtonic/pel",
-            "reference": "ba4a204f3f10425ab1e2ba9b48923e8fe49eb418"
+            "reference": "054b8220207c571df3a6882b895e19c1674fdbf2"
         },
         "require": {
             "php": ">=5.0.0"
         },
         "require-dev": {
-            "lastcraft/simpletest": ">=1.1"
+            "lastcraft/simpletest": ">=1.1",
+            "squizlabs/php_codesniffer": "2.*"
         },
-        "time": "2015-11-22 03:22:48",
+        "time": "2016-07-18 21:40:02",
         "type": "library",
         "installation-source": "source",
         "autoload": {
@@ -181,18 +244,67 @@
                 "lsolesen\\pel\\": "src/"
             }
         },
+        "license": [
+            "GPL-2.0"
+        ],
         "authors": [
             {
                 "name": "Lars Olesen",
                 "email": "lars@intraface.dk",
                 "homepage": "http://intraface.dk",
                 "role": "Developer"
+            },
+            {
+                "name": "Martin Geisler",
+                "email": "martin@geisler.net",
+                "homepage": "http://geisler.net",
+                "role": "Developer"
             }
         ],
         "description": "PHP Exif Library. A library for reading and writing Exif headers in JPEG and TIFF images using PHP.",
         "homepage": "http://lsolesen.github.com/pel/",
         "keywords": [
-            "template"
+            "exif",
+            "image"
+        ]
+    },
+    {
+        "name": "pclzip/pclzip",
+        "version": "2.8.2",
+        "version_normalized": "2.8.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/ivanlanin/pclzip.git",
+            "reference": "19dd1de9d3f5fc4d7d70175b4c344dee329f45fd"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/ivanlanin/pclzip/zipball/19dd1de9d3f5fc4d7d70175b4c344dee329f45fd",
+            "reference": "19dd1de9d3f5fc4d7d70175b4c344dee329f45fd",
+            "shasum": ""
+        },
+        "time": "2014-06-05 11:42:24",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "pclzip.lib.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "LGPL-2.1"
+        ],
+        "authors": [
+            {
+                "name": "Vincent Blavet"
+            }
+        ],
+        "description": "A PHP library that offers compression and extraction functions for Zip formatted archives",
+        "homepage": "http://www.phpconcept.net/pclzip",
+        "keywords": [
+            "php",
+            "zip"
         ]
     },
     {
@@ -253,17 +365,17 @@
     },
     {
         "name": "simplepie/simplepie",
-        "version": "1.3.2",
-        "version_normalized": "1.3.2.0",
+        "version": "1.3.3",
+        "version_normalized": "1.3.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/pixelandtonic/simplepie",
-            "reference": "e77b9e86081a5a7dcf5bba1e8c52069aca01ffec"
+            "reference": "db8b6500fb72f0f9bed0751b33005cce1628d3ab"
         },
         "require": {
             "php": ">=5.2.0"
         },
-        "time": "2015-11-22 02:51:00",
+        "time": "2015-12-17 19:51:31",
         "type": "library",
         "installation-source": "source",
         "autoload": {
@@ -302,12 +414,12 @@
     },
     {
         "name": "twig/twig",
-        "version": "1.23.2",
-        "version_normalized": "1.23.2.0",
+        "version": "1.24.1.1",
+        "version_normalized": "1.24.1.1",
         "source": {
             "type": "git",
             "url": "https://github.com/pixelandtonic/Twig",
-            "reference": "d584e6df2daa0745d53a130b8f3d7627438117d7"
+            "reference": "c49d824b19924e99db813a21f058959c4aa9b374"
         },
         "require": {
             "php": ">=5.2.7"
@@ -316,11 +428,11 @@
             "symfony/debug": "~2.7",
             "symfony/phpunit-bridge": "~2.7"
         },
-        "time": "2015-11-22 02:19:18",
+        "time": "2016-07-14 23:35:41",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.23-dev"
+                "dev-master": "1.24-dev"
             }
         },
         "installation-source": "source",
@@ -358,67 +470,5 @@
         "support": {
             "forum": "https://groups.google.com/forum/#!forum/twig-users"
         }
-    },
-    {
-        "name": "symfony/event-dispatcher",
-        "version": "v2.8.0",
-        "version_normalized": "2.8.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/symfony/event-dispatcher.git",
-            "reference": "a5eb815363c0388e83247e7e9853e5dbc14999cc"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/a5eb815363c0388e83247e7e9853e5dbc14999cc",
-            "reference": "a5eb815363c0388e83247e7e9853e5dbc14999cc",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.9"
-        },
-        "require-dev": {
-            "psr/log": "~1.0",
-            "symfony/config": "~2.0,>=2.0.5|~3.0.0",
-            "symfony/dependency-injection": "~2.6|~3.0.0",
-            "symfony/expression-language": "~2.6|~3.0.0",
-            "symfony/stopwatch": "~2.3|~3.0.0"
-        },
-        "suggest": {
-            "symfony/dependency-injection": "",
-            "symfony/http-kernel": ""
-        },
-        "time": "2015-10-30 20:15:42",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.8-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Symfony\\Component\\EventDispatcher\\": ""
-            },
-            "exclude-from-classmap": [
-                "/Tests/"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Fabien Potencier",
-                "email": "fabien@symfony.com"
-            },
-            {
-                "name": "Symfony Community",
-                "homepage": "https://symfony.com/contributors"
-            }
-        ],
-        "description": "Symfony EventDispatcher Component",
-        "homepage": "https://symfony.com"
     }
 ]

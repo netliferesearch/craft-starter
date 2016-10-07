@@ -165,7 +165,30 @@ class ElementCriteriaModel extends BaseModel implements \Countable
 	 */
 	public function count()
 	{
-		return count($this->find());
+		// If the query has already been executed, just return a count of the results.
+		if (isset($this->_matchedElements))
+		{
+			return count($this->_matchedElements);
+		}
+
+		$total = $this->total();
+
+		if ($this->offset)
+		{
+			$total -= $this->offset;
+
+			if ($total < 0)
+			{
+				$total = 0;
+			}
+		}
+
+		if ($this->limit && $total > $this->limit)
+		{
+			$total = $this->limit;
+		}
+
+		return $total;
 	}
 
 	/**
@@ -267,24 +290,27 @@ class ElementCriteriaModel extends BaseModel implements \Countable
 	 */
 	public function nth($offset)
 	{
-		if (!isset($this->_matchedElementsAtOffsets) || !array_key_exists($offset, $this->_matchedElementsAtOffsets))
+		// Do we already have it cached?
+		if (isset($this->_matchedElementsAtOffsets) && array_key_exists($offset, $this->_matchedElementsAtOffsets))
 		{
-			$criteria = new ElementCriteriaModel($this->getAttributes(), $this->_elementType);
-			$criteria->offset = $offset;
-			$criteria->limit = 1;
-			$elements = $criteria->find();
-
-			if ($elements)
-			{
-				$this->_matchedElementsAtOffsets[$offset] = $elements[0];
-			}
-			else
-			{
-				$this->_matchedElementsAtOffsets[$offset] = null;
-			}
+			return $this->_matchedElementsAtOffsets[$offset];
 		}
 
-		return $this->_matchedElementsAtOffsets[$offset];
+		// Temorarily change the offset/limit params, execute the query, and then change them back
+		$oldOffset = $this->offset;
+		$oldLimit = $this->limit;
+		$this->offset = $offset;
+		$this->limit = 1;
+		$elements = $this->find();
+		$this->offset = $oldOffset;
+		$this->limit = $oldLimit;
+
+		if ($elements)
+		{
+			return $elements[0];
+		}
+
+		return null;
 	}
 
 	/**
@@ -401,6 +427,21 @@ class ElementCriteriaModel extends BaseModel implements \Countable
 		}
 	}
 
+	// Events
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Fires an 'onPopulateElements' event.
+	 *
+	 * @param Event $event
+	 *
+	 * @return null
+	 */
+	public function onPopulateElements(Event $event)
+	{
+		$this->raiseEvent('onPopulateElements', $event);
+	}
+
 	// Deprecated Methods
 	// -------------------------------------------------------------------------
 
@@ -458,7 +499,7 @@ class ElementCriteriaModel extends BaseModel implements \Countable
 			'status'           => array(AttributeType::String, 'default' => BaseElementModel::ENABLED),
 			'title'            => AttributeType::String,
 			'uri'              => AttributeType::String,
-			'kind'             => AttributeType::Mixed,
+			'with'             => AttributeType::Mixed,
 
 			// TODO: Deprecated
 			'childField'       => AttributeType::String,
