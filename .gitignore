@@ -10,5 +10,4 @@ craft/storage/runtime
 craft/storage/backups
 craft/storage/userphotos
 /vendor
-composer.lock
 .env
