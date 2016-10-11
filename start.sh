@@ -5,7 +5,7 @@ export $DB
 
 # heroku local & PIDPHP=$!
 php -S localhost:5000 -t public & PIDPHP=$!
-webpack --watch --hot & PIDWEBPACK=$!
+npm run webpack & PIDWEBPACK=$!
 
 function cleanit {
     jobs -p | xargs kill

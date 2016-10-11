@@ -1,5 +1,5 @@
 {
-  "name": "netlife-research-craft-starter",
+  "name": "{{name}}",
   "version": "2.0.0",
   "description": "",
   "main": "index.js",
@@ -8,7 +8,8 @@
     "init": "node scripts/initialize",
     "dev": "sh start.sh",
     "test": "./node_modules/standard/bin/cmd.js",
-    "sync": "node scripts/dbsync"
+    "sync": "node scripts/dbsync",
+    "webpack": "webpack --watch --hot"
   },
   "author": "Netlife Research",
   "license": "",
