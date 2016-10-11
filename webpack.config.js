@@ -5,9 +5,9 @@ const path = require('path')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin')
 const nodeModulesPath = path.resolve(__dirname, 'node_modules')
-const mainJSPath = path.resolve(__dirname, 'resources/js/', 'app.js')
-const mainCSSPath = path.resolve(__dirname, 'resources/scss/', 'style.scss')
-const publicPath = path.resolve(__dirname, 'public/')
+const mainJSPath = path.resolve(__dirname, 'resources/js', 'app.js')
+const mainCSSPath = path.resolve(__dirname, 'resources/scss', 'style.scss')
+const publicPath = path.resolve(__dirname, 'public')
 
 module.exports = {
   entry: {
@@ -19,7 +19,7 @@ module.exports = {
   },
   output: {
     filename: '/js/min/[name].js',
-    path: path.resolve(publicPath),
+    path: publicPath,
     publicPath: publicPath
   },
   module: {
@@ -27,12 +27,12 @@ module.exports = {
       test: /\.jsx$|\.js$/,
       loader: 'standard',
       exclude: '/(node_modules|bower_components)/',
-      include: __dirname + '/resources/js/'
+      include: path.resolve(__dirname,'resources/js')
     }],
     loaders: [
       {
         test: /\.jsx?$/,
-        include: path.join(__dirname, 'resources/js'),
+        include: path.resolve(__dirname, 'resources/js'),
         loader: 'babel-loader',
         exclude: [nodeModulesPath]
       },
