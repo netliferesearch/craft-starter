@@ -16,7 +16,7 @@
     "babel-core": "^6.14.0",
     "babel-eslint": "^6.1.2",
     "babel-loader": "^6.2.5",
-    "babel-polyfill": "^6.13.0",
+    "babel-polyfill": "^6.16.0",
     "bluebird": "^2.9.34",
     "browser-sync": "^2.10.0",
     "browser-sync-webpack-plugin": "^1.1.2",
@@ -47,5 +47,8 @@
       "public/js/dist.js",
       "public/vendor"
     ]
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.16.0"
   }
 }
