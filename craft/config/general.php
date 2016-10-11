@@ -7,6 +7,8 @@ return array(
         'defaultCpLanguage' => 'en',
         'allowAutoUpdates' => false,
         'cache' => true,
+        'usePathInfo' => true
+
     ),
     'localhost' => array(
         'devMode' => true,
