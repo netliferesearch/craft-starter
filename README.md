@@ -26,7 +26,6 @@ If you want to change this URL, you'll have to change it in `start.sh`. If you w
 
 1. `composer install`
 2. `npm i`
-3. `bower install`
 
 ## Setting up the project on Heroku for the first time
 
