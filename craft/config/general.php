@@ -20,11 +20,11 @@ return array(
     ),
     'herokuapp.com' => array(
         'omitScriptNameInUrls' => true,
-        'siteUrl' => 'http://myapp.herokuapp.com/',
+        'siteUrl' => 'http://{{name}}.herokuapp.com/',
         'postLoginRedirect' => '/',
         'allowAutoUpdates' => false,
         'environmentVariables' => array(
-            'siteUrl' => 'http://myapp.herokuapp.com',
+            'siteUrl' => 'http://{{name}}.herokuapp.com',
             'basePath' => realpath(getcwd() . '/public/')
         )
     )
