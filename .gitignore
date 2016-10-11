@@ -11,3 +11,4 @@ craft/storage/backups
 craft/storage/userphotos
 /vendor
 .env
+*.hot-update.*
