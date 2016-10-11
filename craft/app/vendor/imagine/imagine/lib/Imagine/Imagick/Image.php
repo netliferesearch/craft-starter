@@ -389,7 +389,26 @@ final class Image extends AbstractImage
         if (isset($options['animated']) && true === $options['animated']) {
             $format = isset($options['format']) ? $options['format'] : 'gif';
             $delay = isset($options['animated.delay']) ? $options['animated.delay'] : null;
-            $loops = isset($options['animated.loops']) ? $options['animated.loops'] : 0;
+
+            $loops = 0;
+
+            if (isset($options['animated.loops'])) {
+                $loops = $options['animated.loops'];
+            } else {
+                // Calculating animated GIF iterations is a crap-shoot: https://www.imagemagick.org/discourse-server/viewtopic.php?f=1&t=23276
+                // Looks like it started working around 6.8.8-3: http://git.imagemagick.org/repos/ImageMagick/blob/a01518e08c840577cabd7d3ff291a9ba735f7276/ChangeLog#L914-916
+                $versionInfo = $this->imagick->getVersion();
+
+                if (isset($versionInfo['versionString'])) {
+                    preg_match('/ImageMagick ([0-9]+\.[0-9]+\.[0-9]+-[0-9])/', $versionInfo['versionString'], $versionInfo);
+
+                    if (isset($versionInfo[1])) {
+                        if (version_compare($versionInfo[1], '6.8.8-3', '>=')) {
+                            $loops = $this->imagick->getImageIterations();
+                        }
+                    }
+                }
+            }
 
             $options['flatten'] = false;
 
@@ -856,11 +875,11 @@ final class Image extends AbstractImage
      */
     private function setColorspace(PaletteInterface $palette)
     {
-        static $typeMapping = array(
+        $typeMapping = array(
             // We use Matte variants to preserve alpha
-            PaletteInterface::PALETTE_CMYK      => Imagick::IMGTYPE_TRUECOLORMATTE,
-            PaletteInterface::PALETTE_RGB       => Imagick::IMGTYPE_TRUECOLORMATTE,
-            PaletteInterface::PALETTE_GRAYSCALE => Imagick::IMGTYPE_GRAYSCALEMATTE,
+            PaletteInterface::PALETTE_CMYK      => defined('\\Imagine\\Imagick\\Imagick::IMGTYPE_TRUECOLORMATTE') ? Imagick::IMGTYPE_TRUECOLORMATTE : Imagick::IMGTYPE_TRUECOLORALPHA,
+            PaletteInterface::PALETTE_RGB       => defined('\\Imagine\\Imagick\\Imagick::IMGTYPE_TRUECOLORMATTE') ? Imagick::IMGTYPE_TRUECOLORMATTE : Imagick::IMGTYPE_TRUECOLORALPHA,
+            PaletteInterface::PALETTE_GRAYSCALE => defined('\\Imagine\\Imagick\\Imagick::IMGTYPE_GRAYSCALEMATTE') ? Imagick::IMGTYPE_GRAYSCALEMATTE : Imagick::IMGTYPE_GRAYSCALEALPHA,
         );
 
         if (!isset(static::$colorspaceMapping[$palette->name()])) {

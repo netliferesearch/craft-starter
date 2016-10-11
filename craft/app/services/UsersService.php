@@ -337,8 +337,8 @@ class UsersService extends BaseApplicationComponent
 					if ($user->username != $oldUsername)
 					{
 						// Rename the user's photo directory
-						$cleanOldUsername = AssetsHelper::cleanAssetName($oldUsername, false);
-						$cleanUsername = AssetsHelper::cleanAssetName($user->username, false);
+						$cleanOldUsername = AssetsHelper::cleanAssetName($oldUsername, false, true);
+						$cleanUsername = AssetsHelper::cleanAssetName($user->username, false, true);
 						$oldFolder = craft()->path->getUserPhotosPath().$cleanOldUsername;
 						$newFolder = craft()->path->getUserPhotosPath().$cleanUsername;
 
@@ -528,8 +528,9 @@ class UsersService extends BaseApplicationComponent
 				'code' => $unhashedVerificationCode,
 				'id' => $userRecord->uid
 			);
-			$protocol = craft()->request->isSecureConnection() ? 'https' : 'http';
-			$url = UrlHelper::getSiteUrl($path, $params, $protocol, $user->preferredLocale);
+
+			$locale = $user->preferredLocale ?: craft()->i18n->getPrimarySiteLocaleId();
+			$url = UrlHelper::getSiteUrl($path, $params, UrlHelper::getProtocolForTokenizedUrl(), $locale);
 		}
 
 		return $url;
@@ -553,7 +554,8 @@ class UsersService extends BaseApplicationComponent
 			'code' => $unhashedVerificationCode,
 			'id' => $userRecord->uid
 		);
-		$scheme = craft()->request->isSecureConnection() ? 'https' : 'http';
+
+		$scheme = UrlHelper::getProtocolForTokenizedUrl();
 
 		if ($user->can('accessCp'))
 		{
@@ -561,7 +563,8 @@ class UsersService extends BaseApplicationComponent
 		}
 		else
 		{
-			return UrlHelper::getSiteUrl($path, $params, $scheme, $user->preferredLocale);
+			$locale = $user->preferredLocale ?: craft()->i18n->getPrimarySiteLocaleId();
+			return UrlHelper::getSiteUrl($path, $params, $scheme, $locale);
 		}
 	}
 
@@ -577,14 +580,15 @@ class UsersService extends BaseApplicationComponent
 	 */
 	public function saveUserPhoto($fileName, BaseImage $image, UserModel $user)
 	{
-		$userName = AssetsHelper::cleanAssetName($user->username, false);
+		$userName = AssetsHelper::cleanAssetName($user->username, false, true);
 		$userPhotoFolder = craft()->path->getUserPhotosPath().$userName.'/';
 		$targetFolder = $userPhotoFolder.'original/';
 
 		IOHelper::ensureFolderExists($userPhotoFolder);
 		IOHelper::ensureFolderExists($targetFolder);
 
-		$targetPath = $targetFolder.AssetsHelper::cleanAssetName($fileName);
+		$fileName = AssetsHelper::cleanAssetName($fileName);
+		$targetPath = $targetFolder.$fileName;
 
 		$result = $image->saveAs($targetPath);
 
@@ -825,8 +829,8 @@ class UsersService extends BaseApplicationComponent
 			{
 				$userRecord->username = $user->unverifiedEmail;
 
-				$oldProfilePhotoPath = craft()->path->getUserPhotosPath().AssetsHelper::cleanAssetName($oldEmail);
-				$newProfilePhotoPath = craft()->path->getUserPhotosPath().AssetsHelper::cleanAssetName($user->unverifiedEmail);
+				$oldProfilePhotoPath = craft()->path->getUserPhotosPath().AssetsHelper::cleanAssetName($oldEmail, false, true);
+				$newProfilePhotoPath = craft()->path->getUserPhotosPath().AssetsHelper::cleanAssetName($user->unverifiedEmail, false, true);
 
 				// Update the user profile photo folder name, if it exists.
 				if (IOHelper::folderExists($oldProfilePhotoPath))
@@ -1290,16 +1294,20 @@ class UsersService extends BaseApplicationComponent
 			$pastTimeStamp = $expire->sub($interval)->getTimestamp();
 			$pastTime = DateTimeHelper::formatTimeForDb($pastTimeStamp);
 
-			$ids = craft()->db->createCommand()->select('id')
+			$userIds = craft()->db->createCommand()->select('id')
 				->from('users')
 				->where('pending=1 AND verificationCodeIssuedDate < :pastTime', array(':pastTime' => $pastTime))
 				->queryColumn();
 
-			$affectedRows = craft()->db->createCommand()->delete('elements', array('in', 'id', $ids));
-
-			if ($affectedRows > 0)
+			if ($userIds)
 			{
-				Craft::log('Just deleted '.$affectedRows.' pending users from the users table, because the were more than '.$duration.' old', LogLevel::Info, true);
+				foreach ($userIds as $userId)
+				{
+					$user = $this->getUserById($userId);
+					$this->deleteUser($user);
+
+					Craft::log('Just deleted pending userId '.$userId.' ('.$user->username.'), because the were more than '.$duration.' old', LogLevel::Info, true);
+				}
 			}
 		}
 	}

@@ -97,6 +97,21 @@ class UserModel extends BaseElementModel
 	}
 
 	/**
+	 * Sets an array of {@link UserGroupModel} objects on the user.
+	 *
+	 * @param $groups An array of {@link UserGroupModel} objects.
+	 *
+	 * @return null
+	 */
+	public function setGroups($groups)
+	{
+		if (craft()->getEdition() == Craft::Pro)
+		{
+			$this->_groups = $groups;
+		}
+	}
+
+	/**
 	 * Returns whether the user is in a specific group.
 	 *
 	 * @param mixed $group The user group model, its handle, or ID.
@@ -229,7 +244,7 @@ class UserModel extends BaseElementModel
 	{
 		if ($this->photo)
 		{
-			$username = AssetsHelper::cleanAssetName($this->username, false);
+			$username = AssetsHelper::cleanAssetName($this->username, false, true);
 			return UrlHelper::getResourceUrl('userphotos/'.$username.'/'.$size.'/'.$this->photo);
 		}
 	}
@@ -292,9 +307,9 @@ class UserModel extends BaseElementModel
 	 */
 	public function can($permission)
 	{
-		if (craft()->getEdition() == Craft::Pro)
+		if (craft()->getEdition() >= Craft::Client)
 		{
-			if ($this->admin || $this->client)
+			if ($this->admin)
 			{
 				return true;
 			}

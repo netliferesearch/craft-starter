@@ -179,6 +179,18 @@ abstract class BaseController extends \CController
 	}
 
 	/**
+	 * Requires that the user has an elevated session.
+	 *
+	 */
+	public function requireElevatedSession()
+	{
+		if (!craft()->userSession->hasElevatedSession())
+		{
+			throw new HttpException(403, Craft::t('This action may only be performed with an elevated session.'));
+		}
+	}
+
+	/**
 	 * Throws a 400 error if this isn’t a POST request
 	 *
 	 * @throws HttpException
@@ -253,7 +265,7 @@ abstract class BaseController extends \CController
 	 */
 	public function redirectToPostedUrl($object = null, $default = null)
 	{
-		$url = craft()->request->getPost('redirect');
+		$url = craft()->request->getValidatedPost('redirect');
 
 		if ($url === null)
 		{
@@ -269,7 +281,7 @@ abstract class BaseController extends \CController
 
 		if ($object)
 		{
-			$url = craft()->templates->renderObjectTemplate($url, $object);
+			$url = craft()->templates->renderObjectTemplate($url, $object, true);
 		}
 
 		$this->redirect($url);
@@ -278,13 +290,34 @@ abstract class BaseController extends \CController
 	/**
 	 * Responds to the request with JSON.
 	 *
-	 * @param array|null $var The array that should be JSON-encoded and returned to the browser.
+	 * @param array $var     The array that should be JSON-encoded and returned to the browser.
+	 * @param array $options An array of options.
+	 *
+	 * The $options array can contain the following values:
+	 *
+	 * - `'expires'` - Sets the Expires header value (in seconds). Defaults to `false`, which prevents
+	 *                 the response from getting cached. If set to `null`, no Expires header will be set.
 	 *
 	 * @return null
 	 */
-	public function returnJson($var = array())
+	public function returnJson($var = array(), $options = array())
 	{
-		JsonHelper::sendJsonHeaders();
+		// Set the 'application/json' Content-Type header
+		JsonHelper::setJsonContentTypeHeader();
+
+		$options = array_merge(array(
+			'expires' => false,
+		), $options);
+
+		// Set the Expires header
+		if ($options['expires'] === false)
+		{
+			HeaderHelper::setNoCache();
+		}
+		else if ($options['expires'])
+		{
+			HeaderHelper::setExpires($options['expires']);
+		}
 
 		// Output it into a buffer, in case TasksService wants to close the connection prematurely
 		ob_start();

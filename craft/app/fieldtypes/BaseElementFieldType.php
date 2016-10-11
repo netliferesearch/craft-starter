@@ -11,7 +11,7 @@ namespace Craft;
  * @package   craft.app.fieldtypes
  * @since     1.0
  */
-abstract class BaseElementFieldType extends BaseFieldType implements IPreviewableFieldType
+abstract class BaseElementFieldType extends BaseFieldType implements IPreviewableFieldType, IEagerLoadingFieldType
 {
 	// Properties
 	// =========================================================================
@@ -227,10 +227,11 @@ abstract class BaseElementFieldType extends BaseFieldType implements IPreviewabl
 		{
 			$alias = 'relations_'.$this->model->handle;
 			$operator = ($value == ':notempty:' ? '!=' : '=');
+			$paramHandle = ':fieldId'.StringHelper::randomString(8);
 
 			$query->andWhere(
-				"(select count({$alias}.id) from {{relations}} {$alias} where {$alias}.sourceId = elements.id and {$alias}.fieldId = :fieldId) {$operator} 0",
-				array(':fieldId' => $this->model->id)
+				"(select count({$alias}.id) from {{relations}} {$alias} where {$alias}.sourceId = elements.id and {$alias}.fieldId = {$paramHandle}) {$operator} 0",
+				array($paramHandle => $this->model->id)
 			);
 		}
 		else if ($value !== null)
@@ -360,7 +361,14 @@ abstract class BaseElementFieldType extends BaseFieldType implements IPreviewabl
 	 */
 	public function getTableAttributeHtml($value)
 	{
-		$element = $value->first();
+		if ($value instanceof ElementCriteriaModel)
+		{
+			$element = $value->first();
+		}
+		else
+		{
+			$element = isset($value[0]) ? $value[0] : null;
+		}
 
 		if ($element)
 		{
@@ -368,6 +376,59 @@ abstract class BaseElementFieldType extends BaseFieldType implements IPreviewabl
 				'element' => $element,
 			));
 		}
+	}
+
+	/**
+	 * @inheritDoc IEagerLoadingFieldType::getEagerLoadingMap()
+	 *
+	 * @param BaseElementModel[]  $sourceElements
+	 *
+	 * @return array|false
+	 */
+	public function getEagerLoadingMap($sourceElements)
+	{
+		$firstElement = isset($sourceElements[0]) ? $sourceElements[0] : null;
+
+		// Get the source element IDs
+		$sourceElementIds = array();
+
+		foreach ($sourceElements as $sourceElement)
+		{
+			$sourceElementIds[] = $sourceElement->id;
+		}
+
+		// Return any relation data on these elements, defined with this field
+		$map = craft()->db->createCommand()
+			->select('sourceId as source, targetId as target')
+			->from('relations')
+			->where(
+				array(
+					'and',
+					'fieldId=:fieldId',
+					array('in', 'sourceId', $sourceElementIds),
+					array('or', 'sourceLocale=:sourceLocale', 'sourceLocale is null')
+				),
+				array(
+					':fieldId' => $this->model->id,
+					':sourceLocale' => ($firstElement ? $firstElement->locale : null),
+				)
+			)
+			->order('sortOrder')
+			->queryAll();
+
+		// Figure out which target locale to use
+		$element = $this->element;
+		$this->element = $firstElement;
+		$targetLocale = $this->getTargetLocale();
+		$this->element = $element;
+
+		return array(
+			'elementType' => $this->elementType,
+			'map' => $map,
+			'criteria' => array(
+				'locale' => $targetLocale
+			),
+		);
 	}
 
 	// Protected Methods

@@ -11,7 +11,7 @@
  */
 return array (
   'version' => '8245',
-  'numberSymbols' =>
+  'numberSymbols' => 
   array (
     'decimal' => ',',
     'group' => '.',
@@ -28,7 +28,7 @@ return array (
   'scientificFormat' => '#E0',
   'percentFormat' => '#,##0%',
   'currencyFormat' => '¤#,##0.00;¤-#,##0.00',
-  'currencySymbols' =>
+  'currencySymbols' => 
   array (
     'AUD' => 'AU$',
     'BRL' => 'R$',
@@ -60,9 +60,9 @@ return array (
     'ESP' => '₧',
     'VEF' => 'Bs.',
   ),
-  'monthNames' =>
+  'monthNames' => 
   array (
-    'wide' =>
+    'wide' => 
     array (
       1 => 'enero',
       2 => 'febrero',
@@ -77,7 +77,7 @@ return array (
       11 => 'noviembre',
       12 => 'diciembre',
     ),
-    'abbreviated' =>
+    'abbreviated' => 
     array (
       1 => 'ene',
       2 => 'feb',
@@ -93,9 +93,9 @@ return array (
       12 => 'dic',
     ),
   ),
-  'monthNamesSA' =>
+  'monthNamesSA' => 
   array (
-    'narrow' =>
+    'narrow' => 
     array (
       1 => 'E',
       2 => 'F',
@@ -110,7 +110,7 @@ return array (
       11 => 'N',
       12 => 'D',
     ),
-    'abbreviated' =>
+    'abbreviated' => 
     array (
       1 => 'ene',
       2 => 'feb',
@@ -126,9 +126,9 @@ return array (
       12 => 'dic',
     ),
   ),
-  'weekDayNames' =>
+  'weekDayNames' => 
   array (
-    'wide' =>
+    'wide' => 
     array (
       0 => 'domingo',
       1 => 'lunes',
@@ -138,7 +138,7 @@ return array (
       5 => 'viernes',
       6 => 'sábado',
     ),
-    'abbreviated' =>
+    'abbreviated' => 
     array (
       0 => 'dom',
       1 => 'lun',
@@ -148,7 +148,7 @@ return array (
       5 => 'vie',
       6 => 'sáb',
     ),
-    'short' =>
+    'short' => 
     array (
       0 => 'D',
       1 => 'L',
@@ -159,9 +159,9 @@ return array (
       6 => 'S',
     ),
   ),
-  'weekDayNamesSA' =>
+  'weekDayNamesSA' => 
   array (
-    'narrow' =>
+    'narrow' => 
     array (
       0 => 'D',
       1 => 'L',
@@ -171,7 +171,7 @@ return array (
       5 => 'V',
       6 => 'S',
     ),
-    'short' =>
+    'short' => 
     array (
       0 => 'D',
       1 => 'L',
@@ -182,32 +182,32 @@ return array (
       6 => 'S',
     ),
   ),
-  'eraNames' =>
+  'eraNames' => 
   array (
-    'abbreviated' =>
+    'abbreviated' => 
     array (
       0 => 'a.C.',
       1 => 'd.C.',
     ),
-    'wide' =>
+    'wide' => 
     array (
       0 => 'antes de Cristo',
       1 => 'anno Dómini',
     ),
-    'narrow' =>
+    'narrow' => 
     array (
       0 => 'a.C.',
       1 => 'd.C.',
     ),
   ),
-  'dateFormats' =>
+  'dateFormats' => 
   array (
     'full' => 'EEEE, d \'de\' MMMM \'de\' y',
     'long' => 'd \'de\' MMMM \'de\' y',
     'medium' => 'dd/MM/y',
     'short' => 'dd/MM/yy',
   ),
-  'timeFormats' =>
+  'timeFormats' => 
   array (
     'full' => 'HH:mm:ss zzzz',
     'long' => 'HH:mm:ss z',
@@ -218,7 +218,7 @@ return array (
   'amName' => 'a.m.',
   'pmName' => 'p.m.',
   'orientation' => 'ltr',
-  'languages' =>
+  'languages' => 
   array (
     'aa' => 'afar',
     'ab' => 'abjasio',
@@ -794,7 +794,7 @@ return array (
     'zxx' => 'sin contenido lingüístico',
     'zza' => 'zazaki',
   ),
-  'scripts' =>
+  'scripts' => 
   array (
     'arab' => 'perso-arábigo',
     'armn' => 'armenio',
@@ -916,7 +916,7 @@ return array (
     'zyyy' => 'común',
     'zzzz' => 'alfabeto desconocido',
   ),
-  'territories' =>
+  'territories' => 
   array (
     '001' => 'Mundo',
     '002' => 'África',
@@ -1209,7 +1209,7 @@ return array (
     'zw' => 'Zimbabue',
     'zz' => 'Región desconocida',
   ),
-  'pluralRules' =>
+  'pluralRules' => 
   array (
     0 => 'n==1',
     1 => 'true',

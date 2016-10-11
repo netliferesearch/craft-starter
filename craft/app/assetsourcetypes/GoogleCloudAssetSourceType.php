@@ -285,8 +285,7 @@ class GoogleCloudAssetSourceType extends BaseAssetSourceType
 	 */
 	public function getTimeTransformModified(AssetFileModel $fileModel, $transformLocation)
 	{
-		$folder = $fileModel->getFolder();
-		$path = $this->_getPathPrefix().$folder->path.$transformLocation.'/'.$fileModel->filename;
+		$path = $this->_getPathPrefix().$fileModel->folderPath.$transformLocation.'/'.$fileModel->filename;
 		$this->_prepareForRequests();
 		$info = $this->_googleCloud->getObjectInfo($this->getSettings()->bucket, $path);
 
@@ -321,7 +320,7 @@ class GoogleCloudAssetSourceType extends BaseAssetSourceType
 	public function transformExists(AssetFileModel $file, $location)
 	{
 		$this->_prepareForRequests();
-		return (bool) @$this->_googleCloud->getObjectInfo($this->getSettings()->bucket, $this->_getPathPrefix().$file->getFolder()->path.$location.'/'.$file->filename);
+		return (bool) @$this->_googleCloud->getObjectInfo($this->getSettings()->bucket, $this->_getPathPrefix().$file->folderPath.$location.'/'.$file->filename);
 	}
 
 	/**
@@ -386,7 +385,8 @@ class GoogleCloudAssetSourceType extends BaseAssetSourceType
 			'keyId'      => array(AttributeType::String, 'required' => true),
 			'secret'     => array(AttributeType::String, 'required' => true),
 			'bucket'     => array(AttributeType::String, 'required' => true),
-			'urlPrefix'  => array(AttributeType::String, 'required' => true),
+			'publicURLs' => array(AttributeType::Bool,   'default' => true),
+			'urlPrefix'  => array(AttributeType::String),
 			'subfolder'  => array(AttributeType::String, 'default' => ''),
 			'expires'    => array(AttributeType::String, 'default' => ''),
 		);
@@ -427,7 +427,7 @@ class GoogleCloudAssetSourceType extends BaseAssetSourceType
 		clearstatcache();
 		$this->_prepareForRequests();
 
-		if (!$this->putObject($filePath, $this->getSettings()->bucket, $uriPath, \GC::ACL_PUBLIC_READ))
+		if (!$this->putObject($filePath, $this->getSettings()->bucket, $uriPath, $this->_getACL()))
 		{
 			throw new Exception(Craft::t('Could not copy file to target destination'));
 		}
@@ -446,10 +446,12 @@ class GoogleCloudAssetSourceType extends BaseAssetSourceType
 	 */
 	protected function getNameReplacementInFolder(AssetFolderModel $folder, $fileName)
 	{
+		$baseFileName = IOHelper::getFileName($fileName, false);
 		$prefix = $this->_getPathPrefix().$folder->path;
-		$this->_prepareForRequests();
-		$fileList = $this->_googleCloud->getBucket($this->getSettings()->bucket, $prefix);
 
+		$this->_prepareForRequests();
+		$fileList = $this->_googleCloud->getBucket($this->getSettings()->bucket, $prefix.$baseFileName);
+		
 		foreach ($fileList as &$file)
 		{
 			$file = preg_replace('/^'.preg_quote($prefix, '/').'/', '', $file['name']);
@@ -525,7 +527,7 @@ class GoogleCloudAssetSourceType extends BaseAssetSourceType
 
 		$this->_prepareForRequests($originatingSettings);
 
-		if (!$this->_googleCloud->copyObject($sourceBucket, $this->_getPathPrefix($originatingSettings).$file->getFolder()->path.$file->filename, $bucket, $newServerPath, \GC::ACL_PUBLIC_READ))
+		if (!$this->_googleCloud->copyObject($sourceBucket, $this->_getPathPrefix($originatingSettings).$file->getPath(), $bucket, $newServerPath, $this->_getACL()))
 		{
 			$response = new AssetOperationResponseModel();
 			return $response->setError(Craft::t("Could not save the file"));
@@ -555,7 +557,7 @@ class GoogleCloudAssetSourceType extends BaseAssetSourceType
 						craft()->assetTransforms->storeTransformIndexData($destinationIndex);
 					}
 
-					$from = $this->_getPathPrefix($originatingSettings).$file->getFolder()->path.craft()->assetTransforms->getTransformSubpath($file, $index);
+					$from = $this->_getPathPrefix($originatingSettings).$file->folderPath.craft()->assetTransforms->getTransformSubpath($file, $index);
 					$to   = $this->_getPathPrefix().$targetFolder->path.craft()->assetTransforms->getTransformSubpath($destination, $destinationIndex);
 
 					$this->copySourceFile($from, $to);
@@ -585,7 +587,7 @@ class GoogleCloudAssetSourceType extends BaseAssetSourceType
 	protected function createSourceFolder(AssetFolderModel $parentFolder, $folderName)
 	{
 		$this->_prepareForRequests();
-		return $this->putObject('', $this->getSettings()->bucket, $this->_getPathPrefix().rtrim($parentFolder->path.$folderName, '/').'/', \GC::ACL_PUBLIC_READ);
+		return $this->putObject('', $this->getSettings()->bucket, $this->_getPathPrefix().rtrim($parentFolder->path.$folderName, '/').'/', $this->_getACL());
 	}
 
 	/**
@@ -610,7 +612,7 @@ class GoogleCloudAssetSourceType extends BaseAssetSourceType
 		{
 			$filePath = mb_substr($file['name'], mb_strlen($this->_getPathPrefix().$folder->path));
 
-			$this->_googleCloud->copyObject($bucket, $file['name'], $bucket, $newFullPath.$filePath, \GC::ACL_PUBLIC_READ);
+			$this->_googleCloud->copyObject($bucket, $file['name'], $bucket, $newFullPath.$filePath, $this->_getACL());
 			@$this->_googleCloud->deleteObject($bucket, $file['name']);
 		}
 
@@ -651,9 +653,9 @@ class GoogleCloudAssetSourceType extends BaseAssetSourceType
 	public function putImageTransform(AssetFileModel $file, AssetTransformIndexModel $index, $sourceImage)
 	{
 		$this->_prepareForRequests();
-		$targetFile = $this->_getPathPrefix().$file->getFolder()->path.craft()->assetTransforms->getTransformSubpath($file, $index);
+		$targetFile = $this->_getPathPrefix().$file->folderPath.craft()->assetTransforms->getTransformSubpath($file, $index);
 
-		return $this->putObject($sourceImage, $this->getSettings()->bucket, $targetFile, \GC::ACL_PUBLIC_READ);
+		return $this->putObject($sourceImage, $this->getSettings()->bucket, $targetFile, $this->_getACL());
 	}
 
 	/**
@@ -721,7 +723,7 @@ class GoogleCloudAssetSourceType extends BaseAssetSourceType
 		}
 
 		$bucket = $this->getSettings()->bucket;
-		return (bool) @$this->_googleCloud->copyObject($bucket, $sourceUri, $bucket, $targetUri, \GC::ACL_PUBLIC_READ);
+		return (bool) @$this->_googleCloud->copyObject($bucket, $sourceUri, $bucket, $targetUri, $this->_getACL());
 	}
 
 	// Private Methods
@@ -759,8 +761,7 @@ class GoogleCloudAssetSourceType extends BaseAssetSourceType
 	 */
 	private function _getGCPath(AssetFileModel $file, $settings = null)
 	{
-		$folder = $file->getFolder();
-		return $this->_getPathPrefix($settings).$folder->path.$file->filename;
+		return $this->_getPathPrefix($settings).$file->getPath();
 	}
 
 	/**
@@ -783,5 +784,15 @@ class GoogleCloudAssetSourceType extends BaseAssetSourceType
 		}
 
 		\GC::setAuth($settings->keyId, $settings->secret);
+	}
+
+	/**
+	 * Return the ACL for this source.
+	 *
+	 * @return string
+	 */
+	private function _getACL()
+	{
+		return $this->getHasUrls() ? \GC::ACL_PUBLIC_READ : \GC::ACL_PRIVATE;
 	}
 }

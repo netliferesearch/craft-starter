@@ -601,6 +601,14 @@ class SectionsService extends BaseApplicationComponent
 
 							if (!$isNewSection)
 							{
+								// Re-save the entrytype name if the section name just changed
+								if (!$isNewSection && $oldSection->name != $section->name)
+								{
+									$entryType = $this->getEntryTypeById($entryTypeId);
+									$entryType->name = $section->name;
+									$this->saveEntryType($entryType);
+								}
+
 								// Make sure there's only one entry in this section
 								$entryIds = craft()->db->createCommand()
 									->select('id')
@@ -781,6 +789,28 @@ class SectionsService extends BaseApplicationComponent
 
 			try
 			{
+				// Nuke the field layouts first.
+				$entryTypeIds = array();
+				$entryTypes = $this->getEntryTypesBySectionId($sectionId);
+
+				foreach ($entryTypes as $entryType)
+				{
+					$entryTypeIds[] = $entryType->id;
+				}
+
+				// Delete the field layout(s)
+				 $query = craft()->db->createCommand()
+					->select('fieldLayoutId')
+					->from('entrytypes')
+					->where(array('in', 'id', $entryTypeIds));
+
+				$fieldLayoutIds = $query->queryColumn();
+
+				if ($fieldLayoutIds)
+				{
+					craft()->fields->deleteLayoutById($fieldLayoutIds);
+				}
+
 				// Grab the entry ids so we can clean the elements table.
 				$entryIds = craft()->db->createCommand()
 					->select('id')
@@ -840,15 +870,15 @@ class SectionsService extends BaseApplicationComponent
 	{
 		if ($section->hasUrls)
 		{
-			// Set Craft to the site template path
-			$oldTemplatesPath = craft()->path->getTemplatesPath();
-			craft()->path->setTemplatesPath(craft()->path->getSiteTemplatesPath());
+			// Set Craft to the site template mode
+			$oldTemplateMode = craft()->templates->getTemplateMode();
+			craft()->templates->setTemplateMode(TemplateMode::Site);
 
 			// Does the template exist?
 			$templateExists = craft()->templates->doesTemplateExist($section->template);
 
-			// Restore the original template path
-			craft()->path->setTemplatesPath($oldTemplatesPath);
+			// Restore the original template mode
+			craft()->templates->setTemplateMode($oldTemplateMode);
 
 			if ($templateExists)
 			{
@@ -949,6 +979,15 @@ class SectionsService extends BaseApplicationComponent
 		{
 			$entryTypeRecord = new EntryTypeRecord();
 			$isNewEntryType = true;
+
+			// Get the next biggest sort order
+			$maxSortOrder = craft()->db->createCommand()
+				->select('max(sortOrder)')
+				->from('entrytypes')
+				->where('sectionId=:sectionId', array(':sectionId' => $entryType->sectionId))
+				->queryScalar();
+
+			$entryTypeRecord->sortOrder = $maxSortOrder ? $maxSortOrder + 1 : 1;
 		}
 
 		$entryTypeRecord->sectionId     = $entryType->sectionId;
@@ -978,20 +1017,26 @@ class SectionsService extends BaseApplicationComponent
 				// Is the event giving us the go-ahead?
 				if ($event->performAction)
 				{
-					if (!$isNewEntryType && $oldEntryType->fieldLayoutId)
+					// Is there a new field layout?
+					$fieldLayout = $entryType->getFieldLayout();
+
+					if (!$fieldLayout->id)
 					{
-						// Drop the old field layout
-						craft()->fields->deleteLayoutById($oldEntryType->fieldLayoutId);
+						// Delete the old one
+						if (!$isNewEntryType && $oldEntryType->fieldLayoutId)
+						{
+							craft()->fields->deleteLayoutById($oldEntryType->fieldLayoutId);
+						}
+
+						// Save the new one
+						craft()->fields->saveLayout($fieldLayout);
+
+						// Update the entry type record/model with the new layout ID
+						$entryType->fieldLayoutId = $fieldLayout->id;
+						$entryTypeRecord->fieldLayoutId = $fieldLayout->id;
 					}
 
-					// Save the new one
-					$fieldLayout = $entryType->getFieldLayout();
-					craft()->fields->saveLayout($fieldLayout);
-
-					// Update the entry type record/model with the new layout ID
-					$entryType->fieldLayoutId = $fieldLayout->id;
-					$entryTypeRecord->fieldLayoutId = $fieldLayout->id;
-
+					// Save the entry type
 					$entryTypeRecord->save(false);
 
 					// Now that we have an entry type ID, save it on the model

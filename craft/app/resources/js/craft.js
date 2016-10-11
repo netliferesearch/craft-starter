@@ -25,8 +25,8 @@ $.extend(Craft,
 		'257':'aa', '269':'ch', '275':'ee', '291':'gj', '299':'ii', '311':'kj', '316':'lj', '326':'nj', '353':'sh', '363':'uu',
 		'382':'zh', '256':'aa', '268':'ch', '274':'ee', '290':'gj', '298':'ii', '310':'kj', '315':'lj', '325':'nj', '337':'o',
 		'352':'sh', '362':'uu', '369':'u',  '381':'zh', '260':'A',  '261':'a',  '262':'C',  '263':'c',  '280':'E',  '281':'e',
-		'321':'L',  '322':'l',  '323':'N',  '324':'n',  '211':'O',  '346':'S',  '347':'s',  '379':'Z',  '380':'z',  '377':'Z',
-		'388':'z'
+		'321':'L',  '322':'l',  '323':'N',  '324':'n',  '211':'O',  '346':'S',  '347':'s',  '377':'Z',  '378':'z',  '379':'Z',
+		'380':'z',  '388':'z',
 	},
 
 	/**
@@ -592,7 +592,7 @@ $.extend(Craft,
 			// If they're actual objects (not arrays), compare the keys
 			if (!(obj1 instanceof Array))
 			{
-				if (!Craft.compare(Craft.getObjectKeys(obj1), Craft.getObjectKeys(obj2)))
+				if (!Craft.compare(Craft.getObjectKeys(obj1).sort(), Craft.getObjectKeys(obj2).sort()))
 				{
 					return false;
 				}
@@ -628,6 +628,10 @@ $.extend(Craft,
 
 		for (var key in obj)
 		{
+			if (!obj.hasOwnProperty(key)) {
+				continue;
+			}
+
 			keys.push(key);
 		}
 
@@ -1206,12 +1210,13 @@ $.extend(Craft,
 	 * Shows an element editor HUD.
 	 *
 	 * @param object $element
+	 * @param object settings
 	 */
-	showElementEditor: function($element)
+	showElementEditor: function($element, settings)
 	{
 		if (Garnish.hasAttr($element, 'data-editable') && !$element.hasClass('disabled') && !$element.hasClass('loading'))
 		{
-			new Craft.ElementEditor($element);
+			return new Craft.ElementEditor($element, settings);
 		}
 	}
 });
@@ -2090,6 +2095,10 @@ Craft.BaseElementIndex = Garnish.Base.extend(
 			return;
 		}
 
+		// Hard-code the min toolbar height in case it was taller than the actions toolbar
+		// (prevents the elements from jumping if this ends up being a double-click)
+		this.$toolbar.css('min-height', this.$toolbar.height());
+
 		// Hide any toolbar inputs
 		this.$toolbarTableRow.children().not(this.$selectAllContainer).addClass('hidden');
 
@@ -2182,6 +2191,9 @@ Craft.BaseElementIndex = Garnish.Base.extend(
 
 		this.$toolbarTableRow.children().not(this.$selectAllContainer).removeClass('hidden');
 
+		// Unset the min toolbar height
+		this.$toolbar.css('min-height', '');
+
 		this.showingActionTriggers = false;
 	},
 
@@ -2198,11 +2210,13 @@ Craft.BaseElementIndex = Garnish.Base.extend(
 				{
 					this.$selectAllCheckbox.removeClass('indeterminate');
 					this.$selectAllCheckbox.addClass('checked');
+					this.$selectAllBtn.attr('aria-checked', 'true');
 				}
 				else
 				{
 					this.$selectAllCheckbox.addClass('indeterminate');
 					this.$selectAllCheckbox.removeClass('checked');
+					this.$selectAllBtn.attr('aria-checked', 'mixed');
 				}
 
 				this.showActionTriggers();
@@ -2210,6 +2224,7 @@ Craft.BaseElementIndex = Garnish.Base.extend(
 			else
 			{
 				this.$selectAllCheckbox.removeClass('indeterminate checked');
+				this.$selectAllBtn.attr('aria-checked', 'false');
 				this.hideActionTriggers();
 			}
 		}
@@ -3011,8 +3026,14 @@ Craft.BaseElementIndex = Garnish.Base.extend(
 			{
 				// Create the select all button
 				this.$selectAllContainer = $('<td class="selectallcontainer thin"/>');
-				this.$selectAllBtn = $('<div class="btn"/>').appendTo(this.$selectAllContainer);
+				this.$selectAllBtn = $('<div class="btn" />').appendTo(this.$selectAllContainer);
 				this.$selectAllCheckbox = $('<div class="checkbox"/>').appendTo(this.$selectAllBtn);
+
+				this.$selectAllBtn.attr({
+					'role': 'checkbox',
+					'tabindex': '0',
+					'aria-checked': 'false',
+				});
 
 				this.addListener(this.$selectAllBtn, 'click', function()
 				{
@@ -3025,11 +3046,23 @@ Craft.BaseElementIndex = Garnish.Base.extend(
 						this.view.deselectAllElements();
 					}
 				});
+
+				this.addListener(this.$selectAllBtn, 'keydown', function(ev)
+				{
+					if(ev.keyCode == Garnish.SPACE_KEY)
+					{
+						ev.preventDefault();
+
+						$(ev.currentTarget).trigger('click');
+					}
+				});
 			}
 			else
 			{
 				// Reset the select all button
 				this.$selectAllCheckbox.removeClass('indeterminate checked');
+
+				this.$selectAllBtn.attr('aria-checked', 'false');
 			}
 
 			// Place the select all button at the beginning of the toolbar
@@ -3277,7 +3310,7 @@ Craft.BaseElementIndexView = Garnish.Base.extend(
 		// Enable inline element editing if this is an index page
 		if (this.settings.context == 'index')
 		{
-			this.addListener(this.$elementContainer, 'dblclick', function(ev)
+			this._handleElementEditing = $.proxy(function(ev)
 			{
 				var $target = $(ev.target);
 
@@ -3303,9 +3336,16 @@ Craft.BaseElementIndexView = Garnish.Base.extend(
 
 				if (Garnish.hasAttr($element, 'data-editable'))
 				{
-					new Craft.ElementEditor($element);
+					this.createElementEditor($element);
 				}
-			});
+			}, this);
+
+			this.addListener(this.$elementContainer, 'dblclick', this._handleElementEditing);
+
+			if($.isTouchCapable())
+			{
+				this.addListener(this.$elementContainer, 'taphold', this._handleElementEditing);
+			}
 		}
 
 		// Give sub-classes a chance to do post-initialization stuff here
@@ -3544,7 +3584,7 @@ Craft.BaseElementIndexView = Garnish.Base.extend(
 	getLoadMoreParams: function()
 	{
 		// Use the same params that were passed when initializing this view
-		var params = $.extend({}, this.settings.params);
+		var params = $.extend(true, {}, this.settings.params);
 		params.criteria.offset = this.getTotalVisible();
 		return params;
 	},
@@ -3567,6 +3607,11 @@ Craft.BaseElementIndexView = Garnish.Base.extend(
 	{
 		this.settings.onSelectionChange();
 		this.trigger('selectionChange');
+	},
+
+	createElementEditor: function($element)
+	{
+		new Craft.ElementEditor($element);
 	},
 
 	disable: function()
@@ -3625,6 +3670,7 @@ Craft.BaseElementSelectInput = Garnish.Base.extend(
 	elementSelect: null,
 	elementSort: null,
 	modal: null,
+	elementEditor: null,
 
 	$container: null,
 	$elementsContainer: null,
@@ -3850,10 +3896,16 @@ Craft.BaseElementSelectInput = Garnish.Base.extend(
 
 		if (this.settings.editable)
 		{
-			this.addListener($elements, 'dblclick', function(ev)
+			this._handleShowElementEditor = $.proxy(function(ev) {
+				this.elementEditor = Craft.showElementEditor($(ev.currentTarget), this.settings.editorSettings);
+			}, this);
+
+			this.addListener($elements, 'dblclick', this._handleShowElementEditor);
+
+			if($.isTouchCapable())
 			{
-				Craft.showElementEditor($(ev.currentTarget));
-			});
+				this.addListener($elements, 'taphold', this._handleShowElementEditor);
+			}
 		}
 
 		$elements.find('.delete').on('click', $.proxy(function(ev)
@@ -3957,6 +4009,7 @@ Craft.BaseElementSelectInput = Garnish.Base.extend(
 			sources:            this.settings.sources,
 			criteria:           this.settings.criteria,
 			multiSelect:        (this.settings.limit != 1),
+			showLocaleMenu:     this.settings.showLocaleMenu,
 			disabledElementIds: this.getDisabledElementIds(),
 			onSelect:           $.proxy(this, 'onModalSelect')
 		}, this.settings.modalSettings);
@@ -4109,13 +4162,15 @@ Craft.BaseElementSelectInput = Garnish.Base.extend(
 		sourceElementId: null,
 		viewMode: 'list',
 		limit: null,
+		showLocaleMenu: false,
 		modalStorageKey: null,
 		modalSettings: {},
 		onSelectElements: $.noop,
 		onRemoveElements: $.noop,
 		sortable: true,
 		selectable: true,
-		editable: true
+		editable: true,
+		editorSettings: {}
 	}
 });
 
@@ -4321,6 +4376,10 @@ Craft.BaseElementSelectorModal = Garnish.Modal.extend(
 			sources:     this.settings.sources
 		};
 
+		if (this.settings.showLocaleMenu !== null && this.settings.showLocaleMenu != 'auto') {
+			data.showLocaleMenu = this.settings.showLocaleMenu ? '1' : '0';
+		}
+
 		Craft.postActionRequest('elements/getModalBody', data, $.proxy(function(response, textStatus)
 		{
 			if (textStatus == 'success')
@@ -4344,8 +4403,8 @@ Craft.BaseElementSelectorModal = Garnish.Modal.extend(
 					onSelectionChange:  $.proxy(this, 'onSelectionChange')
 				});
 
-				// Double-clicking should select the elements
-				this.addListener(this.elementIndex.$elements, 'dblclick', 'selectElements');
+				// Double-clicking or double-tapping should select the elements
+				this.addListener(this.elementIndex.$elements, 'doubletap', 'selectElements');
 			}
 
 		}, this));
@@ -4358,6 +4417,7 @@ Craft.BaseElementSelectorModal = Garnish.Modal.extend(
 		sources: null,
 		criteria: null,
 		multiSelect: false,
+		showLocaleMenu: null,
 		disabledElementIds: [],
 		disableElementsOnSelect: false,
 		hideOnSelect: true,
@@ -6230,17 +6290,24 @@ Craft.AssetSelectInput = Craft.BaseElementSelectInput.extend(
 	uploader: null,
 	progressBar: null,
 
-	init: function()
-	{
-		this.base.apply(this, arguments);
+	originalFilename: '',
+	originalExtension: '',
+
+	init: function (settings) {
+		settings.editorSettings = {
+			onShowHud: $.proxy(this.resetOriginalFilename, this),
+			onCreateForm: $.proxy(this._renameHelper, this),
+			validators: [$.proxy(this.validateElementForm, this)]
+		};
+
+		this.base(settings);
 		this._attachUploader();
 	},
 
 	/**
 	 * Attach the uploader with drag event handler
 	 */
-	_attachUploader: function()
-	{
+	_attachUploader: function () {
 		this.progressBar = new Craft.ProgressBar($('<div class="progress-shade"></div>').appendTo(this.$container));
 
 		var options = {
@@ -6253,14 +6320,12 @@ Craft.AssetSelectInput = Craft.BaseElementSelectInput.extend(
 		};
 
 		// If CSRF protection isn't enabled, these won't be defined.
-		if (typeof Craft.csrfTokenName !== 'undefined' && typeof Craft.csrfTokenValue !== 'undefined')
-		{
+		if (typeof Craft.csrfTokenName !== 'undefined' && typeof Craft.csrfTokenValue !== 'undefined') {
 			// Add the CSRF token
 			options.formData[Craft.csrfTokenName] = Craft.csrfTokenValue;
 		}
 
-		if (typeof this.settings.criteria.kind != "undefined")
-		{
+		if (typeof this.settings.criteria.kind != "undefined") {
 			options.allowedKinds = this.settings.criteria.kind;
 		}
 
@@ -6277,11 +6342,9 @@ Craft.AssetSelectInput = Craft.BaseElementSelectInput.extend(
 	/**
 	 * Add the freshly uploaded file to the input field.
 	 */
-	selectUploadedFile: function(element)
-	{
+	selectUploadedFile: function (element) {
 		// Check if we're able to add new elements
-		if (!this.canAddMoreElements())
-		{
+		if (!this.canAddMoreElements()) {
 			return;
 		}
 
@@ -6289,17 +6352,17 @@ Craft.AssetSelectInput = Craft.BaseElementSelectInput.extend(
 
 		// Make a couple tweaks
 		$newElement.addClass('removable');
-		$newElement.prepend('<input type="hidden" name="'+this.settings.name+'[]" value="'+element.id+'">' +
-			'<a class="delete icon" title="'+Craft.t('Remove')+'"></a>');
+		$newElement.prepend('<input type="hidden" name="' + this.settings.name + '[]" value="' + element.id + '">' +
+			'<a class="delete icon" title="' + Craft.t('Remove') + '"></a>');
 
 		$newElement.appendTo(this.$elementsContainer);
 
-		var margin = -($newElement.outerWidth()+10);
+		var margin = -($newElement.outerWidth() + 10);
 
-		this.$addElementBtn.css('margin-'+Craft.left, margin+'px');
+		this.$addElementBtn.css('margin-' + Craft.left, margin + 'px');
 
 		var animateCss = {};
-		animateCss['margin-'+Craft.left] = 0;
+		animateCss['margin-' + Craft.left] = 0;
 		this.$addElementBtn.velocity(animateCss, 'fast');
 
 		this.addElements($newElement);
@@ -6310,8 +6373,7 @@ Craft.AssetSelectInput = Craft.BaseElementSelectInput.extend(
 	/**
 	 * On upload start.
 	 */
-	_onUploadStart: function(event)
-	{
+	_onUploadStart: function (event) {
 		this.progressBar.$progressBar.css({
 			top: Math.round(this.$container.outerHeight() / 2) - 6
 		});
@@ -6324,8 +6386,7 @@ Craft.AssetSelectInput = Craft.BaseElementSelectInput.extend(
 	/**
 	 * On upload progress.
 	 */
-	_onUploadProgress: function(event, data)
-	{
+	_onUploadProgress: function (event, data) {
 		var progress = parseInt(data.loaded / data.total * 100, 10);
 		this.progressBar.setProgressPercentage(progress);
 	},
@@ -6333,22 +6394,18 @@ Craft.AssetSelectInput = Craft.BaseElementSelectInput.extend(
 	/**
 	 * On a file being uploaded.
 	 */
-	_onUploadComplete: function(event, data)
-	{
-		if (data.result.error)
-		{
+	_onUploadComplete: function (event, data) {
+		if (data.result.error) {
 			alert(data.result.error);
 		}
-		else
-		{
+		else {
 			var html = $(data.result.html);
 			Craft.appendHeadHtml(data.result.headHtml);
 			this.selectUploadedFile(Craft.getElementInfo(html));
 		}
 
 		// Last file
-		if (this.uploader.isLastUpload())
-		{
+		if (this.uploader.isLastUpload()) {
 			this.progressBar.hideProgressBar();
 			this.$container.removeClass('uploading');
 		}
@@ -6357,9 +6414,90 @@ Craft.AssetSelectInput = Craft.BaseElementSelectInput.extend(
 	/**
 	 * We have to take into account files about to be added as well
 	 */
-	canAddMoreFiles: function (slotsTaken)
-	{
-		return (!this.settings.limit || this.$elements.length  + slotsTaken < this.settings.limit);
+	canAddMoreFiles: function (slotsTaken) {
+		return (!this.settings.limit || this.$elements.length + slotsTaken < this.settings.limit);
+	},
+
+	/**
+	 * Parse the passed filename into the base filename and extension.
+	 *
+	 * @param filename
+	 * @returns {{extension: string, baseFileName: string}}
+	 */
+	_parseFilename: function (filename) {
+		var parts = filename.split('.'),
+			extension = '';
+
+		if (parts.length > 1) {
+			extension = parts.pop();
+		}
+		var baseFileName = parts.join('.');
+		return {extension: extension, baseFileName: baseFileName};
+	},
+
+	/**
+	 * A helper function or the filename field.
+	 * @private
+	 */
+	_renameHelper: function ($form) {
+		$('.renameHelper', $form).on('focus', $.proxy(function (e) {
+			input = e.currentTarget;
+			var filename = this._parseFilename(input.value);
+
+			if (this.originalFilename == "" && this.originalExtension == "") {
+				this.originalFilename = filename.baseFileName;
+				this.originalExtension = filename.extension;
+			}
+
+			var startPos = 0,
+				endPos = filename.baseFileName.length;
+
+			if (typeof input.selectionStart != "undefined") {
+				input.selectionStart = startPos;
+				input.selectionEnd = endPos;
+			} else if (document.selection && document.selection.createRange) {
+				// IE branch
+				input.select();
+				var range = document.selection.createRange();
+				range.collapse(true);
+				range.moveEnd("character", endPos);
+				range.moveStart("character", startPos);
+				range.select();
+			}
+
+		}, this));
+	},
+
+	resetOriginalFilename: function () {
+		this.originalFilename = "";
+		this.originalExtension = "";
+	},
+
+	validateElementForm: function () {
+		var $filenameField = $('.renameHelper', this.elementEditor.hud.$hud.data('elementEditor').$form);
+		var filename = this._parseFilename($filenameField.val());
+
+		if (filename.extension != this.originalExtension) {
+			// Blank extension
+			if (filename.extension == "") {
+				// If filename changed as well, assume removal of extension a mistake
+				if (this.originalFilename != filename.baseFileName) {
+					$filenameField.val(filename.baseFileName + '.' + this.originalExtension);
+					return true;
+				} else {
+					// If filename hasn't changed, make sure they want to remove extension
+					return confirm(Craft.t("Are you sure you want to remove the extension “.{ext}”?", {ext: this.originalExtension}));
+				}
+			} else {
+				// If the extension has changed, make sure it s intentional
+				return confirm(Craft.t("Are you sure you want to change the extension from “.{oldExt}” to “.{newExt}”?",
+					{
+						oldExt: this.originalExtension,
+						newExt: filename.extension
+					}));
+			}
+		}
+		return true;
 	}
 });
 
@@ -6376,54 +6514,17 @@ Craft.AssetSelectorModal = Craft.BaseElementSelectorModal.extend(
 	{
 		settings = $.extend({}, Craft.AssetSelectorModal.defaults, settings);
 
-		if (settings.canSelectImageTransforms)
-		{
-			if (typeof Craft.AssetSelectorModal.transforms == 'undefined')
-			{
-				var base = this.base;
-
-				this.fetchTransformInfo($.proxy(function()
-				{
-					// Finally call this.base()
-					base.call(this, elementType, settings);
-
-					this.createSelectTransformButton();
-				}, this));
-
-				// Prevent this.base() from getting called until later
-				return;
-			}
-		}
-
 		this.base(elementType, settings);
 
-		if (settings.canSelectImageTransforms)
+		if (settings.transforms.length)
 		{
-			this.createSelectTransformButton();
+			this.createSelectTransformButton(settings.transforms);
 		}
 	},
 
-	fetchTransformInfo: function(callback)
+	createSelectTransformButton: function(transforms)
 	{
-		Craft.postActionRequest('assets/getTransformInfo', $.proxy(function(response, textStatus)
-		{
-			if (textStatus == 'success' && response instanceof Array)
-			{
-				Craft.AssetSelectorModal.transforms = response;
-			}
-			else
-			{
-				Craft.AssetSelectorModal.transforms = [];
-			}
-
-			callback();
-
-		}, this));
-	},
-
-	createSelectTransformButton: function()
-	{
-		if (!Craft.AssetSelectorModal.transforms.length)
+		if (!transforms || !transforms.length)
 		{
 			return;
 		}
@@ -6436,9 +6537,9 @@ Craft.AssetSelectorModal = Craft.BaseElementSelectorModal.extend(
 		var $menu = $('<div class="menu" data-align="right"></div>').insertAfter(this.$selectTransformBtn),
 			$menuList = $('<ul></ul>').appendTo($menu);
 
-		for (var i = 0; i < Craft.AssetSelectorModal.transforms.length; i++)
+		for (var i = 0; i < transforms.length; i++)
 		{
-			$('<li><a data-transform="'+Craft.AssetSelectorModal.transforms[i].handle+'">'+Craft.AssetSelectorModal.transforms[i].name+'</a></li>').appendTo($menuList);
+			$('<li><a data-transform="'+transforms[i].handle+'">'+transforms[i].name+'</a></li>').appendTo($menuList);
 		}
 
 		var MenuButton = new Garnish.MenuBtn(this.$selectTransformBtn, {
@@ -6453,9 +6554,11 @@ Craft.AssetSelectorModal = Craft.BaseElementSelectorModal.extend(
 	{
 		var $selectedElements = this.elementIndex.getSelectedElements();
 
-		if ($selectedElements.length && this.settings.canSelectImageTransforms && Craft.AssetSelectorModal.transforms.length)
+		var allowTransforms = false;
+
+		if ($selectedElements.length && this.settings.transforms.length)
 		{
-			var allowTransforms = true;
+			allowTransforms = true;
 
 			for (var i = 0; i < $selectedElements.length; i++)
 			{
@@ -6466,18 +6569,12 @@ Craft.AssetSelectorModal = Craft.BaseElementSelectorModal.extend(
 				}
 			}
 		}
-		else
-		{
-			var allowTransforms = false;
-		}
+
+		var MenuBtn = null;
 
 		if (this.$selectTransformBtn)
 		{
-			var MenuBtn = this.$selectTransformBtn.data('menuButton');
-		}
-		else
-		{
-			var MenuBtn = null;
+			MenuBtn = this.$selectTransformBtn.data('menuButton');
 		}
 
 		if (allowTransforms)
@@ -6610,7 +6707,8 @@ Craft.AssetSelectorModal = Craft.BaseElementSelectorModal.extend(
 },
 {
 	defaults: {
-		canSelectImageTransforms: false
+		canSelectImageTransforms: false,
+		transforms: []
 	},
 
 	transformUrls: {}
@@ -7168,7 +7266,7 @@ Craft.CategoryIndex = Craft.BaseElementIndex.extend(
 			this.$newCategoryBtnGroup = $('<div class="btngroup submit"/>');
 			var $menuBtn;
 
-			// If they are, show a primany "New category" button, and a dropdown of the other groups (if any).
+			// If they are, show a primary "New category" button, and a dropdown of the other groups (if any).
 			// Otherwise only show a menu button
 			if (selectedGroup)
 			{
@@ -7461,6 +7559,889 @@ Craft.CategorySelectInput = Craft.BaseElementSelectInput.extend(
 		}
 	}
 });
+
+
+/**
+ * Craft Charts
+ */
+
+Craft.charts = {};
+
+/**
+ * Class Craft.charts.DataTable
+ */
+Craft.charts.DataTable = Garnish.Base.extend(
+{
+    columns: null,
+    rows: null,
+
+    init: function(data)
+    {
+        columns = data.columns;
+        rows = data.rows;
+
+        rows.forEach($.proxy(function(d)
+        {
+            $.each(d, function(cellIndex, cell)
+            {
+                var column = columns[cellIndex];
+
+                switch(column.type)
+                {
+                    case 'date':
+                        d[cellIndex] = d3.time.format("%Y-%m-%d").parse(d[cellIndex]);
+                    break;
+
+                    case 'datetime':
+                        d[cellIndex] = d3.time.format("%Y-%m-%d %H:00:00").parse(d[cellIndex]);
+                    break;
+
+                    case 'percent':
+                    d[cellIndex] = d[cellIndex] / 100;
+                    break;
+
+                    case 'number':
+                        d[cellIndex] = +d[cellIndex];
+                        break;
+
+                    default:
+                        // do nothing
+                }
+            });
+
+        }, this));
+
+        this.columns = columns;
+        this.rows = rows;
+    }
+});
+
+/**
+ * Class Craft.charts.Tip
+ */
+Craft.charts.Tip = Garnish.Base.extend(
+{
+    $tip: null,
+
+    init: function($container, settings)
+    {
+        this.setSettings(settings, Craft.charts.Tip.defaults);
+
+        this.$container = $container;
+
+        this.$tip = $('<div class="tooltip"></div>').appendTo(this.$container);
+
+        this.hide();
+    },
+
+    tipContentFormat: function(d)
+    {
+        var locale = this.settings.locale;
+
+
+        if(this.settings.tipContentFormat)
+        {
+            return this.settings.tipContentFormat(locale, d);
+        }
+        else
+        {
+            var $content = $('<div />');
+            var $xValue = $('<div class="x-value" />').appendTo($content);
+            var $yValue = $('<div class="y-value" />').appendTo($content);
+
+            $xValue.html(this.settings.xTickFormat(d[0]));
+            $yValue.html(this.settings.yTickFormat(d[1]));
+
+            return $content.get(0);
+        }
+    },
+
+    show: function(d)
+    {
+        this.$tip.html(this.tipContentFormat(d));
+        this.$tip.css("display", 'block');
+
+        var position = this.settings.getPosition(this.$tip, d);
+
+        this.$tip.css("left", position.left + "px");
+        this.$tip.css("top", position.top + "px");
+    },
+
+    hide: function()
+    {
+        this.$tip.css("display", 'none');
+    },
+},
+{
+    defaults: {
+        locale: null,
+        tipContentFormat: null, // $.noop ?
+        getPosition: null, // $.noop ?
+    }
+});
+
+/**
+ * Class Craft.charts.BaseChart
+ */
+Craft.charts.BaseChart = Garnish.Base.extend(
+{
+    $container: null,
+    $chart: null,
+
+    chartBaseClass: 'cp-chart',
+    dataTable: null,
+
+    // dataTables: [],
+    // isStacked: true,
+
+    locale: null,
+    orientation: null,
+
+    svg: null,
+    width: null,
+    height: null,
+    x: null,
+    y: null,
+
+    init: function(container)
+    {
+        this.$container = container;
+
+        d3.select(window).on('resize', $.proxy(function() {
+            this.resize();
+        }, this));
+    },
+
+    initLocale: function()
+    {
+        var localeDefinition = window['d3_locale'];
+
+        if(this.settings.localeDefinition)
+        {
+            localeDefinition = $.extend(true, {}, localeDefinition, this.settings.localeDefinition);
+        }
+
+        this.locale = d3.locale(localeDefinition);
+    },
+
+    initChartElement: function()
+    {
+        // reset chart element's HTML
+
+        if(this.$chart)
+        {
+            this.$chart.remove();
+        }
+
+        // chart class
+
+        var className = this.chartBaseClass;
+
+        if(this.settings.chartClass)
+        {
+            className += ' '+this.settings.chartClass;
+        }
+
+        this.$chart = $('<div class="'+className+'" />').appendTo(this.$container);
+    },
+
+    draw: function(dataTable, settings, settingsDefaults)
+    {
+        // settings
+
+        this.setSettings(settings, Craft.charts.BaseChart.defaults);
+
+        if(settingsDefaults)
+        {
+            this.setSettings(settings, settingsDefaults);
+        }
+
+
+        // chart
+
+        this.initLocale();
+        this.initChartElement();
+
+        this.orientation = this.settings.orientation;
+
+        this.dataTable = dataTable;
+    },
+
+    xTickFormat: function(locale)
+    {
+        switch(this.settings.dataScale)
+        {
+            case 'year':
+                return locale.timeFormat('%Y');
+                break;
+
+            case 'month':
+                return locale.timeFormat(this.settings.formats.shortDateFormats.month);
+                break;
+
+            case 'hour':
+                return locale.timeFormat(this.settings.formats.shortDateFormats.month+" %H:00:00");
+                break;
+
+            default:
+                return locale.timeFormat(this.settings.formats.shortDateFormats.day);
+        }
+    },
+
+    yTickFormat: function(locale)
+    {
+        switch(this.dataTable.columns[1].type)
+        {
+            case 'currency':
+                return locale.numberFormat(this.settings.formats.currencyFormat);
+                break;
+
+            case 'percent':
+                return locale.numberFormat(this.settings.formats.percentFormat);
+                break;
+
+            case 'time':
+                return Craft.charts.utils.getDuration;
+                break;
+
+            default:
+                return locale.numberFormat("n");
+        }
+    },
+
+    resize: function()
+    {
+        this.draw(this.dataTable, this.settings);
+    },
+
+    onAfterDrawTicks: function()
+    {
+        // White border for ticks' text
+        $('.tick', this.$chart).each(function(tickKey, tick)
+        {
+            var $tickText = $('text', tick);
+
+            var $clone = $tickText.clone();
+            $clone.appendTo(tick);
+
+            $tickText.attr('stroke', '#ffffff');
+            $tickText.attr('stroke-width', 3);
+        });
+    }
+},
+{
+    defaults: {
+        margin: { top: 25, right: 25, bottom: 25, left: 25 },
+        chartClass: null,
+        colors: ["#0594D1", "#DE3800", "#FF9A00", "#009802", "#9B009B"],
+        ticksStyles: {
+            'fill': '#555',
+            'font-size': '11px'
+        }
+    }
+});
+
+
+/**
+ * Class Craft.charts.Area
+ */
+Craft.charts.Area = Craft.charts.BaseChart.extend(
+{
+    tip: null,
+
+    paddedX: null,
+    paddedY: null,
+
+    draw: function(dataTable, settings)
+    {
+        this.base(dataTable, settings, Craft.charts.Area.defaults);
+
+        if(this.tip)
+        {
+            this.tip = null;
+        }
+
+        this.width = this.$chart.width() - this.settings.margin.left - this.settings.margin.right;
+        this.height = this.$chart.height() - this.settings.margin.top - this.settings.margin.bottom;
+
+        // X & Y Scales & Domains
+        this.x = d3.time.scale().range([0, this.width]);
+        this.y = d3.scale.linear().range([this.height, 0]);
+        this.x.domain(this.xDomain());
+        this.y.domain(this.yDomain());
+
+        // Append SVG to chart element
+
+        var svg = {
+            width: this.width + (this.settings.margin.left + this.settings.margin.right),
+            height: this.height + (this.settings.margin.top + this.settings.margin.bottom),
+            translateX: (this.orientation != 'rtl' ? (this.settings.margin.left) : (this.settings.margin.right)),
+            translateY: this.settings.margin.top
+        };
+
+        this.svg = d3.select(this.$chart.get(0)).append("svg")
+                .attr("width", svg.width)
+                .attr("height", svg.height)
+            .append("g")
+                .attr("transform", "translate(" + svg.translateX + "," + svg.translateY + ")");
+
+        // Draw elements
+        this.drawGridlines();
+        this.drawYTicks();
+
+
+        // Draw padded elements
+        var chartMargin = this.getChartMargin();
+        this.paddedX = d3.time.scale().range([chartMargin.left, (this.width - chartMargin.right)]);
+        this.paddedY = d3.scale.linear().range([this.height, 0]);
+        this.paddedX.domain(this.xDomain());
+        this.paddedY.domain(this.yDomain());
+
+        this.drawXTicks();
+        this.onAfterDrawTicks();
+        this.drawAxes();
+        this.drawChart();
+        this.drawPlots();
+        this.drawTipTriggers();
+    },
+
+    getChartMargin: function()
+    {
+        var left = 0;
+        var right = 0;
+
+
+        // calculate left based on widest Y tick's width
+
+        var yTickMaxWidth = 0;
+
+        $('.y .tick text:last', this.$chart).each(function(tickKey, tick)
+        {
+            var tickWidth = $(tick).get(0).getBoundingClientRect().width;
+
+            if(tickWidth > yTickMaxWidth)
+            {
+                yTickMaxWidth = tickWidth;
+            }
+        });
+
+        left = yTickMaxWidth + 14;
+
+        return {
+            left: (this.orientation != 'rtl' ? left : right),
+            right: (this.orientation != 'rtl' ? right : left)
+        };
+    },
+
+    drawChart: function()
+    {
+        var x = this.paddedX;
+        var y = this.paddedY;
+
+        // Line
+
+        var line = d3.svg.line()
+            .x(function(d) { return x(d[0]); })
+            .y(function(d) { return y(d[1]); });
+
+        this.svg
+            .append("g")
+                .attr("class", "chart-line")
+            .append("path")
+                .datum(this.dataTable.rows)
+                .style({
+                    'fill': 'none',
+                    'stroke': this.settings.colors[0],
+                    'stroke-width': '3px',
+                })
+                .attr("d", line);
+
+        // Area
+        var area = d3.svg.area()
+            .x(function(d) { return x(d[0]); })
+            .y0(this.height)
+            .y1(function(d) { return y(d[1]); });
+
+        // Area
+        this.svg
+            .append("g")
+                .attr("class", "chart-area")
+            .append("path")
+                .datum(this.dataTable.rows)
+                .style({
+                    'fill': this.settings.colors[0],
+                    'fill-opacity': '0.3'
+                })
+                .attr("d", area);
+    },
+
+    drawAxes: function()
+    {
+        var x = d3.time.scale().range([0, this.width]);
+        var y = this.y;
+
+        var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(0).outerTickSize(0);
+
+        var xTranslateX = - 0;
+        var xTranslateY = this.height;
+
+        this.svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate("+ xTranslateX +"," + xTranslateY + ")")
+            .call(xAxis);
+
+        var chartMargin = this.getChartMargin();
+
+        if(this.settings.axis.y.show)
+        {
+            if(this.orientation == 'rtl')
+            {
+                var yTranslateX = this.width - chartMargin.right;
+                var yTranslateY = 0;
+
+                var yAxis = d3.svg.axis().scale(y).orient("left").ticks(0);
+
+                this.svg.append("g")
+                    .attr("class", "y axis")
+                    .attr("transform", "translate(" + yTranslateX + ", "+ yTranslateY +")")
+                    .call(yAxis);
+            }
+            else
+            {
+                var yTranslateX = chartMargin.left;
+                var yTranslateY = 0;
+
+                var yAxis = d3.svg.axis().scale(y).orient("right").ticks(0);
+
+                this.svg.append("g")
+                    .attr("class", "y axis")
+                    .attr("transform", "translate(" + yTranslateX + ", "+ yTranslateY +")")
+                    .call(yAxis);
+            }
+        }
+    },
+
+    drawYTicks: function()
+    {
+        var y = this.y;
+
+        if(this.orientation == 'rtl')
+        {
+            var yAxis = d3.svg.axis().scale(y).orient("left")
+                .tickFormat(this.yTickFormat(this.locale))
+                .tickValues(this.yTickValues())
+                .ticks(this.yTicks());
+
+            var translateX = this.width + 10;
+            var translateY = 0;
+
+            this.svg.append("g")
+                .attr("class", "y ticks-axis")
+                .attr("transform", "translate(" + translateX + ",0)")
+                .style(this.settings.ticksStyles)
+                .call(yAxis);
+
+            this.svg.selectAll('.y.ticks-axis text').style({
+                'text-anchor': 'start',
+            });
+        }
+        else
+        {
+            var yAxis = d3.svg.axis().scale(y).orient("right")
+                .tickFormat(this.yTickFormat(this.locale))
+                .tickValues(this.yTickValues())
+                .ticks(this.yTicks());
+
+            var translateX = - (10);
+            var translateY = 0;
+
+            this.svg.append("g")
+                .attr("class", "y ticks-axis")
+                .attr("transform", "translate("+ translateX + ", "+ translateY +")")
+                .style(this.settings.ticksStyles)
+                .call(yAxis);
+        }
+    },
+
+    drawXTicks: function()
+    {
+        var x = this.paddedX;
+
+        var xAxis = d3.svg.axis().scale(x).orient("bottom")
+            .tickFormat(this.xTickFormat(this.locale))
+            .ticks(this.xTicks());
+
+        this.svg.append("g")
+            .attr("class", "x ticks-axis")
+            .attr("transform", "translate(0," + this.height + ")")
+            .style(this.settings.ticksStyles)
+            .call(xAxis);
+    },
+
+    drawGridlines: function()
+    {
+        var x = this.x;
+        var y = this.y;
+
+        if(this.settings.xAxisGridlines)
+        {
+            var xLineAxis = d3.svg.axis().scale(x).orient("bottom");
+
+            // draw x lines
+            this.svg.append("g")
+                .attr("class", "x grid-line")
+                .attr("transform", "translate(0," + this.height + ")")
+                .call(xLineAxis
+                    .tickSize(-this.height, 0, 0)
+                    .tickFormat("")
+                );
+        }
+
+        if(this.settings.yAxisGridlines)
+        {
+            var yLineAxis = d3.svg.axis().scale(y).orient("left");
+
+            var translateX = 0;
+            var translateY = 0;
+
+            var innerTickSize = - (this.width);
+            var outerTickSize = 0;
+
+            this.svg.append("g")
+                .attr("class", "y grid-line")
+                .attr("transform", "translate(-"+ translateX +" , "+ translateY +")")
+                .call(yLineAxis
+                    .tickSize(innerTickSize, outerTickSize)
+                    .tickFormat("")
+                    .tickValues(this.yTickValues())
+                    .ticks(this.yTicks())
+                );
+        }
+    },
+
+    drawPlots: function()
+    {
+        var x = this.paddedX;
+        var y = this.paddedY;
+
+        if(this.settings.enablePlots)
+        {
+            this.svg.append('g')
+                .attr("class", "plots")
+            .selectAll("circle")
+                .data(this.dataTable.rows)
+                .enter()
+                .append("circle")
+                    .style({
+                        'fill': this.settings.colors[0],
+                    })
+                    .attr("class", $.proxy(function(d, index) { return 'plot plot-'+index; }, this))
+                    .attr("r", 4)
+                    .attr("cx", $.proxy(function(d) { return x(d[0]); }, this))
+                    .attr("cy", $.proxy(function(d) { return y(d[1]); }, this));
+        }
+    },
+
+    expandPlot: function(index)
+    {
+        this.svg.select('.plot-'+index).attr("r", 5);
+    },
+
+    unexpandPlot: function(index)
+    {
+        this.svg.select('.plot-'+index).attr("r", 4);
+    },
+
+    getTipTriggerWidth: function () {
+
+        return Math.max(0, this.xAxisTickInterval());
+    },
+
+    xAxisTickInterval: function()
+    {
+        var chartMargin = this.getChartMargin()
+
+        var outerTickSize = 6;
+        var length = this.svg.select('.x path.domain').node().getTotalLength() - chartMargin.left - chartMargin.right - outerTickSize * 2;
+        var interval = length / (this.dataTable.rows.length - 1);
+
+        return interval;
+    },
+
+    drawTipTriggers: function()
+    {
+        var x = this.paddedX;
+
+        if(this.settings.enableTips)
+        {
+            var tipSettings = {
+                chart: this,
+                locale: this.locale,
+                xTickFormat: this.xTickFormat(this.locale),
+                yTickFormat: this.yTickFormat(this.locale),
+                tipContentFormat: $.proxy(this, 'tipContentFormat'),
+                getPosition: $.proxy(this, 'getTipPosition')
+            };
+
+            if(!this.tip)
+            {
+                this.tip = new Craft.charts.Tip(this.$chart, tipSettings);
+            }
+            else
+            {
+                this.tip.setSettings(tipSettings);
+            }
+
+            this.svg.append('g')
+                .attr("class", "tip-triggers")
+            .selectAll("rect")
+                .data(this.dataTable.rows)
+            .enter().append("rect")
+                .attr("class", "tip-trigger")
+                .style({
+                    'fill': 'transparent',
+                    'fill-opacity': '1',
+                })
+                .attr("width", this.getTipTriggerWidth())
+                .attr("height", this.height)
+                .attr("x", $.proxy(function(d) { return x(d[0]) - this.getTipTriggerWidth() / 2; }, this))
+                .on("mouseover", $.proxy(function(d, index)
+                {
+                    this.expandPlot(index);
+                    this.tip.show(d);
+                }, this))
+                .on("mouseout", $.proxy(function(d, index)
+                {
+                    this.unexpandPlot(index);
+                    this.tip.hide();
+                }, this));
+        }
+
+        // Apply shadow filter
+        Craft.charts.utils.applyShadowFilter('drop-shadow', this.svg);
+    },
+
+    getTipPosition: function($tip, d)
+    {
+        var x = this.paddedX;
+        var y = this.paddedY;
+
+        var chartMargin = this.getChartMargin()
+
+        var offset = 24;
+        var top = (y(d[1]) - $tip.height() / 2);
+
+        if(this.orientation != 'rtl')
+        {
+            var left = (x(d[0]) + this.settings.margin.left + offset);
+
+            var calcLeft = (this.$chart.offset().left + left + $tip.width());
+            var maxLeft = this.$chart.offset().left + this.$chart.width() - offset;
+
+            if(calcLeft > maxLeft)
+            {
+                left = x(d[0]) - ($tip.width() + offset);
+            }
+        }
+        else
+        {
+            var left = (x(d[0]) - ($tip.width() + this.settings.margin.left + offset));
+        }
+
+        if(left < 0)
+        {
+            left = (x(d[0]) + this.settings.margin.left + offset);
+        }
+
+        return {
+            top: top,
+            left: left,
+        };
+    },
+
+    xDomain: function()
+    {
+        var min = d3.min(this.dataTable.rows, function(d) { return d[0]; });
+        var max = d3.max(this.dataTable.rows, function(d) { return d[0]; });
+
+        if(this.orientation == 'rtl')
+        {
+            return [max, min];
+        }
+        else
+        {
+            return [min, max];
+        }
+    },
+
+    xTicks: function()
+    {
+        return 3;
+    },
+
+    yAxisMaxValue: function()
+    {
+        return d3.max(this.dataTable.rows, function(d) { return d[1]; });
+    },
+
+    yDomain: function()
+    {
+        var yDomainMax = $.proxy(function()
+        {
+            return this.yAxisMaxValue();
+
+        }, this);
+
+        return [0, yDomainMax()];
+    },
+
+    yTicks: function()
+    {
+        return 2;
+    },
+
+    yTickValues: function()
+    {
+        return [this.yAxisMaxValue() / 2, this.yAxisMaxValue()];
+    },
+},
+{
+    defaults: {
+        chartClass: 'area',
+        enablePlots: true,
+        enableTips: true,
+        xAxisGridlines: false,
+        yAxisGridlines: true,
+        axis: {
+            y: {
+                show: false
+            }
+        }
+    }
+});
+
+/**
+ * Class Craft.charts.Utils
+ */
+Craft.charts.utils = {
+
+    getDuration: function(value)
+    {
+        var sec_num = parseInt(value, 10);
+        var hours   = Math.floor(sec_num / 3600);
+        var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+        var seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+        if (hours < 10)
+        {
+            hours = "0"+hours;
+        }
+
+        if (minutes < 10)
+        {
+            minutes = "0"+minutes;
+        }
+
+        if (seconds < 10)
+        {
+            seconds = "0"+seconds;
+        }
+
+        var time = hours+':'+minutes+':'+seconds;
+
+        return time;
+    },
+
+    /**
+     * arrayToDataTable
+     */
+    arrayToDataTable: function(twoDArray)
+    {
+
+        var data = {
+            columns: [],
+            rows: []
+        };
+
+        $.each(twoDArray, function(k, v) {
+            if(k == 0)
+            {
+                // first row is column definition
+
+                data.columns = [];
+
+                $.each(v, function(k2, v2) {
+
+                    // guess column type from first row
+                    var columnType = typeof(twoDArray[(k + 1)][k2]);
+
+                    var column = {
+                        name: v2,
+                        type: columnType,
+                    };
+
+                    data.columns.push(column);
+                });
+            }
+            else
+            {
+                var row = [];
+
+                $.each(v, function(k2, v2) {
+                    var cell = v2;
+
+                    row.push(cell);
+                });
+
+                data.rows.push(row);
+            }
+        });
+
+        var dataTable = new Craft.charts.DataTable(data);
+
+        return dataTable;
+    },
+
+    applyShadowFilter: function(id, svg)
+    {
+        // filters go in defs element
+        var defs = svg.append("defs");
+
+        // create filter with id #{id}
+        // height=130% so that the shadow is not clipped
+        var filter = defs.append("filter")
+            .attr("id", id)
+            .attr("width", "200%")
+            .attr("height", "200%")
+            .attr("x", "-50%")
+            .attr("y", "-50%");
+
+        // SourceAlpha refers to opacity of graphic that this filter will be applied to
+        // convolve that with a Gaussian with standard deviation 3 and store result
+        // in blur
+        filter.append("feGaussianBlur")
+            .attr("in", "SourceAlpha")
+            .attr("stdDeviation", 1)
+            .attr("result", "blur");
+
+        // translate output of Gaussian blur to the right and downwards with 2px
+        // store result in offsetBlur
+        filter.append("feOffset")
+            .attr("in", "blur")
+            .attr("dx", 0)
+            .attr("dy", 0)
+            .attr("result", "offsetBlur");
+
+        // overlay original SourceGraphic over translated blurred opacity by using
+        // feMerge filter. Order of specifying inputs is important!
+        var feMerge = filter.append("feMerge");
+
+        feMerge.append("feMergeNode")
+            .attr("in", "offsetBlur")
+        feMerge.append("feMergeNode")
+            .attr("in", "SourceGraphic");
+    }
+};
 
 
 /**
@@ -8040,6 +9021,329 @@ Craft.DataTableSorter = Garnish.DragSort.extend(
 });
 
 
+
+/**
+ * Chart Date Range Picker
+ */
+Craft.DateRangePicker = Garnish.Base.extend(
+{
+    hud: null,
+    value: null,
+    presets: null,
+
+    startDate: null,
+
+    $startDateInput: null,
+    $endDateInput: null,
+
+    init: function(trigger, settings)
+    {
+        this.$trigger = trigger;
+
+        this.setSettings(settings, Craft.DateRangePicker.defaults);
+
+        if(this.settings.customRangeStartDate)
+        {
+            this.customRangeStartDate = new Date(this.settings.customRangeStartDate);
+        }
+
+        if(this.settings.customRangeEndDate)
+        {
+            this.customRangeEndDate = new Date(this.settings.customRangeEndDate);
+        }
+
+        this.value = this.settings.value;
+        this.presets = this.settings.presets;
+
+
+        if(this.value == 'customrange')
+        {
+            this.startDate = this.customRangeStartDate;
+            this.endDate = this.customRangeEndDate;
+        }
+        else
+        {
+            this.startDate = this.presets[this.value].startDate;
+            this.endDate = this.presets[this.value].endDate;
+        }
+
+
+        var dateRangeValue = this.presets[this.value].label;
+        this.$trigger.data('value', dateRangeValue);
+
+        this.addListener(this.$trigger, 'click', 'showHud');
+    },
+
+    getStartDate: function()
+    {
+        return this.startDate;
+    },
+
+    getEndDate: function()
+    {
+        return this.endDate;
+    },
+
+    showHud: function()
+    {
+        this.$trigger.addClass('active');
+
+        if (!this.hud)
+        {
+            this.createHud();
+
+            // default value
+
+            if(this.value)
+            {
+                var $item = this.$items.filter('[data-value='+this.value+']');
+                var value = $item.data('value');
+                var label = $item.data('label');
+                var startDate = ($item.data('start-date') != 'undefined' ? $item.data('start-date') : null);
+                var endDate = ($item.data('end-date') != 'undefined' ? $item.data('end-date') : null);
+
+                $item.addClass('sel');
+
+                this.$trigger.data('value', label);
+            }
+        }
+        else
+        {
+            this.hud.show();
+        }
+    },
+
+    createHud: function()
+    {
+        this.$hudBody = $('<div></div>');
+
+        this.createPresets();
+
+        $('<hr />').appendTo(this.$hudBody);
+
+        this.createCustomRangeFields();
+
+
+        // initialize items
+
+        this.$items = $('a.item', this.$hudBody);
+
+        this.addListener(this.$items, 'click', 'selectItem');
+
+        // instiantiate hud
+        this.hud = new Garnish.HUD(this.$trigger, this.$hudBody, {
+            hudClass: 'hud daterange-hud',
+            onSubmit: $.proxy(this, 'save'),
+            onShow: $.proxy(function()
+            {
+                this.$trigger.addClass('active');
+            }, this),
+            onHide: $.proxy(function()
+            {
+                this.$trigger.removeClass('active');
+            }, this)
+        });
+    },
+
+    createPresets: function()
+    {
+        var $presets = $('<div class="daterange-items" />').appendTo(this.$hudBody);
+        var $presetsUl = $('<ul />').appendTo($presets);
+
+        $.each(this.presets, function(key, item)
+        {
+            if(key != 'customrange')
+            {
+                $('<li><a class="item" data-value="'+key+'" data-label="'+item.label+'" data-start-date="'+item.startDate+'" data-end-date="'+item.endDate+'">'+item.label+'</a></li>').appendTo($presetsUl);
+            }
+        });
+    },
+
+    createCustomRangeFields: function()
+    {
+        var $customRange = $('<div class="daterange-items" />').appendTo(this.$hudBody),
+            $customRangeUl = $('<ul />').appendTo($customRange),
+            $customRangeLi = $('<li />').appendTo($customRangeUl),
+            $customRangeLink = $('<a class="item" data-value="customrange" data-label="'+this.presets.customrange.label+'">'+this.presets.customrange.label+'</a>').appendTo($customRangeLi);
+
+        var $dateRangeFields =  $('<div class="daterange-fields"></div>').appendTo($customRange),
+            $startDateWrapper = $('<div class="datewrapper"></div>').appendTo($dateRangeFields),
+            $endDateWrapper = $('<div class="datewrapper"></div>').appendTo($dateRangeFields);
+
+        // custom range startDate
+
+        if(!this.customRangeStartDate)
+        {
+            var date = new Date();
+            date = date.getTime() - (60 * 60 * 24 * 7 * 1000);
+            this.customRangeStartDate = new Date(date);
+        }
+
+        this.$startDateInput = $('<input type="text" value="'+Craft.formatDate(this.customRangeStartDate)+'" class="text" size="20" autocomplete="off" value="" />').appendTo($startDateWrapper);
+        this.$startDateInput.datepicker($.extend({
+            onClose: $.proxy(function(dateText, inst)
+            {
+                this.$items.removeClass('sel');
+                $('[data-value=customrange]').addClass('sel');
+
+                var selectedDate = new Date(inst.currentYear, inst.currentMonth, inst.currentDay);
+
+                this.customRangeStartDate = selectedDate;
+
+                if(selectedDate.getTime() > this.customRangeEndDate.getTime())
+                {
+                    // if selectedDate > endDate, set endDate at selectedDate plus 7 days
+                    var newEndDate = selectedDate.getTime() + (60 * 60 * 24 * 7 * 1000);
+                    newEndDate = new Date(newEndDate);
+                    this.customRangeEndDate = newEndDate;
+                    this.$endDateInput.val(Craft.formatDate(this.customRangeEndDate));
+                }
+
+                this.showCustomRangeApplyButton();
+
+            }, this)
+        }, Craft.datepickerOptions));
+
+        // custom range endDate
+
+        if(!this.customRangeEndDate)
+        {
+            this.customRangeEndDate = new Date();
+        }
+
+        this.$endDateInput = $('<input type="text" value="'+Craft.formatDate(this.customRangeEndDate)+'" class="text" size="20" autocomplete="off" value="" />').appendTo($endDateWrapper);
+        this.$endDateInput.datepicker($.extend({
+            onClose: $.proxy(function(dateText, inst)
+            {
+                this.$items.removeClass('sel');
+                $('[data-value=customrange]').addClass('sel');
+
+                var selectedDate = new Date(inst.currentYear, inst.currentMonth, inst.currentDay);
+
+                this.customRangeEndDate = selectedDate;
+
+                if(selectedDate.getTime() < this.customRangeStartDate.getTime())
+                {
+                    // if selectedDate < startDate, set startDate at selectedDate minus 7 days
+                    var newStartDate = selectedDate.getTime() - (60 * 60 * 24 * 7 * 1000);
+                    newStartDate = new Date(newStartDate);
+                    this.customRangeStartDate = newStartDate;
+                    this.$startDateInput.val(Craft.formatDate(this.customRangeStartDate));
+                }
+
+                this.showCustomRangeApplyButton();
+
+            }, this)
+        }, Craft.datepickerOptions));
+    },
+
+    selectItem: function(ev)
+    {
+        var $item = $(ev.currentTarget);
+        this._selectItem($item);
+    },
+
+    _selectItem: function($item)
+    {
+        this.$items.removeClass('sel');
+
+        var label = $item.data('label');
+        var value = $item.data('value');
+
+        if(value != 'customrange')
+        {
+            this.startDate = $item.data('start-date');
+            this.endDate = $item.data('end-date');
+        }
+        else
+        {
+            this.startDate = this.customRangeStartDate;
+            this.endDate = this.customRangeEndDate;
+        }
+
+        this.startDate = (this.startDate != 'undefined' ? this.startDate : null);
+        this.endDate = (this.endDate != 'undefined' ? this.endDate : null);
+
+        $item.addClass('sel');
+
+        this.$trigger.data('value', label);
+
+        this.hud.hide();
+
+        this.hideCustomRangeApplyButton();
+
+        this.onAfterSelect(value, this.startDate, this.endDate, this.customRangeStartDate, this.customRangeEndDate);
+    },
+
+    hideCustomRangeApplyButton: function()
+    {
+        if(this.$applyBtn)
+        {
+            this.$applyBtn.parent().addClass('hidden');
+        }
+    },
+
+    showCustomRangeApplyButton: function()
+    {
+        if(!this.$applyBtn)
+        {
+            var $buttons = $('<div class="buttons" />').appendTo(this.$hudBody);
+            this.$applyBtn = $('<input type="button" class="btn" value="'+Craft.t('Apply')+'" />').appendTo($buttons);
+
+            this.addListener(this.$applyBtn, 'click', 'applyCustomRange')
+        }
+        else
+        {
+            this.$applyBtn.parent().removeClass('hidden');
+        }
+    },
+
+    applyCustomRange: function()
+    {
+        var $item = this.$items.filter('[data-value=customrange]');
+
+        this._selectItem($item);
+    },
+
+    onAfterSelect: function(value, startDate, endDate, customRangeStartDate, customRangeEndDate)
+    {
+        this.settings.onAfterSelect(value, startDate, endDate, customRangeStartDate, customRangeEndDate);
+    }
+},
+{
+    defaults: {
+        value: null,
+        presets: {
+            d7 : {
+                label: Craft.t('Last 7 days'),
+                startDate: '-7 days'
+            },
+            d30: {
+                label: Craft.t('Last 30 days'),
+                startDate: '-30 days'
+            },
+            lastweek: {
+                label: Craft.t('Last Week'),
+                startDate: '-14 days',
+                endDate: '-7 days',
+            },
+            lastmonth: {
+                label: Craft.t('Last Month'),
+                startDate: '-60 days',
+                endDate: '-30 days',
+            },
+
+            customrange: {
+                label: Craft.t('Custom Range'),
+            }
+        },
+        customRangeStartDate: null,
+        customRangeEndDate: null,
+        onAfterSelect: $.noop
+    }
+});
+
+
 /**
  * Delete User Modal
  */
@@ -8210,6 +9514,8 @@ Craft.DeleteUserModal = Garnish.Modal.extend(
  */
 Craft.EditableTable = Garnish.Base.extend(
 {
+	initialized: false,
+
 	id: null,
 	baseName: null,
 	columns: null,
@@ -8235,6 +9541,31 @@ Craft.EditableTable = Garnish.Base.extend(
 			copyDraggeeInputValuesToHelper: true
 		});
 
+		if (this.isVisible())
+		{
+			this.initialize();
+		}
+		else
+		{
+			this.addListener(Garnish.$win, 'resize', 'initializeIfVisible');
+		}
+	},
+
+	isVisible: function()
+	{
+		return (this.$table.height() > 0);
+	},
+
+	initialize: function()
+	{
+		if (this.initialized)
+		{
+			return;
+		}
+
+		this.initialized = true;
+		this.removeListener(Garnish.$win, 'resize');
+
 		var $rows = this.$tbody.children();
 
 		for (var i = 0; i < $rows.length; i++)
@@ -8246,10 +9577,18 @@ Craft.EditableTable = Garnish.Base.extend(
 		this.addListener(this.$addRowBtn, 'activate', 'addRow');
 	},
 
+	initializeIfVisible: function()
+	{
+		if (this.isVisible())
+		{
+			this.initialize();
+		}
+	},
+
 	addRow: function()
 	{
 		var rowId = this.settings.rowIdPrefix+(this.biggestId+1),
-			rowHtml = Craft.EditableTable.getRowHtml(rowId, this.columns, this.baseName, {}),
+			rowHtml = this.getRowHtml(rowId, this.columns, this.baseName, {}),
 			$tr = $(rowHtml).appendTo(this.$tbody);
 
 		new Craft.EditableTable.Row(this, $tr);
@@ -8260,6 +9599,11 @@ Craft.EditableTable = Garnish.Base.extend(
 
 		// onAddRow callback
 		this.settings.onAddRow($tr);
+	},
+
+	getRowHtml: function(rowId, columns, baseName, values)
+	{
+		return Craft.EditableTable.getRowHtml(rowId, columns, baseName, values);
 	}
 },
 {
@@ -8475,7 +9819,7 @@ Craft.EditableTable.Row = Garnish.Base.extend(
 	{
 		var keyCode = ev.keyCode ? ev.keyCode : ev.charCode;
 
-		if (!Garnish.isCtrlKeyPressed(ev) (
+		if (!Garnish.isCtrlKeyPressed(ev) && (
 			(keyCode == Garnish.RETURN_KEY) ||
 			(ev.data.type == 'number' && !Craft.inArray(keyCode, Craft.EditableTable.Row.numericKeyCodes))
 		))
@@ -8728,7 +10072,7 @@ Craft.ElementEditor = Garnish.Base.extend(
 
 	getBaseData: function()
 	{
-		var data = {};
+		var data = $.extend({}, this.settings.params);
 
 		if (this.settings.locale)
 		{
@@ -8779,7 +10123,7 @@ Craft.ElementEditor = Garnish.Base.extend(
 
 			if (response.locales)
 			{
-				var $header = $('<div class="header"/>'),
+				var $header = $('<div class="hud-header"/>'),
 					$localeSelectContainer = $('<div class="select"/>').appendTo($header);
 
 				this.$localeSelect = $('<select/>').appendTo($localeSelectContainer);
@@ -8801,7 +10145,9 @@ Craft.ElementEditor = Garnish.Base.extend(
 
 			this.updateForm(response);
 
-			var $footer = $('<div class="footer"/>').appendTo(this.$form),
+			this.onCreateForm(this.$form);
+
+			var $footer = $('<div class="hud-footer"/>').appendTo(this.$form),
 				$buttonsContainer = $('<div class="buttons right"/>').appendTo($footer);
 			this.$cancelBtn = $('<div class="btn">'+Craft.t('Cancel')+'</div>').appendTo($buttonsContainer);
 			this.$saveBtn = $('<input class="btn submit" type="submit" value="'+Craft.t('Save')+'"/>').appendTo($buttonsContainer);
@@ -8902,6 +10248,19 @@ Craft.ElementEditor = Garnish.Base.extend(
 
 	saveElement: function()
 	{
+		var validators = this.settings.validators;
+
+		if ($.isArray(validators))
+		{
+			for (var i = 0; i < validators.length; i++)
+			{
+				if ($.isFunction(validators[i]) && !validators[i].call())
+				{
+					return false;
+				}
+			}
+		}
+
 		this.$spinner.removeClass('hidden');
 
 		var data = $.param(this.getBaseData())+'&'+this.hud.$body.serialize();
@@ -8998,6 +10357,11 @@ Craft.ElementEditor = Garnish.Base.extend(
 			response: response
 		});
 	},
+
+	onCreateForm: function ($form)
+	{
+		this.settings.onCreateForm($form);
+	}
 },
 {
 	defaults: {
@@ -9007,14 +10371,284 @@ Craft.ElementEditor = Garnish.Base.extend(
 		elementType: null,
 		locale: null,
 		attributes: null,
+		params: null,
 
 		onShowHud: $.noop,
 		onHideHud: $.noop,
 		onBeginLoading: $.noop,
 		onEndLoading: $.noop,
-		onSaveElement: $.noop
+		onCreateForm: $.noop,
+		onSaveElement: $.noop,
+
+		validators: []
 	}
 });
+
+
+/**
+ * Elevated Session Form
+ */
+Craft.ElevatedSessionForm = Garnish.Base.extend(
+{
+	$form: null,
+	inputs: null,
+
+	init: function(form, inputs)
+	{
+		this.$form = $(form);
+
+		// Only check specific inputs?
+		if (typeof inputs !== typeof undefined)
+		{
+			this.inputs = [];
+			var inputs = $.makeArray(inputs);
+
+			for (var i = 0; i < inputs.length; i++)
+			{
+				var $inputs = $(inputs[i]);
+
+				for (var j = 0; j < $inputs.length; j++)
+				{
+					var $input = $inputs.eq(j);
+
+					this.inputs.push({
+						input: $input,
+						val: Garnish.getInputPostVal($input)
+					});
+				}
+			}
+		}
+
+		this.addListener(this.$form, 'submit', 'handleFormSubmit');
+	},
+
+	handleFormSubmit: function(ev)
+	{
+		// Ignore if we're in the middle of getting the elevated session timeout
+		if (Craft.elevatedSessionManager.fetchingTimeout)
+		{
+			ev.preventDefault();
+			return;
+		}
+
+		// Are we only interested in certain inputs?
+		if (this.inputs)
+		{
+			var inputsChanged = false;
+
+			for (var i = 0; i < this.inputs.length; i++)
+			{
+				// Has this input's value changed?
+				if (Garnish.getInputPostVal(this.inputs[i].input) != this.inputs[i].val)
+				{
+					inputsChanged = true;
+					break;
+				}
+			}
+
+			if (!inputsChanged)
+			{
+				// No need to interrupt the submit
+				return;
+			}
+		}
+
+		// Prevent the form from submitting until the user has an elevated session
+		ev.preventDefault();
+		Craft.elevatedSessionManager.requireElevatedSession($.proxy(this, 'submitForm'));
+	},
+
+	submitForm: function()
+	{
+		// Don't let handleFormSubmit() interrupt this time
+		this.disable();
+		this.$form.submit();
+		this.enable();
+	}
+});
+
+
+/**
+ * Elevated Session Manager
+ */
+Craft.ElevatedSessionManager = Garnish.Base.extend(
+{
+	fetchingTimeout: false,
+
+	passwordModal: null,
+	$passwordInput: null,
+	$passwordSpinner: null,
+	$submitBtn: null,
+	$errorPara: null,
+
+	callback: null,
+
+	/**
+	 * Requires that the user has an elevated session.
+	 *
+	 * @param function callback The callback function that should be called once the user has an elevated session
+	 */
+	requireElevatedSession: function(callback)
+	{
+		this.callback = callback;
+
+		// Check the time remaining on the user's elevated session (if any)
+		this.fetchingTimeout = true;
+
+		Craft.postActionRequest('users/getElevatedSessionTimeout', $.proxy(function(response, textStatus)
+		{
+			this.fetchingTimeout = false;
+
+			if (textStatus == 'success')
+			{
+				// Is there still enough time left or has it been disabled?
+				if (response.timeout === false || response.timeout >= Craft.ElevatedSessionManager.minSafeElevatedSessionTimeout)
+				{
+					this.callback();
+				}
+				else
+				{
+					// Show the password modal
+					this.showPasswordModal();
+				}
+			}
+		}, this));
+	},
+
+	showPasswordModal: function()
+	{
+		if (!this.passwordModal)
+		{
+			var $passwordModal = $('<form id="elevatedsessionmodal" class="modal secure fitted"/>'),
+				$body = $('<div class="body"><p>'+Craft.t('Enter your password to continue.')+'</p></div>').appendTo($passwordModal),
+				$inputContainer = $('<div class="inputcontainer">').appendTo($body),
+				$inputsTable = $('<table class="inputs fullwidth"/>').appendTo($inputContainer),
+				$inputsRow = $('<tr/>').appendTo($inputsTable),
+				$passwordCell = $('<td/>').appendTo($inputsRow),
+				$buttonCell = $('<td class="thin"/>').appendTo($inputsRow),
+				$passwordWrapper = $('<div class="passwordwrapper"/>').appendTo($passwordCell);
+
+			this.$passwordInput = $('<input type="password" class="text password fullwidth" placeholder="'+Craft.t('Password')+'"/>').appendTo($passwordWrapper);
+			this.$passwordSpinner = $('<div class="spinner hidden"/>').appendTo($inputContainer);
+			this.$submitBtn = $('<input type="submit" class="btn submit disabled" value="'+Craft.t('Submit')+'" />').appendTo($buttonCell);
+			this.$errorPara = $('<p class="error"/>').appendTo($body);
+
+			this.passwordModal = new Garnish.Modal($passwordModal, {
+				closeOtherModals: false,
+				onFadeIn: $.proxy(function()
+				{
+					setTimeout($.proxy(this, 'focusPasswordInput'), 100);
+				}, this),
+				onFadeOut: $.proxy(function()
+				{
+					this.$passwordInput.val('');
+				}, this),
+			});
+
+			new Craft.PasswordInput(this.$passwordInput, {
+				onToggleInput: $.proxy(function($newPasswordInput) {
+					this.$passwordInput = $newPasswordInput;
+				}, this)
+			});
+
+			this.addListener(this.$passwordInput, 'textchange', 'validatePassword');
+			this.addListener($passwordModal, 'submit', 'submitPassword');
+		}
+		else
+		{
+			this.passwordModal.show();
+		}
+	},
+
+	focusPasswordInput: function()
+	{
+		if (!Garnish.isMobileBrowser(true))
+		{
+			this.$passwordInput.focus();
+		}
+	},
+
+	validatePassword: function()
+	{
+		if (this.$passwordInput.val().length >= 6)
+		{
+			this.$submitBtn.removeClass('disabled');
+			return true;
+		}
+		else
+		{
+			this.$submitBtn.addClass('disabled');
+			return false;
+		}
+	},
+
+	submitPassword: function(ev)
+	{
+		if (ev)
+		{
+			ev.preventDefault();
+		}
+
+		if (!this.validatePassword())
+		{
+			return;
+		}
+
+		this.$passwordSpinner.removeClass('hidden');
+		this.clearLoginError();
+
+		var data = {
+			password: this.$passwordInput.val()
+		};
+
+		Craft.postActionRequest('users/startElevatedSession', data, $.proxy(function(response, textStatus)
+		{
+			this.$passwordSpinner.addClass('hidden');
+
+			if (textStatus == 'success')
+			{
+				if (response.success)
+				{
+					this.passwordModal.hide();
+					this.callback();
+				}
+				else
+				{
+					this.showPasswordError(Craft.t('Incorrect password.'));
+					Garnish.shake(this.passwordModal.$container);
+					this.focusPasswordInput();
+				}
+			}
+			else
+			{
+				this.showPasswordError();
+			}
+
+		}, this));
+	},
+
+	showPasswordError: function(error)
+	{
+		if (error === null || typeof error == 'undefined')
+		{
+			error = Craft.t('An unknown error occurred.');
+		}
+
+		this.$errorPara.text(error);
+		this.passwordModal.updateSizeAndPosition();
+	},
+
+	clearLoginError: function()
+	{
+		this.showPasswordError('');
+	},
+},
+{
+	minSafeElevatedSessionTimeout: 5,
+});
+
+// Instantiate it
+Craft.elevatedSessionManager = new Craft.ElevatedSessionManager();
 
 
 /**
@@ -9111,7 +10745,7 @@ Craft.EntryIndex = Craft.BaseElementIndex.extend(
 			this.$newEntryBtnGroup = $('<div class="btngroup submit"/>');
 			var $menuBtn;
 
-			// If they are, show a primany "New entry" button, and a dropdown of the other sections (if any).
+			// If they are, show a primary "New entry" button, and a dropdown of the other sections (if any).
 			// Otherwise only show a menu button
 			if (selectedSection)
 			{
@@ -10255,6 +11889,10 @@ Craft.Grid = Garnish.Base.extend(
 	itemHeights: null,
 	leftPadding: null,
 
+	_refreshingCols: false,
+	_refreshColsAfterRefresh: false,
+	_forceRefreshColsAfterRefresh: false,
+
 	init: function(container, settings)
 	{
 		this.$container = $(container);
@@ -10331,8 +11969,19 @@ Craft.Grid = Garnish.Base.extend(
 
 	refreshCols: function(force, animate)
 	{
+		if (this._refreshingCols) {
+			this._refreshColsAfterRefresh = true;
+			if (force) {
+				this._forceRefreshColsAfterRefresh = true;
+			}
+			return;
+		}
+
+		this._refreshingCols = true;
+
 		if (!this.items.length)
 		{
+			this.completeRefreshCols();
 			return;
 		}
 
@@ -10346,7 +11995,7 @@ Craft.Grid = Garnish.Base.extend(
 
 		if (this.refreshCols._.scrollHeight == 0)
 		{
-			delete this.refreshCols._;
+			this.completeRefreshCols();
 			return;
 		}
 
@@ -10372,7 +12021,7 @@ Craft.Grid = Garnish.Base.extend(
 		// Same number of columns as before?
 		if (force !== true && this.totalCols === this.refreshCols._.totalCols)
 		{
-			delete this.refreshCols._;
+			this.completeRefreshCols();
 			return;
 		}
 
@@ -10439,221 +12088,239 @@ Craft.Grid = Garnish.Base.extend(
 						top: 0
 					})
 					.css(Craft.left, 0);
-
-				delete this.refreshCols._;
-				return;
 			}
 			else
 			{
 				this.$items.css('position', 'absolute');
-			}
 
-			if (this.settings.mode == 'pct')
-			{
-				this.colPctWidth = (100 / this.totalCols);
-			}
-
-			// The setup
-
-			this.layouts = [];
-
-			this.itemPositions = [];
-			this.itemColspansByPosition = [];
-
-			// Figure out all of the possible colspans for each item,
-			// as well as all the possible positions for each item at each of its colspans
-
-			this.possibleItemColspans = [];
-			this.possibleItemPositionsByColspan = [];
-			this.itemHeightsByColspan = [];
-
-			for (this.refreshCols._.item = 0; this.refreshCols._.item < this.items.length; this.refreshCols._.item++)
-			{
-				this.possibleItemColspans[this.refreshCols._.item] = [];
-				this.possibleItemPositionsByColspan[this.refreshCols._.item] = {};
-				this.itemHeightsByColspan[this.refreshCols._.item] = {};
-
-				this.refreshCols._.$item = this.items[this.refreshCols._.item].show();
-				this.refreshCols._.positionRight = (this.refreshCols._.$item.data('position') == 'right');
-				this.refreshCols._.positionLeft = (this.refreshCols._.$item.data('position') == 'left');
-				this.refreshCols._.minColspan = (this.refreshCols._.$item.data('colspan') ? this.refreshCols._.$item.data('colspan') : (this.refreshCols._.$item.data('min-colspan') ? this.refreshCols._.$item.data('min-colspan') : 1));
-				this.refreshCols._.maxColspan = (this.refreshCols._.$item.data('colspan') ? this.refreshCols._.$item.data('colspan') : (this.refreshCols._.$item.data('max-colspan') ? this.refreshCols._.$item.data('max-colspan') : this.totalCols));
-
-				if (this.refreshCols._.minColspan > this.totalCols) this.refreshCols._.minColspan = this.totalCols;
-				if (this.refreshCols._.maxColspan > this.totalCols) this.refreshCols._.maxColspan = this.totalCols;
-
-				for (this.refreshCols._.colspan = this.refreshCols._.minColspan; this.refreshCols._.colspan <= this.refreshCols._.maxColspan; this.refreshCols._.colspan++)
+				if (this.settings.mode == 'pct')
 				{
-					// Get the height for this colspan
-					this.refreshCols._.$item.css('width', this.getItemWidth(this.refreshCols._.colspan) + this.sizeUnit);
-					this.itemHeightsByColspan[this.refreshCols._.item][this.refreshCols._.colspan] = this.refreshCols._.$item.outerHeight();
+					this.colPctWidth = (100 / this.totalCols);
+				}
 
-					this.possibleItemColspans[this.refreshCols._.item].push(this.refreshCols._.colspan);
-					this.possibleItemPositionsByColspan[this.refreshCols._.item][this.refreshCols._.colspan] = [];
+				// The setup
 
-					if (this.refreshCols._.positionLeft)
-					{
-						this.refreshCols._.minPosition = 0;
-						this.refreshCols._.maxPosition = 0;
-					}
-					else if (this.refreshCols._.positionRight)
-					{
-						this.refreshCols._.minPosition = this.totalCols - this.refreshCols._.colspan;
-						this.refreshCols._.maxPosition = this.refreshCols._.minPosition;
-					}
-					else
-					{
-						this.refreshCols._.minPosition = 0;
-						this.refreshCols._.maxPosition = this.totalCols - this.refreshCols._.colspan;
-					}
+				this.layouts = [];
 
-					for (this.refreshCols._.position = this.refreshCols._.minPosition; this.refreshCols._.position <= this.refreshCols._.maxPosition; this.refreshCols._.position++)
+				this.itemPositions = [];
+				this.itemColspansByPosition = [];
+
+				// Figure out all of the possible colspans for each item,
+				// as well as all the possible positions for each item at each of its colspans
+
+				this.possibleItemColspans = [];
+				this.possibleItemPositionsByColspan = [];
+				this.itemHeightsByColspan = [];
+
+				for (this.refreshCols._.item = 0; this.refreshCols._.item < this.items.length; this.refreshCols._.item++)
+				{
+					this.possibleItemColspans[this.refreshCols._.item] = [];
+					this.possibleItemPositionsByColspan[this.refreshCols._.item] = {};
+					this.itemHeightsByColspan[this.refreshCols._.item] = {};
+
+					this.refreshCols._.$item = this.items[this.refreshCols._.item].show();
+					this.refreshCols._.positionRight = (this.refreshCols._.$item.data('position') == 'right');
+					this.refreshCols._.positionLeft = (this.refreshCols._.$item.data('position') == 'left');
+					this.refreshCols._.minColspan = (this.refreshCols._.$item.data('colspan') ? this.refreshCols._.$item.data('colspan') : (this.refreshCols._.$item.data('min-colspan') ? this.refreshCols._.$item.data('min-colspan') : 1));
+					this.refreshCols._.maxColspan = (this.refreshCols._.$item.data('colspan') ? this.refreshCols._.$item.data('colspan') : (this.refreshCols._.$item.data('max-colspan') ? this.refreshCols._.$item.data('max-colspan') : this.totalCols));
+
+					if (this.refreshCols._.minColspan > this.totalCols) this.refreshCols._.minColspan = this.totalCols;
+					if (this.refreshCols._.maxColspan > this.totalCols) this.refreshCols._.maxColspan = this.totalCols;
+
+					for (this.refreshCols._.colspan = this.refreshCols._.minColspan; this.refreshCols._.colspan <= this.refreshCols._.maxColspan; this.refreshCols._.colspan++)
 					{
-						this.possibleItemPositionsByColspan[this.refreshCols._.item][this.refreshCols._.colspan].push(this.refreshCols._.position);
+						// Get the height for this colspan
+						this.refreshCols._.$item.css('width', this.getItemWidth(this.refreshCols._.colspan) + this.sizeUnit);
+						this.itemHeightsByColspan[this.refreshCols._.item][this.refreshCols._.colspan] = this.refreshCols._.$item.outerHeight();
+
+						this.possibleItemColspans[this.refreshCols._.item].push(this.refreshCols._.colspan);
+						this.possibleItemPositionsByColspan[this.refreshCols._.item][this.refreshCols._.colspan] = [];
+
+						if (this.refreshCols._.positionLeft)
+						{
+							this.refreshCols._.minPosition = 0;
+							this.refreshCols._.maxPosition = 0;
+						}
+						else if (this.refreshCols._.positionRight)
+						{
+							this.refreshCols._.minPosition = this.totalCols - this.refreshCols._.colspan;
+							this.refreshCols._.maxPosition = this.refreshCols._.minPosition;
+						}
+						else
+						{
+							this.refreshCols._.minPosition = 0;
+							this.refreshCols._.maxPosition = this.totalCols - this.refreshCols._.colspan;
+						}
+
+						for (this.refreshCols._.position = this.refreshCols._.minPosition; this.refreshCols._.position <= this.refreshCols._.maxPosition; this.refreshCols._.position++)
+						{
+							this.possibleItemPositionsByColspan[this.refreshCols._.item][this.refreshCols._.colspan].push(this.refreshCols._.position);
+						}
 					}
 				}
-			}
 
-			// Find all the possible layouts
+				// Find all the possible layouts
 
-			this.refreshCols._.colHeights = [];
+				this.refreshCols._.colHeights = [];
 
-			for (this.refreshCols._.i = 0; this.refreshCols._.i < this.totalCols; this.refreshCols._.i++)
-			{
-				this.refreshCols._.colHeights.push(0);
-			}
-
-			this.createLayouts(0, [], [], this.refreshCols._.colHeights, 0);
-
-			// Now find the layout that looks the best.
-
-			// First find the layouts with the highest number of used columns
-			this.refreshCols._.layoutTotalCols = [];
-
-			for (this.refreshCols._.i = 0; this.refreshCols._.i < this.layouts.length; this.refreshCols._.i++)
-			{
-				this.refreshCols._.layoutTotalCols[this.refreshCols._.i] = 0;
-
-				for (this.refreshCols._.j = 0; this.refreshCols._.j < this.totalCols; this.refreshCols._.j++)
+				for (this.refreshCols._.i = 0; this.refreshCols._.i < this.totalCols; this.refreshCols._.i++)
 				{
-					if (this.layouts[this.refreshCols._.i].colHeights[this.refreshCols._.j])
-					{
-						this.refreshCols._.layoutTotalCols[this.refreshCols._.i]++;
-					}
+					this.refreshCols._.colHeights.push(0);
 				}
-			}
 
-			this.refreshCols._.highestTotalCols = Math.max.apply(null, this.refreshCols._.layoutTotalCols);
+				this.createLayouts(0, [], [], this.refreshCols._.colHeights, 0);
 
-			// Filter out the ones that aren't using as many columns as they could be
-			for (this.refreshCols._.i = this.layouts.length - 1; this.refreshCols._.i >= 0; this.refreshCols._.i--)
-			{
-				if (this.refreshCols._.layoutTotalCols[this.refreshCols._.i] != this.refreshCols._.highestTotalCols)
+				// Now find the layout that looks the best.
+
+				// First find the layouts with the highest number of used columns
+				this.refreshCols._.layoutTotalCols = [];
+
+				for (this.refreshCols._.i = 0; this.refreshCols._.i < this.layouts.length; this.refreshCols._.i++)
 				{
-					this.layouts.splice(this.refreshCols._.i, 1);
-				}
-			}
-
-			// Find the layout(s) with the least overall height
-			this.refreshCols._.layoutHeights = [];
-
-			for (this.refreshCols._.i = 0; this.refreshCols._.i < this.layouts.length; this.refreshCols._.i++)
-			{
-				this.refreshCols._.layoutHeights.push(Math.max.apply(null, this.layouts[this.refreshCols._.i].colHeights));
-			}
-
-			this.refreshCols._.shortestHeight = Math.min.apply(null, this.refreshCols._.layoutHeights);
-			this.refreshCols._.shortestLayouts = [];
-			this.refreshCols._.emptySpaces = [];
-
-			for (this.refreshCols._.i = 0; this.refreshCols._.i < this.refreshCols._.layoutHeights.length; this.refreshCols._.i++)
-			{
-				if (this.refreshCols._.layoutHeights[this.refreshCols._.i] == this.refreshCols._.shortestHeight)
-				{
-					this.refreshCols._.shortestLayouts.push(this.layouts[this.refreshCols._.i]);
-
-					// Now get its total empty space, including any trailing empty space
-					this.refreshCols._.emptySpace = this.layouts[this.refreshCols._.i].emptySpace;
+					this.refreshCols._.layoutTotalCols[this.refreshCols._.i] = 0;
 
 					for (this.refreshCols._.j = 0; this.refreshCols._.j < this.totalCols; this.refreshCols._.j++)
 					{
-						this.refreshCols._.emptySpace += (this.refreshCols._.shortestHeight - this.layouts[this.refreshCols._.i].colHeights[this.refreshCols._.j]);
+						if (this.layouts[this.refreshCols._.i].colHeights[this.refreshCols._.j])
+						{
+							this.refreshCols._.layoutTotalCols[this.refreshCols._.i]++;
+						}
 					}
-
-					this.refreshCols._.emptySpaces.push(this.refreshCols._.emptySpace);
 				}
-			}
 
-			// And the layout with the least empty space is...
-			this.layout = this.refreshCols._.shortestLayouts[$.inArray(Math.min.apply(null, this.refreshCols._.emptySpaces), this.refreshCols._.emptySpaces)];
+				this.refreshCols._.highestTotalCols = Math.max.apply(null, this.refreshCols._.layoutTotalCols);
 
-			// Figure out the left padding based on the number of empty columns
-			this.refreshCols._.totalEmptyCols = 0;
-
-			for (this.refreshCols._.i = this.layout.colHeights.length-1; this.refreshCols._.i >= 0; this.refreshCols._.i--)
-			{
-				if (this.layout.colHeights[this.refreshCols._.i] == 0)
+				// Filter out the ones that aren't using as many columns as they could be
+				for (this.refreshCols._.i = this.layouts.length - 1; this.refreshCols._.i >= 0; this.refreshCols._.i--)
 				{
-					this.refreshCols._.totalEmptyCols++;
+					if (this.refreshCols._.layoutTotalCols[this.refreshCols._.i] != this.refreshCols._.highestTotalCols)
+					{
+						this.layouts.splice(this.refreshCols._.i, 1);
+					}
+				}
+
+				// Find the layout(s) with the least overall height
+				this.refreshCols._.layoutHeights = [];
+
+				for (this.refreshCols._.i = 0; this.refreshCols._.i < this.layouts.length; this.refreshCols._.i++)
+				{
+					this.refreshCols._.layoutHeights.push(Math.max.apply(null, this.layouts[this.refreshCols._.i].colHeights));
+				}
+
+				this.refreshCols._.shortestHeight = Math.min.apply(null, this.refreshCols._.layoutHeights);
+				this.refreshCols._.shortestLayouts = [];
+				this.refreshCols._.emptySpaces = [];
+
+				for (this.refreshCols._.i = 0; this.refreshCols._.i < this.refreshCols._.layoutHeights.length; this.refreshCols._.i++)
+				{
+					if (this.refreshCols._.layoutHeights[this.refreshCols._.i] == this.refreshCols._.shortestHeight)
+					{
+						this.refreshCols._.shortestLayouts.push(this.layouts[this.refreshCols._.i]);
+
+						// Now get its total empty space, including any trailing empty space
+						this.refreshCols._.emptySpace = this.layouts[this.refreshCols._.i].emptySpace;
+
+						for (this.refreshCols._.j = 0; this.refreshCols._.j < this.totalCols; this.refreshCols._.j++)
+						{
+							this.refreshCols._.emptySpace += (this.refreshCols._.shortestHeight - this.layouts[this.refreshCols._.i].colHeights[this.refreshCols._.j]);
+						}
+
+						this.refreshCols._.emptySpaces.push(this.refreshCols._.emptySpace);
+					}
+				}
+
+				// And the layout with the least empty space is...
+				this.layout = this.refreshCols._.shortestLayouts[$.inArray(Math.min.apply(null, this.refreshCols._.emptySpaces), this.refreshCols._.emptySpaces)];
+
+				// Figure out the left padding based on the number of empty columns
+				this.refreshCols._.totalEmptyCols = 0;
+
+				for (this.refreshCols._.i = this.layout.colHeights.length-1; this.refreshCols._.i >= 0; this.refreshCols._.i--)
+				{
+					if (this.layout.colHeights[this.refreshCols._.i] == 0)
+					{
+						this.refreshCols._.totalEmptyCols++;
+					}
+					else
+					{
+						break;
+					}
+				}
+
+				this.leftPadding = this.getItemWidth(this.refreshCols._.totalEmptyCols) / 2;
+
+				if (this.settings.mode == 'fixed')
+				{
+					this.leftPadding += (this.$container.width() - (this.settings.minColWidth * this.totalCols)) / 2;
+				}
+
+				// Set the item widths and left positions
+				for (this.refreshCols._.i = 0; this.refreshCols._.i < this.items.length; this.refreshCols._.i++)
+				{
+					this.refreshCols._.css = {
+						width: this.getItemWidth(this.layout.colspans[this.refreshCols._.i]) + this.sizeUnit
+					};
+					this.refreshCols._.css[Craft.left] = this.leftPadding + this.getItemWidth(this.layout.positions[this.refreshCols._.i]) + this.sizeUnit;
+
+					if (animate)
+					{
+						this.items[this.refreshCols._.i].velocity(this.refreshCols._.css, {
+							queue: false
+						});
+					}
+					else
+					{
+						this.items[this.refreshCols._.i].velocity('finish').css(this.refreshCols._.css);
+					}
+				}
+
+				// If every item is at position 0, then let them lay out au naturel
+				if (this.isSimpleLayout())
+				{
+
+					this.$container.height('auto');
+					this.$items.css('position', 'relative');
 				}
 				else
 				{
-					break;
+					this.$items.css('position', 'absolute');
+
+					// Now position the items
+					this.positionItems(animate);
+
+					// Update the positions as the items' heigthts change
+					this.addListener(this.$items, 'resize', 'onItemResize');
 				}
-			}
-
-			this.leftPadding = this.getItemWidth(this.refreshCols._.totalEmptyCols) / 2;
-
-			if (this.settings.mode == 'fixed')
-			{
-				this.leftPadding += (this.$container.width() - (this.settings.minColWidth * this.totalCols)) / 2;
-			}
-
-			// Set the item widths and left positions
-			for (this.refreshCols._.i = 0; this.refreshCols._.i < this.items.length; this.refreshCols._.i++)
-			{
-				this.refreshCols._.css = {
-					width: this.getItemWidth(this.layout.colspans[this.refreshCols._.i]) + this.sizeUnit
-				};
-				this.refreshCols._.css[Craft.left] = this.leftPadding + this.getItemWidth(this.layout.positions[this.refreshCols._.i]) + this.sizeUnit;
-
-				if (animate)
-				{
-					this.items[this.refreshCols._.i].velocity(this.refreshCols._.css, {
-						queue: false
-					});
-				}
-				else
-				{
-					this.items[this.refreshCols._.i].velocity('finish').css(this.refreshCols._.css);
-				}
-			}
-
-			// If every item is at position 0, then let them lay out au naturel
-			if (this.isSimpleLayout())
-			{
-
-				this.$container.height('auto');
-				this.$items.css('position', 'relative');
-			}
-			else
-			{
-				this.$items.css('position', 'absolute');
-
-				// Now position the items
-				this.positionItems(animate);
-
-				// Update the positions as the items' heigthts change
-				this.addListener(this.$items, 'resize', 'onItemResize');
 			}
 		}
 
-		this.onRefreshCols();
-
-		delete this.refreshCols._;
+		this.completeRefreshCols();
 
 		// Resume container resize listening
 		this.addListener(this.$container, 'resize', this.handleContainerHeightProxy);
+
+		this.onRefreshCols();
+	},
+
+	completeRefreshCols: function()
+	{
+		// Delete the internal variable object
+		if (typeof this.refreshCols._ != typeof undefined)
+		{
+			delete this.refreshCols._;
+		}
+
+		this._refreshingCols = false;
+
+		if (this._refreshColsAfterRefresh) {
+			force = this._forceRefreshColsAfterRefresh;
+			this._refreshColsAfterRefresh = false;
+			this._forceRefreshColsAfterRefresh = false;
+
+			Garnish.requestAnimationFrame($.proxy(function() {
+				this.refreshCols(force);
+			}, this))
+		}
 	},
 
 	getItemWidth: function(colspan)
@@ -11397,6 +13064,11 @@ Craft.LightSwitch = Garnish.Base.extend(
 
 		this.on = this.$outerContainer.hasClass('on');
 
+		this.$outerContainer.attr({
+			'role': 'checkbox',
+			'aria-checked': (this.on ? 'true' : 'false'),
+		});
+
 		this.addListener(this.$outerContainer, 'mousedown', '_onMouseDown');
 		this.addListener(this.$outerContainer, 'keydown', '_onKeyDown');
 
@@ -11419,6 +13091,7 @@ Craft.LightSwitch = Garnish.Base.extend(
 
 		this.$input.val('1');
 		this.$outerContainer.addClass('on');
+		this.$outerContainer.attr('aria-checked', 'true');
 		this.on = true;
 		this.onChange();
 	},
@@ -11433,6 +13106,7 @@ Craft.LightSwitch = Garnish.Base.extend(
 
 		this.$input.val('');
 		this.$outerContainer.removeClass('on');
+		this.$outerContainer.attr('aria-checked', 'false');
 		this.on = false;
 		this.onChange();
 	},
@@ -12076,6 +13750,7 @@ Craft.Pane = Garnish.Base.extend(
 	$pane: null,
 	$content: null,
 	$sidebar: null,
+	$tabsContainer: null,
 
 	tabs: null,
 	selectedTab: null,
@@ -12097,8 +13772,8 @@ Craft.Pane = Garnish.Base.extend(
 		this.$content = this.$pane.find('.content:not(.hidden):first');
 
 		// Initialize the tabs
-		var $tabsContainer = this.$pane.children('.tabs'),
-			$tabs = $tabsContainer.find('a')
+		this.$tabsContainer = this.$pane.children('.tabs');
+		var $tabs = this.$tabsContainer.find('a')
 
 		if ($tabs.length)
 		{
@@ -12226,7 +13901,7 @@ Craft.Pane = Garnish.Base.extend(
 	{
 		if (true || this.$pane.hasClass('showing-sidebar'))
 		{
-			this.setMinContentSizeForSidebar._minHeight = this.$sidebar.prop('scrollHeight') - 48;
+			this.setMinContentSizeForSidebar._minHeight = this.$sidebar.prop('scrollHeight') - this.$tabsContainer.height() - 48;
 		}
 		else
 		{
@@ -12241,8 +13916,8 @@ Craft.Pane = Garnish.Base.extend(
 		this.updateSidebarStyles._styles = {};
 
 		this.updateSidebarStyles._scrollTop = Garnish.$win.scrollTop();
-		this.updateSidebarStyles._paneOffset = this.$pane.offset().top;
-		this.updateSidebarStyles._paneHeight = this.$pane.outerHeight();
+		this.updateSidebarStyles._paneOffset = this.$pane.offset().top + this.$tabsContainer.height();
+		this.updateSidebarStyles._paneHeight = this.$pane.outerHeight() - this.$tabsContainer.height();
 		this.updateSidebarStyles._windowHeight = Garnish.$win.height();
 
 		// Have we scrolled passed the top of the pane?
@@ -12370,9 +14045,6 @@ Craft.PasswordInput = Garnish.Base.extend(
 		this.setCurrentInput(this.$passwordInput);
 		this.updateToggleLabel(Craft.t('Show'));
 		this.showingPassword = false;
-
-		// Alt key temporarily shows the password
-		this.addListener(this.$passwordInput, 'keydown', 'onKeyDown');
 	},
 
 	togglePassword: function()
@@ -12387,27 +14059,6 @@ Craft.PasswordInput = Garnish.Base.extend(
 		}
 
 		this.settings.onToggleInput(this.$currentInput);
-	},
-
-	onKeyDown: function(ev)
-	{
-		if (ev.keyCode == Garnish.ALT_KEY && this.$currentInput.val())
-		{
-			this.showPassword();
-			this.$showPasswordToggle.hide();
-			this.addListener(this.$textInput, 'keyup', 'onKeyUp');
-		}
-	},
-
-	onKeyUp: function(ev)
-	{
-		ev.preventDefault();
-
-		if (ev.keyCode == Garnish.ALT_KEY)
-		{
-			this.hidePassword();
-			this.$showPasswordToggle.show();
-		}
 	},
 
 	onInputChange: function()
@@ -12761,7 +14412,8 @@ Craft.SlugGenerator = Craft.BaseInputGenerator.extend(
 		}
 
 		// Get the "words". Split on anything that is not alphanumeric.
-		var words = Craft.filterArray(XRegExp.matchChain(sourceVal, [XRegExp('[\\p{L}\\p{N}]+')]));
+		// Reference: http://www.regular-expressions.info/unicode.html
+		var words = Craft.filterArray(XRegExp.matchChain(sourceVal, [XRegExp('[\\p{L}\\p{N}\\p{M}]+')]));
 
 		if (words.length)
 		{
@@ -14248,6 +15900,20 @@ Craft.TableElementIndexView = Craft.BaseElementIndexView.extend(
 		Craft.cp.updateResponsiveTables();
 	},
 
+	createElementEditor: function($element)
+	{
+		new Craft.ElementEditor($element, {
+			params: {
+				includeTableAttributesForSource: this.elementIndex.sourceKey
+			},
+			onSaveElement: $.proxy(function(response) {
+				if (response.tableAttributes) {
+					this._updateTableAttributes($element, response.tableAttributes);
+				}
+			}, this)
+		});
+	},
+
 	destroy: function()
 	{
 		if (this.$table)
@@ -14338,8 +16004,8 @@ Craft.TableElementIndexView = Craft.BaseElementIndexView.extend(
 				// Add a temporary row
 				var $spinnerRow = this._createSpinnerRowAfter($row);
 
-				// Update the elements
-				var params = $.extend({}, this.settings.params);
+				// Load the nested elements
+				var params = $.extend(true, {}, this.settings.params);
 				params.criteria.descendantOf = id;
 
 				Craft.postActionRequest('elementIndex/getMoreElements', params, $.proxy(function(response, textStatus)
@@ -14476,6 +16142,16 @@ Craft.TableElementIndexView = Craft.BaseElementIndexView.extend(
 
 		// No need for two spinners
 		this.elementIndex.setIndexAvailable();
+	},
+
+	_updateTableAttributes: function($element, tableAttributes)
+	{
+		var $tr = $element.closest('tr');
+
+		for (var attr in tableAttributes)
+		{
+			$tr.children('td[data-attr="'+attr+'"]:first').html(tableAttributes[attr]);
+		}
 	}
 });
 
@@ -14780,7 +16456,7 @@ Craft.ui =
 
 		if (config.showCharsLeft && config.maxlength)
 		{
-			$input.css('padding-'(Craft.orientation == 'ltr' ? 'right' : 'left'), (7.2*config.maxlength.toString().length+14)+'px');
+			$input.css('padding-'+(Craft.orientation == 'ltr' ? 'right' : 'left'), (7.2*config.maxlength.toString().length+14)+'px');
 		}
 
 		if (config.placeholder || config.showCharsLeft)
@@ -14933,7 +16609,7 @@ Craft.ui =
 
 		var $field = $('<div/>', {
 			'class': 'field',
-			id: (config.id ? config.id+'-field' : null)
+			'id': config.fieldId || (config.id ? config.id+'-field' : null)
 		});
 
 		if (config.first) $field.addClass('first');
@@ -14945,6 +16621,7 @@ Craft.ui =
 			if (label)
 			{
 				var $label = $('<label/>', {
+					'id': config.labelId || (config.id ? config.id+'-label' : null),
 					'class': (config.required ? 'required' : null),
 					'for': config.id,
 					text: label
@@ -15261,12 +16938,12 @@ Craft.UpgradeModal = Garnish.Modal.extend(
 		{
 			case 1:
 			{
-				this.$checkoutLogo.attr('class', 'logo craftclient').text('Craft Client');
+				this.$checkoutLogo.attr('class', 'logo craftclient').text('Client');
 				break;
 			}
 			case 2:
 			{
-				this.$checkoutLogo.attr('class', 'logo craftpro').text('Craft Pro');
+				this.$checkoutLogo.attr('class', 'logo craftpro').text('Pro');
 				break;
 			}
 		}

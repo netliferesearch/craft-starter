@@ -247,7 +247,7 @@ class ElementIndexesService extends BaseApplicationComponent
 			// Mix in custom fields
 			foreach ($this->getAvailableTableFields($elementTypeClass) as $field)
 			{
-				$attributes['field:'.$field->id] = array('label' => $field->name);
+				$attributes['field:'.$field->id] = array('label' => Craft::t($field->name));
 			}
 		}
 
@@ -344,16 +344,24 @@ class ElementIndexesService extends BaseApplicationComponent
 		}
 
 		$normalizedSources = array();
+		$pendingHeading = null;
 
 		foreach ($sources as $key => $source)
 		{
 			// Is this a heading?
 			if (array_key_exists('heading', $source))
 			{
-				$normalizedSources[] = array('heading' => $source['heading']);
+				$pendingHeading = $source['heading'];
 			}
 			else
 			{
+				// Is there a pending heading?
+				if ($pendingHeading !== null)
+				{
+					$normalizedSources[] = array('heading' => $pendingHeading);
+					$pendingHeading = null;
+				}
+
 				// Ensure the key is specified in the source
 				if (!is_numeric($key))
 				{

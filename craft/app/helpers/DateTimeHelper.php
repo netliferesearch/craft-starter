@@ -99,7 +99,12 @@ class DateTimeHelper
 
 		if (!is_null($timeStamp))
 		{
-			if ($timeStamp instanceof \DateTime)
+			// If it's a global DateTime, convert it to a Craft DateTime instance, else format will choke.
+			if (is_object($timeStamp) && get_class($timeStamp) == 'DateTime')
+			{
+				$dt = new DateTime('@'.$timeStamp->getTimestamp());
+			}
+			else if ($timeStamp instanceof DateTime)
 			{
 				$dt = $timeStamp;
 			}
@@ -372,7 +377,7 @@ class DateTimeHelper
 	/**
 	 * Returns a UI-facing timestamp for a given {@link DateTime} object.
 	 *
-	 * - If the date/time is from today, only the time will be retuned in a localized format (e.g. “10:00 AM”).
+	 * - If the date/time is from today, only the time will be returned in a localized format (e.g. “10:00 AM”).
 	 * - If the date/time is from yesterday, “Yesterday” will be returned.
 	 * - If the date/time is from the last 7 days, the name of the day will be returned (e.g. “Monday”).
 	 * - Otherwise, the date will be returned in a localized format (e.g. “12/2/2014”).

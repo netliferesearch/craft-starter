@@ -758,7 +758,7 @@ class AppBehavior extends BaseBehavior
 						}
 					}
 
-					// Is there a default CP languge?
+					// Is there a default CP language?
 					if ($defaultCpLanguage = craft()->config->get('defaultCpLanguage'))
 					{
 						// Make sure it's one of the site locales
@@ -820,6 +820,18 @@ class AppBehavior extends BaseBehavior
 			$dbConnection->charset          = craft()->config->get('charset', ConfigFile::Db);
 			$dbConnection->tablePrefix      = $dbConnection->getNormalizedTablePrefix();
 			$dbConnection->driverMap        = array('mysql' => 'Craft\MysqlSchema');
+
+			// Support for Yii's $initSQLs
+			if ($initSQLs = craft()->config->get('initSQLs', ConfigFile::Db))
+			{
+				$dbConnection->initSQLs = $initSQLs;
+			}
+
+			// See if we have any extra PDO attributes passed in.
+			if ($attributes = craft()->config->get('attributes', ConfigFile::Db))
+			{
+				$dbConnection->attributes = $attributes;
+			}
 
 			$dbConnection->init();
 		}

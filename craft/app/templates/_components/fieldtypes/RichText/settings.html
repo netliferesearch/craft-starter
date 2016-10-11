@@ -30,6 +30,24 @@
 	id: 'configFile'
 }, configInput) }}
 
+{{ forms.checkboxSelectField({
+	id: 'availableAssetSources',
+	name: 'availableAssetSources',
+	label: 'Available Asset Sources'|t,
+	instructions: 'The asset sources that should be available when selecting assets (if the selected config has an Image or File button).'|t,
+	options: assetSourceOptions,
+	values: settings.availableAssetSources,
+}) }}
+
+{{ forms.checkboxSelectField({
+	id: 'availableTransforms',
+	name: 'availableTransforms',
+	label: 'Available Image Transforms'|t,
+	instructions: 'The image transforms that should be available when selecting images (if the selected config has an Image button).'|t,
+	options: transformOptions,
+	values: settings.availableTransforms,
+}) }}
+
 {{ forms.checkboxField({
 	label: "Clean up HTML?"|t,
 	instructions: "Removes <code>&lt;span&gt;</code>’s, empty tags, and most <code>style</code> attributes on save."|t,
@@ -41,6 +59,7 @@
 {{ forms.checkboxField({
 	label: "Purify HTML?"|t,
 	instructions: 'Removes any potentially-malicious code on save, by running the submitted data through <a href="http://htmlpurifier.org/" target="_blank">HTML Purifier</a>.'|t,
+	warning: 'Disable this at your own risk!'|t,
 	id: 'purifyHtml',
 	name: 'purifyHtml',
 	checked: settings.purifyHtml

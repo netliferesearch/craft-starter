@@ -160,7 +160,7 @@ class CraftVariable
 	}
 
 	/**
-	 * @return ElementsVariable
+	 * @return ElementIndexesVariable
 	 */
 	public function elementIndexes()
 	{
@@ -355,7 +355,7 @@ class CraftVariable
 	 */
 	public function userPermissions()
 	{
-		if (craft()->getEdition() == Craft::Pro)
+		if (craft()->getEdition() >= Craft::Client)
 		{
 			return new UserPermissionsVariable();
 		}

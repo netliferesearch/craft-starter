@@ -74,8 +74,17 @@ class AssetElementType extends BaseElementType
 			$sourceIds = craft()->assetSources->getAllSourceIds();
 		}
 
-		$tree = craft()->assets->getFolderTreeBySourceIds($sourceIds);
-		$sources = $this->_assembleSourceList($tree);
+		if ($context == 'settings')
+		{
+			$additionalCriteria = array('parentId' => ':empty:');
+		}
+		else
+		{
+			$additionalCriteria = array();
+		}
+
+		$tree = craft()->assets->getFolderTreeBySourceIds($sourceIds, $additionalCriteria);
+		$sources = $this->_assembleSourceList($tree, $context != 'settings');
 
 		// Allow plugins to modify the sources
 		craft()->plugins->call('modifyAssetSources', array(&$sources, $context));
@@ -127,6 +136,9 @@ class AssetElementType extends BaseElementType
 				'label' => Craft::t('View asset'),
 			));
 			$actions[] = $viewAction;
+
+			// Download
+			$actions[] = 'DownloadFile';
 
 			// Edit
 			$editAction = craft()->elements->getAction('Edit');
@@ -188,7 +200,7 @@ class AssetElementType extends BaseElementType
 	/**
 	 * @inheritDoc IElementType::defineSortableAttributes()
 	 *
-	 * @retrun array
+	 * @return array
 	 */
 	public function defineSortableAttributes()
 	{
@@ -340,6 +352,7 @@ class AssetElementType extends BaseElementType
 			'source'            => AttributeType::Handle,
 			'sourceId'          => AttributeType::Number,
 			'width'             => AttributeType::Number,
+			'withTransforms'    => AttributeType::Mixed,
 		);
 	}
 
@@ -354,8 +367,9 @@ class AssetElementType extends BaseElementType
 	public function modifyElementsQuery(DbCommand $query, ElementCriteriaModel $criteria)
 	{
 		$query
-			->addSelect('assetfiles.sourceId, assetfiles.folderId, assetfiles.filename, assetfiles.kind, assetfiles.width, assetfiles.height, assetfiles.size, assetfiles.dateModified')
-			->join('assetfiles assetfiles', 'assetfiles.id = elements.id');
+			->addSelect('assetfiles.sourceId, assetfiles.folderId, assetfiles.filename, assetfiles.kind, assetfiles.width, assetfiles.height, assetfiles.size, assetfiles.dateModified, assetfolders.path as folderPath')
+			->join('assetfiles assetfiles', 'assetfiles.id = elements.id')
+			->join('assetfolders assetfolders', 'assetfolders.id = assetfiles.folderId');
 
 		if (!empty($criteria->source))
 		{
@@ -417,6 +431,31 @@ class AssetElementType extends BaseElementType
 		{
 			$query->andWhere(DbHelper::parseParam('assetfiles.size', $criteria->size, $query->params));
 		}
+
+		// Clear out existing onPopulateElements handlers
+		$criteria->detachEventHandler('onPopulateElements', array($this, 'eagerLoadTransforms'));
+
+		// Are we eager-loading any transforms?
+		if ($criteria->withTransforms)
+		{
+			$criteria->attachEventHandler('onPopulateElements', array($this, 'eagerLoadTransforms'));
+		}
+	}
+
+	/**
+	 * Eager-loads image transforms requested by an element criteria model.
+	 *
+	 * @param Event $event
+	 *
+	 * @return void
+	 */
+	public function eagerLoadTransforms(Event $event)
+	{
+		/** @var ElementCriteriaModel $criteria */
+		$criteria = $event->sender;
+		$transforms = ArrayHelper::stringToArray($criteria->withTransforms);
+
+		craft()->assetTransforms->eagerLoadTransforms($event->params['elements'], $transforms);
 	}
 
 	/**
@@ -448,7 +487,8 @@ class AssetElementType extends BaseElementType
 				'value'     => $element->filename,
 				'errors'    => $element->getErrors('filename'),
 				'first'     => true,
-				'required'  => true
+				'required'  => true,
+				'class'     => 'renameHelper'
 			)
 		));
 

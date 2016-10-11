@@ -494,6 +494,30 @@ class ConfigService extends BaseApplicationComponent
 	}
 
 	/**
+	 * Returns the configured elevated session duration in seconds.
+	 *
+	 * @return int|boolean The elevated session duration in seconds or false if it has been disabled.
+	 */
+	public function getElevatedSessionDuration()
+	{
+		$duration = craft()->config->get('elevatedSessionDuration');
+
+		// See if it has been disabled.
+		if ($duration === false)
+		{
+			return false;
+		}
+
+		if ($duration)
+		{
+			return DateTimeHelper::timeFormatToSeconds($duration);
+		}
+
+		// Default to 5 minutes
+		return 300;
+	}
+
+	/**
 	 * Returns the user login path based on the type of the current request.
 	 *
 	 * If it’s a front-end request, the [loginPath](http://craftcms.com/docs/config-settings#loginPath) config

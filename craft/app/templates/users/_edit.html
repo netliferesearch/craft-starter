@@ -57,11 +57,12 @@
 	{%- endif %}
 {% endset %}
 
+{% hook "cp.users.edit" %}
 
 {% block main %}
 	<div class="grid" data-max-cols="3">
 		<div class="item" data-position="left" data-colspan="2">
-			<form id="userform" class="pane" method="post" accept-charset="UTF-8" data-saveshortcut data-saveshortcut-redirect="{{ account.isCurrent() ? 'myaccount' : 'users/{id}' }}">
+			<form id="userform" class="pane" method="post" accept-charset="UTF-8" autocomplete="off" data-saveshortcut data-saveshortcut-redirect="{{ account.isCurrent() ? 'myaccount' : (CraftEdition == CraftPro and currentUser.can('editUsers') ? 'users/{id}' : 'dashboard') }}">
 				<input type="hidden" name="action" value="users/saveUser">
 				<input type="hidden" name="redirect" value="{{ CraftEdition == CraftPro and currentUser.can('editUsers') ? 'users' : 'dashboard' }}">
 				{{ hiddenInputs }}
@@ -93,57 +94,24 @@
 
 					{% elseif account.isCurrent() or currentUser.admin or currentUser.can('changeUserEmails') %}
 
-						{% set emailInput %}
-							<table class="fullwidth inputs">
-								<tr>
-									<td>
-										{{ forms.text({
-											id: 'email',
-											name: 'email',
-											value: account.email,
-											required: true,
-											disabled: true
-										}) }}
-									</td>
-									<td class="thin">
-										<div id="emailLockBtn" class="btn lock" data-icon="secure" title="{{ 'Click to change the email address.'|t }}"></div>
-									</td>
-								</tr>
-							</table>
-
-							{{ forms.errorList(account.getErrors('email')) }}
-						{% endset %}
-
-						{{ forms.field({
+						{{ forms.textField({
 							label: "Email"|t,
 							instructions: (requireEmailVerification and not currentUser.admin ? 'New email addresses must be verified before taking effect.'|t),
 							id: 'email',
-						}, emailInput) }}
-
-						{% set newPasswordInput %}
-							<table class="fullwidth inputs">
-								<tr>
-									<td>
-										{{ forms.password({
-											id: 'newPassword',
-											name: 'newPassword',
-											disabled: true
-										}) }}
-									</td>
-									<td class="thin">
-										<div id="newPasswordLockBtn" class="btn lock" data-icon="secure" title="{{ 'Click to set a new password.'|t }}"></div>
-									</td>
-								</tr>
-							</table>
-
-							{{ forms.errorList(account.getErrors('newPassword')) }}
-						{% endset %}
+							name: 'email',
+							value: account.email,
+							required: true,
+							errors: account.getErrors('email')
+						}) }}
 
 						{% if account.isCurrent() %}
-							{{ forms.field({
+							{{ forms.textField({
 								label: "New Password"|t,
 								id: 'newPassword',
-							}, newPasswordInput) }}
+								name: 'newPassword',
+								type: 'password',
+								errors: account.getErrors('newPassword')
+							}) }}
 						{% endif %}
 
 						{% if currentUser.admin %}
@@ -211,41 +179,51 @@
 					</div>
 				{% endif %}
 
-				{% if CraftEdition == CraftPro and currentUser.can('assignUserPermissions') %}
+				{% if CraftEdition >= CraftClient and currentUser.can('assignUserPermissions') %}
 					<div id="perms" class="hidden">
-						<h2>{{ "User Groups"|t }}</h2>
 
-						{% set allGroups = craft.userGroups.getAllGroups() %}
-						{% set userGroups = account.getGroups('id') %}
+						{% if CraftEdition == CraftPro %}
+							<h2>{{ "User Groups"|t }}</h2>
 
-						<input type="hidden" name="groups" value="">
+							{% set allGroups = craft.userGroups.getAllGroups() %}
+							{% set userGroups = account.getGroups('id') %}
 
-						{% if allGroups %}
-							<ul>
-								{% for group in allGroups %}
-									<li>
-										{{ forms.checkbox({
-											label: group.name|t,
-											name: 'groups[]',
-											value: group.id,
-											checked: (group.id in userGroups|keys)
-										}) }}
-									</li>
-								{% endfor %}
-							</ul>
+							{% set userGroupsInput %}
+								<input type="hidden" name="groups" value="">
 
-						{% else %}
-							<p>{{ "No user groups exist yet."|t }}</p>
+								{% if allGroups %}
+									<ul>
+										{% for group in allGroups %}
+											<li>
+												{{ forms.checkbox({
+													label: group.name|t,
+													name: 'groups[]',
+													value: group.id,
+													checked: (group.id in userGroups|keys)
+												}) }}
+											</li>
+										{% endfor %}
+									</ul>
+
+								{% else %}
+									<p>{{ "No user groups exist yet."|t }}</p>
+								{% endif %}
+							{% endset %}
+
+							{{ forms.field({
+								fieldId: 'user-groups'
+							}, userGroupsInput) }}
+
+							<hr>
 						{% endif %}
-
-						<hr>
 
 						<h2>{{ "Permissions"|t }}</h2>
 
-						{% if currentUser.admin %}
+						{% if currentUser.admin and CraftEdition == CraftPro %}
 							{{ forms.checkboxField({
 								label: '<strong>' ~ "Admin"|t ~ '</strong>',
 								name: 'admin',
+								id: 'admin',
 								checked: account.admin,
 								reverseToggle: 'permissions'
 							}) }}
@@ -269,7 +247,7 @@
 
 		{% if CraftEdition >= CraftClient and not isNewAccount %}
 			<div class="item" data-position="right">
-				<form class="pane meta" method="post" accept-charset="UTF-8">
+				<form class="pane lightpane meta" method="post" accept-charset="UTF-8">
 					{{ hiddenInputs }}
 					<div class="data first">
 						<h5 class="heading">{{ "Account Status"|t }}</h5>
@@ -332,7 +310,26 @@
 						</div>
 					{% endif %}
 				</form>
-			</div>
+
+				{# Give plugins a chance to add other panes here #}
+				{% hook "cp.users.edit.right-pane" %}
+			</div><!--/item-->
 		{% endif %}
-	</div>
+	</div><!--/grid-->
 {% endblock %}
+
+{% includejs %}
+	{% if account.isCurrent() %}
+		var changeSidebarPicture = true;
+	{% else %}
+		var changeSidebarPicture = false;
+	{% endif %}
+
+	new Craft.ElevatedSessionForm('#userform', [
+		'#email',
+		'#newPassword',
+		'#admin:not(:checked)',
+		'#user-groups input[type="checkbox"]:not(:checked)',
+		'#permissions input[type="checkbox"]:not(:checked)'
+	]);
+{% endincludejs %}
