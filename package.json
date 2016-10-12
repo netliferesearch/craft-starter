@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "init": "node scripts/initialize",
-    "dev": "sh start.sh",
+    "dev": "npm run webpack & php -S localhost:5000 -t public",
     "test": "./node_modules/standard/bin/cmd.js",
     "sync": "node scripts/dbsync",
     "webpack": "webpack --watch --hot"
@@ -48,8 +48,5 @@
       "public/js/dist.js",
       "public/vendor"
     ]
-  },
-  "dependencies": {
-    "babel-polyfill": "^6.16.0"
   }
 }
