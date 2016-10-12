@@ -3,5 +3,8 @@
     {
       "url": "https://github.com/heroku/heroku-buildpack-php"
     }
-  ]
+  ],
+  "env": {
+    "staging": "true"
+  }
 }
