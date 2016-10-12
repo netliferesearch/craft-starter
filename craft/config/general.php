@@ -5,7 +5,6 @@ define('BASEPATH', realpath(CRAFT_BASE_PATH . '/../') . '/');
 require BASEPATH . '/vendor/autoload.php';
 if (file_exists(BASEPATH . '.env')) {
   $dotenv = new Dotenv\Dotenv(BASEPATH);
-  $dotenv->required(['CLEARDB_DATABASE_URL']);
   $dotenv->load();
 }
 
