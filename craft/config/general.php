@@ -29,12 +29,22 @@ return array(
     ),
     'herokuapp.com' => array(
         'omitScriptNameInUrls' => true,
-        'siteUrl' => 'http://{{name}}.herokuapp.com/',
+        'siteUrl' => 'https://{{name}}.herokuapp.com/',
         'postLoginRedirect' => '/',
         'allowAutoUpdates' => false,
         'environmentVariables' => array(
-            'siteUrl' => 'http://{{name}}.herokuapp.com',
+            'siteUrl' => 'https://{{name}}.herokuapp.com',
             'basePath' => realpath(getcwd() . '/public/')
         )
-    )
+    )/*,
+    'production.url' => array(
+        'omitScriptNameInUrls' => true,
+        'siteUrl' => 'https://www.production.url',
+        'postLoginRedirect' => '/',
+        'allowAutoUpdates' => false,
+        'environmentVariables' => array(
+            'siteUrl' => 'https://www.production.url',
+            'basePath' => realpath(getcwd() . '/public/')
+        )
+    */
 );
