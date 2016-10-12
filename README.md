@@ -9,6 +9,14 @@
 5. Run `npm run init` 
 6. Set up a Heroku app
 
+## Changing the remote git repository
+
+If you have cloned this project, the git remote `origin` is set to the craft-starter repository. Unless you're actually working on improving the craft-starter, you should set the remote `origin` to your project repository. 
+
+1. Remove the current `origin` with `git remote rm origin`
+2. Add the new origin with `git remote add origin git@github.com:netliferesearch/repository-name`
+3. Push to the new origin with `git push --set-upstream origin master` 
+
 ## Install craft
 Go to [http://localhost:5000/admin](http://localhost:5000/admin) and follow the wizard to install craft.
 
