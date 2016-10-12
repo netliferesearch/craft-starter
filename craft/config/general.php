@@ -1,14 +1,21 @@
 <?php
 define('BASEPATH', realpath(CRAFT_BASE_PATH . '/../') . '/');
 
+/* Lets load that .env file if it exists */
+require BASEPATH . '/vendor/autoload.php';
+if (file_exists(BASEPATH . '.env')) {
+  $dotenv = new Dotenv\Dotenv(BASEPATH);
+  $dotenv->required(['CLEARDB_DATABASE_URL']);
+  $dotenv->load();
+}
+
 return array(
     '*' => array(
         'generateTransformsBeforePageLoad' => true,
         'defaultCpLanguage' => 'en',
         'allowAutoUpdates' => false,
         'cache' => true,
-        'usePathInfo' => true
-
+        'usePathInfo' => true /* This fixes the Heroku no resources found issue*/
     ),
     'localhost' => array(
         'devMode' => true,
