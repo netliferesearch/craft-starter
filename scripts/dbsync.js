@@ -25,7 +25,7 @@ const questions = [
     type: 'input',
     name: 'username',
     message: 'Your MySQL username, usually “root”',
-    default: 'root'
+    default: localDbPass
   },
   {
     type: 'password',
@@ -74,8 +74,3 @@ inq.prompt(questions, answers => {
     process.exit(0)
   }
 })
-/*
-if data.sql
-  rm data_backup.sql
-  mv data.sql data_backup.sql
-*/
