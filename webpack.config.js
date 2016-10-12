@@ -18,7 +18,7 @@ module.exports = {
     ]
   },
   output: {
-    filename: path.resolve('js','min','[name].js'),
+    filename: path.join('js','min','[name].js'),
     path: publicPath,
     publicPath: publicPath
   },
@@ -26,13 +26,13 @@ module.exports = {
     preLoaders: [{
       test: /\.jsx$|\.js$/,
       loader: 'standard',
-      exclude: path.resolve('(node_modules|bower_components)'),
-      include: path.resolve(__dirname,'resources','js')
+      exclude: path.join('(node_modules|bower_components)'),
+      include: path.join('resources','js')
     }],
     loaders: [
       {
-        test: /\.jsx?$/,
-        include: path.resolve(__dirname, 'resources','js'),
+        test: /\.jsx$|\.js$/,
+        include: path.join('resources','js'),
         loader: 'babel-loader',
         exclude: [nodeModulesPath]
       },
@@ -62,7 +62,7 @@ module.exports = {
         warnings: false
       }
     }),
-    new ExtractTextPlugin(path.resolve(publicPath,'css','min','screen.css'), {
+    new ExtractTextPlugin('css/min/screen.css', {
       allChunks: true
     })
   ],
