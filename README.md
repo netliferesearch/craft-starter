@@ -49,7 +49,7 @@ This project also includes a script that lets you sync the database on Heroku in
 
 1. If typing `mysql` in the terminal does nothing, install it with `brew install mysql`
 2. Make sure it runs by typing `mysql.server start`
-3. Add `LOCAL_DATABASE_URL=mysql://user:password@127.0.0.1/databasename` to your .env-file. The username is usually `root`. If your database has no password, just omit colon and password-string (`user@127…`)
+3. Set `CLEARDB_DATABASE_URL=mysql://user:password@127.0.0.1/databasename` in your .env-file. The username is usually `root`. If your database has no password, just omit colon and password-string (`user@127…`)
 4. Run `npm run sync` and follow the instructions
 
 ## Start working
