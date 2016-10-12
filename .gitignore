@@ -12,3 +12,4 @@ craft/storage/userphotos
 /vendor
 .env
 *.hot-update.*
+yarn.lock
