@@ -18,7 +18,7 @@ module.exports = {
     ]
   },
   output: {
-    filename: '/js/min/[name].js',
+    filename: path.resolve('js','min','[name].js'),
     path: publicPath,
     publicPath: publicPath
   },
@@ -26,13 +26,13 @@ module.exports = {
     preLoaders: [{
       test: /\.jsx$|\.js$/,
       loader: 'standard',
-      exclude: '/(node_modules|bower_components)/',
-      include: path.resolve(__dirname,'resources/js')
+      exclude: path.resolve('(node_modules|bower_components)'),
+      include: path.resolve(__dirname,'resources','js')
     }],
     loaders: [
       {
         test: /\.jsx?$/,
-        include: path.resolve(__dirname, 'resources/js'),
+        include: path.resolve(__dirname, 'resources','js'),
         loader: 'babel-loader',
         exclude: [nodeModulesPath]
       },
@@ -42,11 +42,11 @@ module.exports = {
       },
       {
         test: /\.(eot|gif|woff|woff2|png|ttf)([\?]?.*)$/,
-        loader: 'file-loader?name=assets/[name].[ext]'
+        loader: path.resolve('file-loader?name=assets','[name].[ext]')
       },
       {
         test: /\.svg/,
-        loader: 'svg-url-loader?name=assets/[name].[ext]'
+        loader: path.resolve('svg-url-loader?name=assets','[name].[ext]')
       }
     ]
   },
@@ -62,7 +62,7 @@ module.exports = {
         warnings: false
       }
     }),
-    new ExtractTextPlugin('/../public/css/min/screen.css', {
+    new ExtractTextPlugin(path.resolve(publicPath,'css','min','screen.css'), {
       allChunks: true
     })
   ],
