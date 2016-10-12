@@ -8,6 +8,12 @@
  */
 
 $url = parse_url(getenv('CLEARDB_DATABASE_URL'));
+if (!$url["path"]) {
+  echo "<p><b>Database configuration is either missing or wrong in .env</b>.</p><p>Here is what we get from the .env file</p>";
+  echo "<pre>";
+  var_dump($url);
+  die();
+}
 
 return array(
   '*' => array(
