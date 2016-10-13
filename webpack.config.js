@@ -34,6 +34,9 @@ module.exports = {
         test: /\.jsx$|\.js$/,
         include: path.join('resources','js'),
         loader: 'babel',
+        query: {
+          presets: ['es2015']
+        },
         exclude: [nodeModulesPath]
       },
       {
