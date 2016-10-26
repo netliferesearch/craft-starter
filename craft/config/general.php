@@ -14,6 +14,7 @@ return array(
         'defaultCpLanguage' => 'en',
         'allowAutoUpdates' => false,
         'cache' => true,
+        'maxUploadFileSize' => 10000000,
         'usePathInfo' => true /* This fixes the Heroku no resources found issue*/
     ),
     'localhost' => array(
