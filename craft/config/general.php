@@ -1,24 +1,32 @@
 <?php
 define('BASEPATH', realpath(CRAFT_BASE_PATH . '/../') . '/');
 
-/* Lets load that .env file if it exists */
+/* Lets load that .env file if it exists. This requires that you've run composer */
 require BASEPATH . '/vendor/autoload.php';
 if (file_exists(BASEPATH . '.env')) {
   $dotenv = new Dotenv\Dotenv(BASEPATH);
   $dotenv->load();
 }
 
+/*
+ * Read more about config settings
+ * at https://craftcms.com/docs/config-settings
+ * */
+
 return array(
     '*' => array(
         'generateTransformsBeforePageLoad' => true,
-        'defaultCpLanguage' => 'en',
-        'allowAutoUpdates' => false,
+        'defaultCpLanguage' => 'en', /* Default language for Control Panel */
+        'defaultWeekStartDay' => '1', /* Sets start of the week on Mondays */
+        'allowAutoUpdates' => false, /* Prevents updating Craft on Heroku */
         'cache' => true,
-        'maxUploadFileSize' => 10000000,
+        'enableCsrfProtection' => false, /* This should be true, but read  https://craftcms.com/support/csrf-protection first */
+        'useCompressedJs' => false, /* Craft can compress JS, haven't been tested */
+        'maxUploadFileSize' => 10000000, /* Set to 100MB, see also public/.user.ini */
         'usePathInfo' => true /* This fixes the Heroku no resources found issue*/
     ),
     'localhost' => array(
-        'devMode' => true,
+        'devMode' => true, /* better for debugging, never in production */
         'cache' => false,
         'siteUrl' => 'http://localhost:5000/',
         'allowAutoUpdates' => true,
@@ -29,9 +37,8 @@ return array(
     ),
     'herokuapp.com' => array(
         'omitScriptNameInUrls' => true,
-        'siteUrl' => 'https://{{name}}.herokuapp.com/',
+        'siteUrl' => 'https://{{name}}.herokuapp.com/', /* {{name}} is automatically updated if you have done npm run init */
         'postLoginRedirect' => '/',
-        'allowAutoUpdates' => false,
         'environmentVariables' => array(
             'siteUrl' => 'https://{{name}}.herokuapp.com',
             'basePath' => realpath(getcwd() . '/public/')
@@ -39,11 +46,11 @@ return array(
     )/*,
     'production.url' => array(
         'omitScriptNameInUrls' => true,
-        'siteUrl' => 'https://www.production.url',
+        'siteUrl' => 'https://www.production.url/',
         'postLoginRedirect' => '/',
         'allowAutoUpdates' => false,
         'environmentVariables' => array(
-            'siteUrl' => 'https://www.production.url',
+            'siteUrl' => 'https://www.production.url/',
             'basePath' => realpath(getcwd() . '/public/')
         )
     */
