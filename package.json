@@ -1,18 +1,25 @@
 {
   "name": "netlife-craft-starter",
-  "version": "2.0.0",
-  "description": "",
+  "version": "2.1.0",
+  "description": "Craft CMS project starter",
   "main": "index.js",
   "private": true,
   "scripts": {
+    "start": "echo 'You probably want to $ npm run dev'",
     "init": "node scripts/initialize",
     "dev": "npm run webpack & php -S localhost:5000 -t public",
     "test": "./node_modules/standard/bin/cmd.js",
+    "build": "webpack -p",
     "sync": "node scripts/dbsync",
-    "webpack": "webpack --watch --hot"
+    "webpack": "webpack --watch --hot",
+    "postinstall": "webpack -p --progress --colors"
+  },
+  "engines": {
+    "node": "6.2.1",
+    "npm": "3.9.3"
   },
   "author": "Netlife Research",
-  "license": "",
+  "license": "MIT",
   "devDependencies": {
     "babel-core": "^6.14.0",
     "babel-eslint": "^7.0.0",
