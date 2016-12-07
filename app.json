@@ -1,10 +1,22 @@
 {
-  "buildpacks": [
+  "name": "Craft CMS Starter",
+  "description": "Starter for Craft CMS on Heroku.",
+  "keywords": [
+    "Craft CMS"
+  ],
+  "repository": "https://github.com/netliferesearch/craft-starter",
+  "addons": [
     {
-      "url": "https://github.com/heroku/heroku-buildpack-php"
+      "plan": "jawsdb"
     }
   ],
   "env": {
-    "staging": "true"
-  }
+    "NPM_CONFIG_PRODUCTION": false
+  },
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-nodejs",
+      "url": "https://github.com/heroku/heroku-buildpack-php"
+    }
+  ]
 }
