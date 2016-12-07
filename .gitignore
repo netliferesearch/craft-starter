@@ -1,5 +1,8 @@
 public/vendor/
 public/images/*
+public/css
+public/js
+yarn.lock
 node_modules
 .DS_Store
 npm-debug.log
@@ -12,4 +15,3 @@ craft/storage/userphotos
 /vendor
 .env
 *.hot-update.*
-yarn.lock
