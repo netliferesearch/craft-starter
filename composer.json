@@ -3,14 +3,15 @@
     "description": "Craft CMS project starter",
     "license": "MIT",
     "authors": [
-        { "name": "Raymond Julin", "email": "raymond.julin@gmail.com" }
+        { "name": "Raymond Julin", "email": "raymond.julin@gmail.com" },
+        { "name": "Knut Melvær", "email": "knut@netliferesearch.com" }
     ],
     "require": {
       "php": "^7.0.0",
       "ext-mbstring": "*",
       "ext-imagick": "*",
       "ext-mcrypt": "*",
-      "vlucas/phpdotenv": "^2.4"
+      "vlucas/phpdotenv": "*"
     },
     "require-dev": {
         "heroku/heroku-buildpack-php": "^83.0"
