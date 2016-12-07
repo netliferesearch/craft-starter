@@ -7,20 +7,38 @@
  * You can see a list of the default settings in craft/app/etc/config/defaults/db.php
  */
 
-$url = parse_url(getenv('CLEARDB_DATABASE_URL'));
-if (!$url["path"]) {
-  echo "<p><b>Database configuration is either missing or wrong in .env</b>.</p><p>Here is what we get from the .env file</p>";
-  echo "<pre>";
-  var_dump($url);
-  die();
-}
+
+$production_url = parse_url(getenv('JAWSDB_URL'));
+$staging_url = parse_url(getenv('STAGING_DATABASE_URL'));
+$local_url = parse_url(getenv('LOCALDB_URL'));
 
 return array(
   '*' => array(
     'tablePrefix' => 'craft',
-    'server' => $url['host'],
-    'user' => $url['user'],
-    'password' => $url['pass'],
-    'database' => substr($url['path'],1)
+    'server' => $staging_url['host'],
+    'user' => $staging_url['user'],
+    'password' => $staging_url['pass'],
+    'database' => substr($staging_url['path'],1)
+  ),/*
+  '{{name}}.com' => array(
+    'tablePrefix' => 'craft',
+    'server' => $production_url['host'],
+    'user' => $production_url['user'],
+    'password' => $production_url['pass'],
+    'database' => substr($production_url['path'],1)
+  ),*/
+  'herokuapp.com' => array(
+      'tablePrefix' => 'craft',
+      'server' => $staging_url['host'],
+      'user' => $staging_url['user'],
+      'password' => $staging_url['pass'],
+      'database' => substr($staging_url['path'],1)
+  ),
+  'localhost' => array(
+      'tablePrefix' => 'craft',
+      'server' => $local_url['host'],
+      'user' => $local_url['user'],
+      'password' => $local_url['pass'],
+      'database' => substr($local_url['path'],1)
   )
 );
