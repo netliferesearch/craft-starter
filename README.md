@@ -29,11 +29,17 @@ If you want to change this URL, you'll have to change it in `start.sh`. If you w
 
 ## Setting up the project on Heroku for the first time
 
+Push this button (remember to set the correct region)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/netliferesearch/craft-starter/tree/master)
+
+
+### Manually
+
 Make sure you install global dependencies like Heroku toolbelt first.
 
 1. `heroku create <name> --region eu`
 2. `heroku buildpacks:set heroku/php`
-3. `heroku addons:create cleardb`
+3. `heroku addons:create jawsdb`
 4. `heroku config -s | tr -d "'" > .env`
 5. `npm run init`
 
