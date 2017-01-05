@@ -1,5 +1,7 @@
 # Netlife Research: Craft Starter
 
+Read through the readme, and if you are stuck, don't hesitate to ask in either #frontend or #craft in Slack.
+
 ## Get started
 
 1. Clone, or download this repository
@@ -52,12 +54,28 @@ Make sure you install global dependencies like Heroku toolbelt first.
 
 ## Developing on a local database
 
-This project also includes a script that lets you sync the database on Heroku into a local database for faster loading. This script assumes that you have `mysql` installed and running. This script will make a new database if it doesn't find one with the name set in `.env`.
+This project is set up to use the JAWSDB as the mysql addon on Heroku. Provided that is used, you can run this command in bash from your project folder to download a dump of the database:
+
+```bash
+heroku config:get JAWSDB_URL|sed -E 's%mysql:\/\/(.+):(.+)@(.+)(:3306| )\/(.+)(\?reconnect=true)%mysqldump --host=\3 --user=\1 --password=\2 \5%'|sh > dump.sql
+```
+
+This command first gets the mysql-url for JAWSDB in the Heroku config. Then it pipes it to `sed`, which [parses it through regex](https://regex101.com/r/EeO9HR/1) and outputs the `mysqldump` command with proper credentials. This text string is piped into `sh` which runs it. With `> dump.sql` we make sure that the output (which is a bunch of sql insert commands) is saved to a file with the name dump.sql.
+
+This file can then be imported into any mysql database, including your local. 
 
 1. If typing `mysql` in the terminal does nothing, install it with `brew install mysql`
 2. Make sure it runs by typing `mysql.server start`
 3. Set `LOCAL_DATABASE_URL=mysql://user:password@127.0.0.1/databasename` in your .env-file. The username is usually `root`. If your database has no password, just omit colon and password-string (`user@127…`)
-4. Run `npm run sync` and follow the instructions
+4. Run this command from the folder with the dump.sql file to import the database dump, assuming that both username and password is `root`: 
+
+```bash
+mysql --host=127.0.0.1 --user=root --password=root databasename < dump.sql
+```
+
+Done!
+
+If all these steps were successfull you can run `npm run sync` to download the mysql dump and import it in one turn.
 
 ## Start working
 
@@ -66,8 +84,6 @@ This project also includes a script that lets you sync the database on Heroku in
 Edit Sass and JavaScript in the `/resources/`-folder. Webpack will compile, transpile, minify it into the `public` folder, ready for production. If you put files in the assets-folder, Webpack will handle those too. The `style.scss` is built into `public/style.css` and it injects vendor prefixes and inlines smaller static resources (icon fonts for example). The file `resources/js/app.js` is built into `public/js/min/app.min.js`, and it uses Browserify + Babel, allowing you to both write ES6 as well as using a Node.js style if you prefer.
 
 Both files are properly included in `craft/templates/_layout.twig`
-
-##
 
 ## Global dependencies for the starter-pack
 
