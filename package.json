@@ -10,7 +10,7 @@
     "dev": "npm run webpack & php -S localhost:5000 -t public",
     "test": "./node_modules/standard/bin/cmd.js",
     "build": "webpack -p",
-    "sync": "node scripts/dbsync",
+    "sync": "sh scripts/dbsync.sh",
     "webpack": "webpack --watch --hot",
     "postinstall": "webpack -p --progress --colors"
   },
