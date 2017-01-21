@@ -19,11 +19,6 @@ If you have cloned this project, the git remote `origin` is set to the craft-sta
 2. Add the new origin with `git remote add origin git@github.com:netliferesearch/repository-name`
 3. Push to the new origin with `git push --set-upstream origin master`
 
-## Install craft
-Go to [http://localhost:5000/admin](http://localhost:5000/admin) and follow the wizard to install craft.
-
-If you want to change this URL, you'll have to change it in `start.sh`. If you want to use browser-sync, you'll have to change it in `webpack.config.js` (line 58) as well.
-
 ## Dependencies
 
 1. `composer install` (for all the PHP stuff)
@@ -33,7 +28,6 @@ If you want to change this URL, you'll have to change it in `start.sh`. If you w
 
 Push this button (remember to set the correct region)
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/netliferesearch/craft-starter/tree/master)
-
 
 ### Manually (like a pro)
 
@@ -83,6 +77,12 @@ mysql --host=127.0.0.1 --user=root --password=root databasename < dump.sql
 ```
 
 Done!
+
+
+## Install craft
+Go to [http://localhost:5000/admin](http://localhost:5000/admin) and follow the wizard to install craft.
+
+If you want to change this URL, you'll have to change it in `start.sh`. If you want to use browser-sync, you'll have to change it in `webpack.config.js` (line 58) as well.
 
 ## Start working
 
