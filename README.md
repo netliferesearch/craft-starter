@@ -116,3 +116,12 @@ brew uninstall imagemagick && brew install imagemagick@6 && brew link imagemagic
 * Install Heroku toolbelt <https://toolbelt.heroku.com/>
   * `brew install heroku`
 * `brew install nvm`
+
+### Troubleshooting
+
+>Peow peow!
+
+- Amazon S3: Craft CMS 2.x doesn't support bucket location Frankfurt because it uses a newer for of authentication. 
+
+
+
