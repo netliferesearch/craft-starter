@@ -121,7 +121,7 @@ brew uninstall imagemagick && brew install imagemagick@6 && brew link imagemagic
 
 >Peow peow!
 
-- Amazon S3: Craft CMS 2.x doesn't support bucket location Frankfurt because it uses a newer for of authentication. 
+- Amazon S3: Craft CMS 2.x doesn't support bucket location Frankfurt because it uses a newer authentication method. 
 
 
 
