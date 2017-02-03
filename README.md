@@ -8,8 +8,7 @@
 2. Install global dependencies if not installed already (see bottom of file)
 3. Install dependencies
 4. Make a repository on GitHub
-5. Run `npm run init`
-6. Set up a Heroku app
+5. Set up a Heroku app for the first time or get up and running when somebody already set things up
 
 ## Changing the remote git repository
 
@@ -39,6 +38,12 @@ Make sure you install global dependencies like Heroku toolbelt first.
 3. `heroku addons:create heroku-redis`
 4. `heroku config -s | tr -d "'" > .env`
 5. `npm run init`
+
+## Up and running when somebody already set things up
+1. `heroku git:remote <name>`
+2. `heroku config -s | tr -d "'" > .env`
+3. Get your local database up and running or connect to the remote database
+
 
 ## Heroku local configuration
 
@@ -70,7 +75,7 @@ This file can then be imported into any mysql database, including your local.
 
 1. If typing `mysql` in the terminal does nothing, install it with `brew install mysql`
 2. Make sure it runs by typing `mysql.server start`
-3. Set `LOCAL_DATABASE_URL=mysql://user:password@127.0.0.1/databasename` in your .env-file. The username is usually `root`. If your database has no password, just omit colon and password-string (`user@127…`)
+3. Set `LOCALDB_URL=mysql://user:password@127.0.0.1/databasename` in your .env-file. The username is usually `root`. If your database has no password, just omit colon and password-string (`user@127…`)
 4. Run this command from the folder with the dump.sql file to import the database dump, assuming that both username and password is `root`: 
 
 ```bash
@@ -123,6 +128,3 @@ brew uninstall imagemagick && brew install imagemagick@6 && brew link imagemagic
 >Peow peow!
 
 - Amazon S3: Craft CMS 2.x doesn't support bucket location Frankfurt because it uses a newer authentication method. 
-
-
-
