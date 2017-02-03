@@ -20,6 +20,7 @@ return array(
         'defaultWeekStartDay' => '1', /* Sets start of the week on Mondays */
         'allowAutoUpdates' => false, /* Prevents updating Craft on Heroku */
         'cache' => true,
+        'cacheMethod' => 'redis', /* Default caching to Redis, but not on localhost */
         'enableCsrfProtection' => false, /* This should be true, but read  https://craftcms.com/support/csrf-protection first */
         'useCompressedJs' => false, /* Craft can compress JS, haven't been tested */
         'maxUploadFileSize' => 10000000, /* Set to 100MB, see also public/.user.ini */
@@ -28,6 +29,7 @@ return array(
     'localhost' => array(
         'devMode' => true, /* better for debugging, never in production */
         'cache' => false,
+        'cacheMethod' => 'file', /* Default caching to Redis, but not on localhost */
         'siteUrl' => 'http://localhost:5000/',
         'allowAutoUpdates' => true,
         'environmentVariables' => array(
@@ -37,10 +39,10 @@ return array(
     ),
     'herokuapp.com' => array(
         'omitScriptNameInUrls' => true,
-        'siteUrl' => 'https://{{name}}.herokuapp.com/', /* {{name}} is automatically updated if you have done npm run init */
+        'siteUrl' => 'https://{{name}}.herokuapp.com/', /* remember to change {{name}} to your heroku app */
         'postLoginRedirect' => '/',
         'environmentVariables' => array(
-            'siteUrl' => 'https://{{name}}.herokuapp.com',
+            'siteUrl' => 'https://{{name}}.herokuapp.com', /* remember to change {{name}} to your heroku app */
             'basePath' => realpath(getcwd() . '/public/')
         )
     )/*,
