@@ -38,7 +38,7 @@ Make sure you install global dependencies like Heroku toolbelt first.
 3. `heroku addons:create jawsdb`
 3. `heroku addons:create heroku-redis`
 4. `heroku config -s | tr -d "'" > .env`
-5. `npm run init`
+5. Update `general.php` with the heroku app {{name}}
 
 ## Heroku local configuration
 
