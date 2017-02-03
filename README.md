@@ -84,7 +84,6 @@ mysql --host=127.0.0.1 --user=root --password=root databasename < dump.sql
 
 Done!
 
-
 ## Install craft
 Go to [http://localhost:5000/admin](http://localhost:5000/admin) and follow the wizard to install craft.
 
