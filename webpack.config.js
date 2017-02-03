@@ -44,7 +44,7 @@ module.exports = {
       },
       {
         test: /\.(eot|gif|woff|woff2|png|ttf)([\?]?.*)$/,
-        loader: path.resolve('file-loader?name=assets','[name].[ext]')
+        loader: 'file-loader?name=fonts/[name].[ext]&publicPath=/'
       },
       {
         test: /\.svg/,
