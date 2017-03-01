@@ -34,7 +34,7 @@ Make sure you install global dependencies like Heroku toolbelt first.
 
 1. `heroku create <name> --region eu`
 2. `heroku buildpacks:set heroku/php`
-2. `heroku buildpacks:set heroku/node`
+2. `heroku buildpacks:set heroku/nodejs`
 3. `heroku addons:create jawsdb`
 3. `heroku addons:create heroku-redis`
 4. `heroku config -s | tr -d "'" > .env`
