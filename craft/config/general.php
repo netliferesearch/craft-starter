@@ -24,7 +24,8 @@ return array(
         'enableCsrfProtection' => false, /* This should be true, but read  https://craftcms.com/support/csrf-protection first */
         'useCompressedJs' => false, /* Craft can compress JS, haven't been tested */
         'maxUploadFileSize' => 10000000, /* Set to 100MB, see also public/.user.ini */
-        'usePathInfo' => true /* This fixes the Heroku no resources found issue*/
+        'usePathInfo' => true, /* This fixes the Heroku no resources found issue*/
+	'limitAutoSlugsToAscii' => true /* Prevent generating urls with æ,ø,å. */
     ),
     'localhost' => array(
         'devMode' => true, /* better for debugging, never in production */
