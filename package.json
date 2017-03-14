@@ -11,8 +11,9 @@
     "test": "./node_modules/standard/bin/cmd.js",
     "build": "webpack -p",
     "sync": "sh scripts/dbsync.sh",
-    "webpack": "webpack --watch --hot",
-    "postinstall": "webpack -p --progress --colors"
+    "webpack": "webpack --watch",
+    "postinstall": "webpack -p --progress --colors",
+    "heroku-postbuild": "mkdir public/admin && cp -R craft/app/resources public/admin"
   },
   "engines": {
     "node": "6.2.1",
