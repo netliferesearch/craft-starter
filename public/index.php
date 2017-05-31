@@ -4,6 +4,12 @@ if (!empty($_SERVER['HTTP_HOST'])) {
   define('CRAFT_ENVIRONMENT', $_SERVER['HTTP_HOST']);
 }
 
+// Use redis to cache php session data
+// source: https://york.io/2016/07/22/redis-persist-sessions-php-heroku.html
+if(!empty($_ENV['REDIS_URL'])) {
+  ini_set('session.save_handler','redis');
+}
+
 if (php_sapi_name() === 'cli-server') {
     $file = realpath(getcwd() . $_SERVER['REQUEST_URI']);
 

@@ -8,6 +8,14 @@ if (file_exists(BASEPATH . '.env')) {
   $dotenv->load();
 }
 
+// Use redis to cache php session data
+// source: https://york.io/2016/07/22/redis-persist-sessions-php-heroku.html
+$prodRedisUrl = '';
+if(!empty($_ENV['REDIS_URL'])) {
+  $redisUrlParts = parse_url($_ENV['REDIS_URL']);
+  $prodRedisUrl = "tcp://$redisUrlParts[host]:$redisUrlParts[port]?auth=$redisUrlParts[pass]";
+}
+
 /*
  * Read more about config settings
  * at https://craftcms.com/docs/config-settings
@@ -25,7 +33,7 @@ return array(
         'useCompressedJs' => false, /* Craft can compress JS, haven't been tested */
         'maxUploadFileSize' => 10000000, /* Set to 100MB, see also public/.user.ini */
         'usePathInfo' => true, /* This fixes the Heroku no resources found issue*/
-	'limitAutoSlugsToAscii' => true /* Prevent generating urls with æ,ø,å. */
+	      'limitAutoSlugsToAscii' => true /* Prevent generating urls with æ,ø,å. */
     ),
     'localhost' => array(
         'devMode' => true, /* better for debugging, never in production */
@@ -45,7 +53,13 @@ return array(
         'environmentVariables' => array(
             'siteUrl' => 'https://{{name}}.herokuapp.com', /* remember to change {{name}} to your heroku app */
             'basePath' => realpath(getcwd() . '/public/')
-        )
+        )/*,
+        Enable these config settings to properly store php sessions in Redis
+        for this to work you'll need to add the Heroku Redis addon to your
+        heroku app.
+        'appId' => 'anUniqueAppId', // Must be set since Craft uses this to fingerprint its data caching and sessions
+        'overridePhpSessionLocation' => $prodRedisUrl, // See above for how the redis url is fetched and prepared.
+        'validationKey' => $_ENV['CRAFT_VALIDATION_KEY'], */ // Should be set to a long string in your environment
     )/*,
     'production.url' => array(
         'omitScriptNameInUrls' => true,
