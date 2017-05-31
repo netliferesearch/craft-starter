@@ -11,6 +11,7 @@
       "ext-mbstring": "*",
       "ext-imagick": "*",
       "ext-mcrypt": "*",
+      "ext-redis": "*",
       "vlucas/phpdotenv": "*"
     },
     "require-dev": {
