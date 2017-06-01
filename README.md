@@ -109,7 +109,7 @@ You only need to do this once per system.
 * `brew tap homebrew/dupes`
 * `brew tap homebrew/versions`
 * `brew tap homebrew/homebrew-php`
-* `brew install php70 php70-mcrypt php70-imagick composer`
+* `brew install php70 php70-mcrypt php70-imagick php70-redis composer`
 * `brew link php70`
 
 If you have problems with php70-magick, you can fix it with this command:
