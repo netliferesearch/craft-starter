@@ -48,6 +48,7 @@ return array(
     ),
     'herokuapp.com' => array(
         'omitScriptNameInUrls' => true,
+        'devMode' => false, /* set this to true if you want more verbose error messages on herkou */
         'siteUrl' => 'https://{{name}}.herokuapp.com/', /* remember to change {{name}} to your heroku app */
         'postLoginRedirect' => '/',
         'environmentVariables' => array(
