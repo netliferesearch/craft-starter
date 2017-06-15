@@ -55,7 +55,7 @@ Make sure you install global dependencies like Heroku toolbelt first.
 2. Make sure that this folder has the correct Heroku app as an git remote `heroku git:remote <name>`
 3. Run `heroku config --app <name> -s | tr -d "'" > .env` in terminal
 
-`heroku config` lists out the configuration (a.k.a. environment variables) in your heroku app in the :cloud:. To save them locally in a file, we will first need the ouput in a shell format, thus we put the `-s` flag in. Heroku spits out database urls with `''`, which tend to create some trouble. Therefore we _pipe_ the output from `heroku config` by using this [`|`](https://en.wikipedia.org/wiki/Pipeline_(Unix)) and a [`tr -d "'"`](http://explainshell.com/explain?cmd=tr+-d+%22%27%22) that deletes these. With this output we can _write_ it to a `.env` file with `>`. 
+`heroku config` lists out the configuration (a.k.a. environment variables) in your heroku app in the :cloud:. To save them locally in a file, we will first need the ouput in a shell format, thus we put the `-s` flag in. Heroku spits out database urls with `''`, which tend to create some trouble. Therefore we _pipe_ the output from `heroku config` by using this [`|`](https://en.wikipedia.org/wiki/Pipeline_(Unix)) and a [`tr -d "'"`](http://explainshell.com/explain?cmd=tr+-d+%22%27%22) that deletes these. With this output we can _write_ it to a `.env` file with `>`.
 
 If you e.g. have installed a new add-on and just want to _append_ this to the .env-configuration file, you can do so with this command
 
@@ -73,12 +73,12 @@ heroku config:get JAWSDB_URL|sed -E 's%mysql:\/\/(.+):(.+)@(.+)(:3306| )\/(.+)(\
 
 This command first gets the mysql-url for JAWSDB in the Heroku config. Then it pipes it to `sed`, which [parses it through regex](https://regex101.com/r/EeO9HR/1) and outputs the `mysqldump` command with proper credentials. This text string is piped into `sh` which runs it. With `> dump.sql` we make sure that the output (which is a bunch of sql insert commands) is saved to a file with the name dump.sql.
 
-This file can then be imported into any mysql database, including your local. 
+This file can then be imported into any mysql database, including your local.
 
 1. If typing `mysql` in the terminal does nothing, install it with `brew install mysql`
 2. Make sure it runs by typing `mysql.server start`
-3. Set `LOCALDB_URL=mysql://user:password@127.0.0.1/databasename` in your .env-file. The username is usually `root`. If your database has no password, just omit colon and password-string (`user@127…`)
-4. Run this command from the folder with the dump.sql file to import the database dump, assuming that both username and password is `root`: 
+3. Set `LOCAL_DATABASE_URL=mysql://user:password@127.0.0.1/databasename` in your .env-file. The username is usually `root`. If your database has no password, just omit colon and password-string (`user@127…`)
+4. Run this command from the folder with the dump.sql file to import the database dump, assuming that both username and password is `root`:
 
 ```bash
 mysql --host=127.0.0.1 --user=root --password=root databasename < dump.sql
@@ -128,4 +128,4 @@ brew uninstall imagemagick && brew install imagemagick@6 && brew link imagemagic
 
 >Peow peow!
 
-- Amazon S3: Craft CMS 2.x doesn't support bucket location Frankfurt because it uses a newer authentication method. 
+- Amazon S3: Craft CMS 2.x doesn't support bucket location Frankfurt because it uses a newer authentication method.

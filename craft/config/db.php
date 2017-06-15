@@ -10,7 +10,7 @@
 
 $production_url = parse_url(getenv('JAWSDB_URL'));
 $staging_url = parse_url(getenv('STAGING_DATABASE_URL'));
-$local_url = parse_url(getenv('LOCALDB_URL'));
+$local_url = parse_url(getenv('LOCAL_DATABASE_URL'));
 
 return array(
   '*' => array(
