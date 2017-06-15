@@ -101,6 +101,8 @@ class AppVariable
 	 * Returns the installed Craft build.
 	 *
 	 * @return string
+	 * @deprecated
+	 * @todo remove in 3.0
 	 */
 	public function getBuild()
 	{
@@ -111,6 +113,8 @@ class AppVariable
 	 * Returns the installed Craft release date.
 	 *
 	 * @return DateTime
+	 * @deprecated
+	 * @todo remove in Craft 3
 	 */
 	public function getReleaseDate()
 	{

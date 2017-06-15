@@ -15,7 +15,7 @@
 		{%- set datepickerLocale = 'fr-CA' %}
 	{%- default %}
 		{%- set language = localeData.getLanguageID(craft.locale) %}
-		{%- if language in ['ar', 'de', 'fr', 'it', 'ja', 'nb', 'nl', 'nn', 'no'] %}
+		{%- if language in ['ar', 'cs', 'da', 'de', 'fr', 'he', 'hu', 'it', 'ja', 'ko', 'nb', 'nl', 'nn', 'no', 'pl', 'pt', 'ru', 'sk', 'sv', 'tr', 'zh'] %}
 			{%- set datepickerLocale = language %}
 		{%- endif %}
 {%- endswitch %}
@@ -71,13 +71,12 @@
 {%- includejsresource 'lib/element-resize-detector'~(useCompressedJs ? '.min')~'.js' first %}
 {%- includejsresource 'lib/picturefill'~(useCompressedJs ? '.min')~'.js' first %}
 {%- includejsresource 'lib/fileupload/jquery.fileupload.js' first %}
-{%- includejsresource 'lib/fileupload/jquery.ui.widget.js' first %}
 {%- includejsresource 'lib/jquery.mobile-events'~(useCompressedJs ? '.min')~'.js' first %}
 {%- includejsresource 'lib/selectize/selectize'~(useCompressedJs ? '.min')~'.js' first %}
 {%- includecssresource 'lib/selectize/selectize.css' %}
 {%- includejsresource 'lib/velocity'~(useCompressedJs ? '.min')~'.js' first %}
 {%- includejsresource 'lib/jquery-ui'~(useCompressedJs ? '.min')~'.js' first %}
-{%- includejsresource 'lib/jquery-2.2.1'~(useCompressedJs ? '.min')~'.js' first %}
+{%- includejsresource 'lib/jquery-2.2.4'~(useCompressedJs ? '.min')~'.js' first %}
 {%- includejsresource 'lib/xregexp-all.js' first %}
 
 {%- includeJsResource 'lib/d3/d3'~(useCompressedJs ? '.min')~'.js' first %}
@@ -126,6 +125,7 @@
 			translations:          {{ getTranslations()|raw }},
 			maxUploadSize:         {{ craft.app.getMaxUploadSize() }},
 			forceConfirmUnload:    {{ forceConfirmUnload is defined and forceConfirmUnload ? 'true' : 'false' }},
+			defaultIndexCriteria:  { localeEnabled: null },
 			{% if craft.config.enableCsrfProtection %}
 				csrfTokenValue:        "{{ craft.request.getCsrfToken()|e('js') }}",
 				csrfTokenName:         "{{ craft.config.csrfTokenName|e('js') }}",

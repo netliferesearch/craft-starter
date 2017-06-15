@@ -1,4 +1,3 @@
-@charset "UTF-8";
 /* Flexbox stuff */
 /* Other */
 /* RTL stuff */
@@ -19,3 +18,5 @@ body.ltr .toolhud .main .alldone { left: 230px; }
 body.rtl .toolhud .main .alldone { right: 230px; }
 
 .confirmmodal .body { max-height: 200px; overflow: auto; }
+
+/*# sourceMappingURL=settings.css.map */

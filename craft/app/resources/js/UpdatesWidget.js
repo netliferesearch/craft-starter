@@ -1,11 +1,3 @@
-/**
- * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
- * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://craftcms.com/license Craft License Agreement
- * @see       http://craftcms.com
- * @package   craft.app.resources
- */
-
 (function($) {
 
 Craft.UpdatesWidget = Garnish.Base.extend(
@@ -65,13 +57,15 @@ Craft.UpdatesWidget = Garnish.Base.extend(
 
 		if (info.total)
 		{
+			var updateText;
+
 			if (info.total == 1)
 			{
-				var updateText = Craft.t('One update available!');
+				updateText = Craft.t('One update available!');
 			}
 			else
 			{
-				var updateText = Craft.t('{total} updates available!', { total: info.total });
+				updateText = Craft.t('{total} updates available!', { total: info.total });
 			}
 
 			this.$body.html(

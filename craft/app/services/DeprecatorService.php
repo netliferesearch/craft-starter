@@ -181,7 +181,6 @@ class DeprecatorService extends BaseApplicationComponent
 		$log->class  = !empty($traces[1]['class'])    ? $traces[1]['class']    : null;
 		$log->method = !empty($traces[1]['function']) ? $traces[1]['function'] : null;
 
-
 		$isTemplateRendering = (craft()->request->isSiteRequest() && craft()->templates->isRendering());
 
 		if ($isTemplateRendering)
@@ -235,9 +234,7 @@ class DeprecatorService extends BaseApplicationComponent
 						break;
 					}
 				}
-
 			}
-
 
 			$logTraces[] = $logTrace;
 		}

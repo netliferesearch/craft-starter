@@ -106,6 +106,9 @@ class PelEntryVersion extends PelEntryUndefined
     {
         $this->version = $version;
         $major = floor($version);
+        if ($version === '') {
+            $version = 0;
+        }
         $minor = ($version - $major) * 100;
         parent::setValue(sprintf('%02.0f%02.0f', $major, $minor));
     }

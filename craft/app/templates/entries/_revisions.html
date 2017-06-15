@@ -5,7 +5,13 @@
 
 <div class="menu">
 	<ul class="padded">
-		<li><a{% if entry.getClassHandle() == 'Entry' %} class="sel"{% endif %} href="{{ entry.getCpEditUrl() }}">{{ "Current"|t }}</a></li>
+		{% set currentVersionEditTime = currentVersionEditTime ?? entry.dateUpdated %}
+		<li><a{% if entry.getClassHandle() == 'Entry' %} class="sel"{% endif %} href="{{ entry.getCpEditUrl() }}">{{ "Current"|t }}
+			<span class="light">
+				{{ currentVersionEditTime.uiTimestamp() }}
+				{%- if currentVersionCreator is defined %}, {{ currentVersionCreator }}{% endif %}
+			</span>
+		</a></li>
 	</ul>
 
 	{% if drafts %}

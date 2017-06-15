@@ -76,7 +76,7 @@ class YiiBase
 	 */
 	public static function getVersion()
 	{
-		return '1.1.17';
+		return '1.1.19';
 	}
 
 	/**
@@ -175,6 +175,7 @@ class YiiBase
 	 */
 	public static function createComponent($config)
 	{
+		$args = func_get_args();
 		if(is_string($config))
 		{
 			$type=$config;
@@ -193,7 +194,6 @@ class YiiBase
 
 		if(($n=func_num_args())>1)
 		{
-			$args=func_get_args();
 			if($n===2)
 				$object=new $type($args[1]);
 			elseif($n===3)
@@ -485,7 +485,7 @@ class YiiBase
 				}
 			}
 		}
-		self::$_logger->log($msg, $level, false, $category);
+		self::$_logger->log($msg,$level,false,$category);
 	}
 
 	/**

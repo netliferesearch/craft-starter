@@ -11,7 +11,7 @@
  */
 return array (
   'version' => '4123',
-  'numberSymbols' =>
+  'numberSymbols' => 
   array (
     'alias' => '',
     'decimal' => '.',
@@ -29,7 +29,7 @@ return array (
   'scientificFormat' => '#E0',
   'percentFormat' => '#,##0%',
   'currencyFormat' => '¤#,##0.00;(¤#,##0.00)',
-  'currencySymbols' =>
+  'currencySymbols' => 
   array (
     'AUD' => 'AU$',
     'BRL' => 'R$',
@@ -54,9 +54,9 @@ return array (
     'XPF' => 'CFPF',
     'MYR' => 'RM',
   ),
-  'monthNames' =>
+  'monthNames' => 
   array (
-    'wide' =>
+    'wide' => 
     array (
       1 => 'Januari',
       2 => 'Februari',
@@ -71,7 +71,7 @@ return array (
       11 => 'November',
       12 => 'Disember',
     ),
-    'abbreviated' =>
+    'abbreviated' => 
     array (
       1 => 'Jan',
       2 => 'Feb',
@@ -86,7 +86,7 @@ return array (
       11 => 'Nov',
       12 => 'Dis',
     ),
-    'narrow' =>
+    'narrow' => 
     array (
       1 => 'J',
       2 => 'F',
@@ -102,9 +102,9 @@ return array (
       12 => 'D',
     ),
   ),
-  'monthNamesSA' =>
+  'monthNamesSA' => 
   array (
-    'narrow' =>
+    'narrow' => 
     array (
       1 => 'J',
       2 => 'F',
@@ -120,9 +120,9 @@ return array (
       12 => 'D',
     ),
   ),
-  'weekDayNames' =>
+  'weekDayNames' => 
   array (
-    'wide' =>
+    'wide' => 
     array (
       0 => 'Ahad',
       1 => 'Isnin',
@@ -132,7 +132,7 @@ return array (
       5 => 'Jumaat',
       6 => 'Sabtu',
     ),
-    'abbreviated' =>
+    'abbreviated' => 
     array (
       0 => 'Ahd',
       1 => 'Isn',
@@ -142,7 +142,7 @@ return array (
       5 => 'Jum',
       6 => 'Sab',
     ),
-    'narrow' =>
+    'narrow' => 
     array (
       0 => 'A',
       1 => 'I',
@@ -153,9 +153,9 @@ return array (
       6 => 'S',
     ),
   ),
-  'weekDayNamesSA' =>
+  'weekDayNamesSA' => 
   array (
-    'narrow' =>
+    'narrow' => 
     array (
       0 => 'A',
       1 => 'I',
@@ -166,32 +166,32 @@ return array (
       6 => 'S',
     ),
   ),
-  'eraNames' =>
+  'eraNames' => 
   array (
-    'abbreviated' =>
+    'abbreviated' => 
     array (
       0 => 'S.M.',
       1 => 'TM',
     ),
-    'wide' =>
+    'wide' => 
     array (
       0 => 'S.M.',
       1 => 'TM',
     ),
-    'narrow' =>
+    'narrow' => 
     array (
       0 => 'S.M.',
       1 => 'TM',
     ),
   ),
-  'dateFormats' =>
+  'dateFormats' => 
   array (
     'full' => 'EEEE, d MMMM y',
     'long' => 'd MMMM y',
     'medium' => 'dd/MM/yyyy',
     'short' => 'd/MM/yy',
   ),
-  'timeFormats' =>
+  'timeFormats' => 
   array (
     'full' => 'h:mm:ss a zzzz',
     'long' => 'h:mm:ss a z',
@@ -202,7 +202,7 @@ return array (
   'amName' => 'PG',
   'pmName' => 'PTG',
   'orientation' => 'ltr',
-  'languages' =>
+  'languages' => 
   array (
     'ab' => 'Abkhazia',
     'af' => 'Afrikaans',
@@ -369,7 +369,7 @@ return array (
     'zu' => 'Zulu',
     'zxx' => 'Tidak kandungan linguistik',
   ),
-  'scripts' =>
+  'scripts' => 
   array (
     'arab' => 'Perso-Arab',
     'armn' => 'Armenia',
@@ -411,7 +411,7 @@ return array (
     'zyyy' => 'Biasa',
     'zzzz' => 'Skrip Tidak Diketahui',
   ),
-  'territories' =>
+  'territories' => 
   array (
     '001' => 'Dunia',
     '002' => 'Afrika',

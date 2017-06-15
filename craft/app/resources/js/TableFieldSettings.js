@@ -1,11 +1,3 @@
-/**
- * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
- * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://craftcms.com/license Craft License Agreement
- * @see       http://craftcms.com
- * @package   craft.app.resources
- */
-
 (function($) {
 
 
@@ -70,7 +62,7 @@ Craft.TableFieldSettings = Garnish.Base.extend(
 	initColumnSettingInputs: function($container)
 	{
 		var $textareas = $container.find('td:first-child textarea, td:nth-child(3) textarea'),
-			$typeSelect = $container.find('td:nth-child(4) select')
+			$typeSelect = $container.find('td:nth-child(4) select');
 
 		this.addListener($textareas, 'textchange', 'reconstructDefaultsTable');
 		this.addListener($typeSelect, 'change', 'reconstructDefaultsTable');

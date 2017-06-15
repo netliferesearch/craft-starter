@@ -286,7 +286,7 @@ class DashboardController extends BaseController
 			// Add some extra info about this install
 			$message = $getHelpModel->message . "\n\n" .
 				"------------------------------\n\n" .
-				'Craft '.craft()->getEditionName().' '.craft()->getVersion().'.'.craft()->getBuild();
+				'Craft '.craft()->getEditionName().' '.craft()->getVersion();
 
 			$plugins = craft()->plugins->getPlugins();
 
@@ -395,7 +395,7 @@ class DashboardController extends BaseController
 						$zipFile = $this->_createZip();
 					}
 
-					if (IOHelper::folderExists(craft()->path->getLogPath()))
+					if (IOHelper::folderExists(craft()->path->getSiteTemplatesPath()))
 					{
 						// Grab it all.
 						$templateFolderContents = IOHelper::getFolderContents(craft()->path->getSiteTemplatesPath());
@@ -478,7 +478,7 @@ class DashboardController extends BaseController
 			$errors = $getHelpModel->getErrors();
 		}
 
-		$this->renderTemplate('_components/widgets/GetHelp/response',
+		$this->renderTemplate('_components/widgets/CraftSupport/response',
 			array(
 				'success' => $success,
 				'errors' => JsonHelper::encode($errors),

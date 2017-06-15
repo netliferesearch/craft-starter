@@ -45,7 +45,7 @@ return array (
     'NZD' => 'NZ$',
     'THB' => '฿',
     'TWD' => 'NT$',
-    'USD' => 'دولار أمريكي',
+    'USD' => 'US$',
     'VND' => '₫',
     'XAF' => 'FCFA',
     'XCD' => 'EC$',

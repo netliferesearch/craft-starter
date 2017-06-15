@@ -11,7 +11,7 @@
  */
 return array (
   'version' => '8671',
-  'numberSymbols' =>
+  'numberSymbols' => 
   array (
     'decimal' => '.',
     'group' => ',',
@@ -28,7 +28,7 @@ return array (
   'scientificFormat' => '#E0',
   'percentFormat' => '#,##0%',
   'currencyFormat' => '¤#,##0.00;(¤#,##0.00)',
-  'currencySymbols' =>
+  'currencySymbols' => 
   array (
     'AUD' => 'A$',
     'BRL' => 'R$',
@@ -53,9 +53,9 @@ return array (
     'XPF' => 'CFPF',
     'MYR' => 'RM',
   ),
-  'monthNames' =>
+  'monthNames' => 
   array (
-    'wide' =>
+    'wide' => 
     array (
       1 => 'Januari',
       2 => 'Februari',
@@ -70,7 +70,7 @@ return array (
       11 => 'November',
       12 => 'Disember',
     ),
-    'abbreviated' =>
+    'abbreviated' => 
     array (
       1 => 'Jan',
       2 => 'Feb',
@@ -85,7 +85,7 @@ return array (
       11 => 'Nov',
       12 => 'Dis',
     ),
-    'narrow' =>
+    'narrow' => 
     array (
       1 => 'J',
       2 => 'F',
@@ -101,9 +101,9 @@ return array (
       12 => 'D',
     ),
   ),
-  'monthNamesSA' =>
+  'monthNamesSA' => 
   array (
-    'narrow' =>
+    'narrow' => 
     array (
       1 => 'J',
       2 => 'F',
@@ -118,7 +118,7 @@ return array (
       11 => 'N',
       12 => 'D',
     ),
-    'abbreviated' =>
+    'abbreviated' => 
     array (
       1 => 'Jan',
       2 => 'Feb',
@@ -133,7 +133,7 @@ return array (
       11 => 'Nov',
       12 => 'Dis',
     ),
-    'wide' =>
+    'wide' => 
     array (
       1 => 'Januari',
       2 => 'Februari',
@@ -149,9 +149,9 @@ return array (
       12 => 'Disember',
     ),
   ),
-  'weekDayNames' =>
+  'weekDayNames' => 
   array (
-    'wide' =>
+    'wide' => 
     array (
       0 => 'Ahad',
       1 => 'Isnin',
@@ -161,7 +161,7 @@ return array (
       5 => 'Jumaat',
       6 => 'Sabtu',
     ),
-    'abbreviated' =>
+    'abbreviated' => 
     array (
       0 => 'Ahd',
       1 => 'Isn',
@@ -171,7 +171,7 @@ return array (
       5 => 'Jum',
       6 => 'Sab',
     ),
-    'narrow' =>
+    'narrow' => 
     array (
       0 => 'A',
       1 => 'I',
@@ -181,7 +181,7 @@ return array (
       5 => 'J',
       6 => 'S',
     ),
-    'short' =>
+    'short' => 
     array (
       0 => 'Ah',
       1 => 'Is',
@@ -192,9 +192,9 @@ return array (
       6 => 'Sa',
     ),
   ),
-  'weekDayNamesSA' =>
+  'weekDayNamesSA' => 
   array (
-    'narrow' =>
+    'narrow' => 
     array (
       0 => 'A',
       1 => 'I',
@@ -204,7 +204,7 @@ return array (
       5 => 'J',
       6 => 'S',
     ),
-    'abbreviated' =>
+    'abbreviated' => 
     array (
       0 => 'Ahd',
       1 => 'Isn',
@@ -214,7 +214,7 @@ return array (
       5 => 'Jum',
       6 => 'Sab',
     ),
-    'short' =>
+    'short' => 
     array (
       0 => 'Ah',
       1 => 'Is',
@@ -224,7 +224,7 @@ return array (
       5 => 'Ju',
       6 => 'Sa',
     ),
-    'wide' =>
+    'wide' => 
     array (
       0 => 'Ahad',
       1 => 'Isnin',
@@ -235,32 +235,32 @@ return array (
       6 => 'Sabtu',
     ),
   ),
-  'eraNames' =>
+  'eraNames' => 
   array (
-    'abbreviated' =>
+    'abbreviated' => 
     array (
       0 => 'S.M.',
       1 => 'TM',
     ),
-    'wide' =>
+    'wide' => 
     array (
       0 => 'S.M.',
       1 => 'TM',
     ),
-    'narrow' =>
+    'narrow' => 
     array (
       0 => 'S.M.',
       1 => 'TM',
     ),
   ),
-  'dateFormats' =>
+  'dateFormats' => 
   array (
     'full' => 'EEEE, d MMMM y',
     'long' => 'd MMMM y',
     'medium' => 'dd/MM/y',
     'short' => 'd/MM/yy',
   ),
-  'timeFormats' =>
+  'timeFormats' => 
   array (
     'full' => 'h:mm:ss a zzzz',
     'long' => 'h:mm:ss a z',
@@ -271,7 +271,7 @@ return array (
   'amName' => 'PG',
   'pmName' => 'PTG',
   'orientation' => 'ltr',
-  'languages' =>
+  'languages' => 
   array (
     'ab' => 'Abkhazia',
     'ach' => 'Akoli',
@@ -454,7 +454,7 @@ return array (
     'zu' => 'Zulu',
     'zxx' => 'Tidak kandungan linguistik',
   ),
-  'scripts' =>
+  'scripts' => 
   array (
     'arab' => 'Perso-Arab',
     'armn' => 'Armenia',
@@ -496,7 +496,7 @@ return array (
     'zyyy' => 'Biasa',
     'zzzz' => 'Skrip Tidak Diketahui',
   ),
-  'territories' =>
+  'territories' => 
   array (
     '001' => 'Dunia',
     '002' => 'Afrika',

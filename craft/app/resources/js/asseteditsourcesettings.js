@@ -1,16 +1,8 @@
-/**
- * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
- * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://craftcms.com/license Craft License Agreement
- * @see       http://craftcms.com
- * @package   craft.app.resources
- */
-
 (function($) {
 
 
 var $s3AccessKeyIdInput = $('.s3-key-id'),
-    $s3SecretAccessKeyInput = $('.s3-secret-key')
+    $s3SecretAccessKeyInput = $('.s3-secret-key');
     $s3BucketSelect = $('.s3-bucket-select > select'),
     $s3RefreshBucketsBtn = $('.s3-refresh-buckets'),
     $s3RefreshBucketsSpinner = $s3RefreshBucketsBtn.parent().next().children(),
@@ -239,7 +231,7 @@ $rackspaceContainerSelect.change(function()
 
 
 var $googleAccessKeyIdInput = $('.google-key-id'),
-    $googleSecretAccessKeyInput = $('.google-secret-key')
+    $googleSecretAccessKeyInput = $('.google-secret-key');
     $googleBucketSelect = $('.google-bucket-select > select'),
     $googleRefreshBucketsBtn = $('.google-refresh-buckets'),
     $googleRefreshBucketsSpinner = $googleRefreshBucketsBtn.parent().next().children(),

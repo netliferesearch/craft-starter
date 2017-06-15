@@ -236,6 +236,8 @@ class UsersController extends BaseController
 				// If they didn't even enter a username/email, just bail now.
 				$errors[] = Craft::t('Username or email is required.');
 				$this->_handleSendPasswordResetError($errors);
+
+				return;
 			}
 
 			$user = craft()->users->getUserByUsernameOrEmail($loginName);
@@ -255,7 +257,7 @@ class UsersController extends BaseController
 		}
 
 		// If there haven't been any errors, or there were, and it's not one logged in user editing another
-		// // and we want to pretend like there wasn't any errors...
+		// and we want to pretend like there wasn't any errors...
 		if (empty($errors) || (count($errors) > 0 && !$existingUser && craft()->config->get('preventUserEnumeration')))
 		{
 			if (craft()->request->isAjaxRequest())
@@ -637,7 +639,13 @@ class UsersController extends BaseController
 
 				if (craft()->userSession->checkPermission('deleteUsers'))
 				{
-					$sketchyActions[] = array('id' => 'delete-btn', 'label' => Craft::t('Delete…'));
+					// Even if they have delete user permissions, we don't want a non-admin
+					// to be able to delete an admin.
+					$currentUser = craft()->userSession->getUser();
+
+					if (($currentUser && $currentUser->admin) || !$variables['account']->admin) {
+						$sketchyActions[] = array('id' => 'delete-btn', 'label' => Craft::t('Delete…'));
+					}
 				}
 			}
 		}
@@ -1016,20 +1024,18 @@ class UsersController extends BaseController
 				$originalEmail = $user->email;
 				$user->email = $user->unverifiedEmail;
 
-				try
+				if ($isNewUser)
 				{
-					if ($isNewUser)
-					{
-						// Send the activation email
-						craft()->users->sendActivationEmail($user);
-					}
-					else
-					{
-						// Send the standard verification email
-						craft()->users->sendNewEmailVerifyEmail($user);
-					}
+					// Send the activation email
+					$emailSent = craft()->users->sendActivationEmail($user);
 				}
-				catch (\phpmailerException $e)
+				else
+				{
+					// Send the standard verification email
+					$emailSent = craft()->users->sendNewEmailVerifyEmail($user);
+				}
+
+				if (!$emailSent)
 				{
 					craft()->userSession->setError(Craft::t('User saved, but couldn’t send verification email. Check your email settings.'));
 				}
@@ -1294,6 +1300,7 @@ class UsersController extends BaseController
 	 * Sends a new activation email to a user.
 	 *
 	 * @return null
+	 * @throws Exception
 	 */
 	public function actionSendActivationEmail()
 	{
@@ -1313,15 +1320,23 @@ class UsersController extends BaseController
 			throw new Exception(Craft::t('Invalid account status for user ID “{id}”.', array('id' => $userId)));
 		}
 
-		craft()->users->sendActivationEmail($user);
+		$emailSent = craft()->users->sendActivationEmail($user);
 
 		if (craft()->request->isAjaxRequest())
 		{
-			$this->returnJson(array('success' => true));
+			$this->returnJson(array('success' => $emailSent));
 		}
 		else
 		{
-			craft()->userSession->setNotice(Craft::t('Activation email sent.'));
+			if ($emailSent)
+			{
+				craft()->userSession->setNotice(Craft::t('Activation email sent.'));
+			}
+			else
+			{
+				craft()->userSession->setError(Craft::t('Couldn’t send activation email. Check your email settings.'));
+			}
+
 			$this->redirectToPostedUrl();
 		}
 	}
@@ -1773,21 +1788,24 @@ class UsersController extends BaseController
 				else
 				{
 					$permissions = craft()->request->getPost('permissions');
+
+					// it will be an empty string if no permissions were assigned during user saving.
+					if ($permissions === '')
+					{
+						$permissions = array();
+					}
 				}
 
-				if ($permissions !== null)
+				if (is_array($permissions))
 				{
 					// See if there are any new permissions in here
-					if (is_array($permissions))
+					foreach ($permissions as $permission)
 					{
-						foreach ($permissions as $permission)
+						if (!$user->can($permission))
 						{
-							if (!$user->can($permission))
-							{
-								// Yep. This will require an elevated session
-								$this->requireElevatedSession();
-								break;
-							}
+							// Yep. This will require an elevated session
+							$this->requireElevatedSession();
+							break;
 						}
 					}
 
@@ -1949,7 +1967,5 @@ class UsersController extends BaseController
 				'loginName' => $loginName,
 			));
 		}
-
-		return;
 	}
 }

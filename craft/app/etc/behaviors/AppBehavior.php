@@ -141,14 +141,19 @@ class AppBehavior extends BaseBehavior
 	 * Returns the installed Craft build.
 	 *
 	 * @return string
+	 * @deprecated
+	 * @todo remove in 3.0
 	 */
 	public function getBuild()
 	{
-		return $this->getInfo('build');
+		craft()->deprecator->log('getBuild()', 'craft()->getBuild() has been deprecated. As of Craft 2.6.2951, craft()->getVersion() returns the complete version number (X.Y.Z).');
+		preg_match('/^\d+\.\d+\.(\d+)/', $this->getVersion(), $matches);
+
+		return $matches[1];
 	}
 
 	/**
-	 * Returns the installed Craft build.
+	 * Returns the installed Craft schema version.
 	 *
 	 * @return string
 	 */
@@ -160,21 +165,29 @@ class AppBehavior extends BaseBehavior
 	/**
 	 * Returns the installed Craft release date.
 	 *
-	 * @return string
+	 * @return DateTime
+	 * @deprecated
+	 * @todo Remove in v3
 	 */
 	public function getReleaseDate()
 	{
-		return $this->getInfo('releaseDate');
+		craft()->deprecator->log('getReleaseDate()', 'craft()->getReleaseDate() has been deprecated.');
+
+		return new DateTime();
 	}
 
 	/**
 	 * Returns the Craft track.
 	 *
 	 * @return string
+	 * @deprecated
+	 * @todo Remove in v3
 	 */
 	public function getTrack()
 	{
-		return $this->getInfo('track');
+		craft()->deprecator->log('getTrack()', 'craft()->getTrack() has been deprecated.');
+
+		return 'stable';
 	}
 
 	/**
@@ -496,8 +509,27 @@ class AppBehavior extends BaseBehavior
 					throw new Exception(Craft::t('Craft appears to be installed but the info table is empty.'));
 				}
 
-				// Prevent an infinite loop in createFromString.
-				$row['releaseDate'] = DateTime::createFromString($row['releaseDate'], null, false);
+				// todo: remove after next breakpiont
+				if (isset($row['build']))
+				{
+					$version = $row['version'];
+
+					switch ($row['track'])
+					{
+						case 'dev':
+							$version .= '.0-alpha.'.$row['build'];
+							break;
+						case 'beta':
+							$version .= '.0-beta.'.$row['build'];
+							break;
+						default:
+							$version .= '.'.$row['build'];
+							break;
+					}
+
+					$row['version'] = $version;
+					unset($row['build'], $row['releaseDate'], $row['track']);
+				}
 
 				$this->_info = new InfoModel($row);
 			}
@@ -529,6 +561,9 @@ class AppBehavior extends BaseBehavior
 		if ($info->validate())
 		{
 			$attributes = $info->getAttributes(null, true);
+
+			// todo: remove after next breakpoint
+			unset($attributes['build'], $attributes['releaseDate'], $attributes['track']);
 
 			if ($this->isInstalled())
 			{
@@ -918,11 +953,14 @@ class AppBehavior extends BaseBehavior
 	 */
 	private function _getFallbackLanguage()
 	{
-		// See if we have the CP translated in one of the user's browsers preferred language(s)
-		$language = craft()->getTranslatedBrowserLanguage();
+		if (!craft()->isConsole())
+		{
+			// See if we have the CP translated in one of the user's browsers preferred language(s)
+			$language = craft()->getTranslatedBrowserLanguage();
+		}
 
 		// Default to the source language.
-		if (!$language)
+		if (empty($language))
 		{
 			$language = craft()->sourceLanguage;
 		}

@@ -127,11 +127,11 @@ class HttpRequestService extends \CHttpRequest
 		}
 
 		// Get the path segments
-		$this->_segments = array_filter(explode('/', $path), function($value)
+		$this->_segments = array_values(array_filter(explode('/', $path), function($value)
 		{
 			// Explicitly check in case there is a 0 in a segment (i.e. foo/0 or foo/0/bar)
 			return $value !== '';
-		});
+		}));
 
 		// Is this a CP request?
 		$this->_isCpRequest = ($this->getSegment(1) == craft()->config->get('cpTrigger'));
@@ -179,7 +179,7 @@ class HttpRequestService extends \CHttpRequest
 				$newPath = $this->decodePathInfo($match[1]);
 
 				// Reset the segments without the pagination stuff
-				$this->_segments = array_filter(explode('/', $newPath));
+				$this->_segments = array_values(array_filter(explode('/', $newPath)));
 			}
 		}
 
@@ -519,7 +519,7 @@ class HttpRequestService extends \CHttpRequest
 	 * @param string $name The dot-delimited name of the POST param to be fetched.
 	 *
 	 * @return mixed The value of the corresponding POST param
-     * @thorws HttpException if the param did not validate
+	 * @thorws HttpException if the param did not validate
 	 */
 	public function getValidatedPost($name)
 	{
@@ -529,10 +529,10 @@ class HttpRequestService extends \CHttpRequest
 		{
 			$value = craft()->security->validateData($value);
 
-            if ($value === false)
-            {
-                throw new HttpException(400, Craft::t('POST param “{name}” was invalid.', array('name' => $name)));
-            }
+			if ($value === false)
+			{
+				throw new HttpException(400, Craft::t('POST param “{name}” was invalid.', array('name' => $name)));
+			}
 		}
 
 		return $value;
@@ -933,7 +933,7 @@ class HttpRequestService extends \CHttpRequest
 
 	// Rename getIsX() => isX() functions for consistency
 	//  - We realize that these methods could be called as if they're properties (using CComponent's magic getter) but
-    //    we're trying to resist the temptation of magic methods for the sake of code obviousness.
+	//    we're trying to resist the temptation of magic methods for the sake of code obviousness.
 
 	/**
 	 * Alias of {@link getIsSecureConnection()}.
@@ -1554,7 +1554,7 @@ class HttpRequestService extends \CHttpRequest
 					else if ($actionParam)
 					{
 						$actionParam = $this->decodePathInfo($actionParam);
-						$this->_actionSegments = array_filter(explode('/', $actionParam));
+						$this->_actionSegments = array_values(array_filter(explode('/', $actionParam)));
 					}
 					else
 					{

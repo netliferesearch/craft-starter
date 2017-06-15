@@ -12,7 +12,6 @@
 	"Are you sure you want to delete this photo?"
 %}
 
-{% includejsresource "lib/fileupload/jquery.ui.widget.js" %}
 {% includejsresource "lib/fileupload/jquery.fileupload.js" %}
 {% includejsresource "lib/jcrop/jquery.Jcrop.min.js" %}
 {% includejsresource "js/profile.js" %}
@@ -36,8 +35,8 @@
 				<div class="menu">
 					<ul>
 						<li><a class="formsubmit" data-redirect="users/{id}">
-							{{ "Save and continue editing"|t }}
 							{{ forms.optionShortcutLabel('S') }}
+							{{ "Save and continue editing"|t }}
 						</a></li>
 						<li><a class="formsubmit" data-redirect="users/new">{{ "Save and add another"|t }}</a></li>
 					</ul>
@@ -196,7 +195,7 @@
 										{% for group in allGroups %}
 											<li>
 												{{ forms.checkbox({
-													label: group.name|t,
+													label: group.name|t|e,
 													name: 'groups[]',
 													value: group.id,
 													checked: (group.id in userGroups|keys)

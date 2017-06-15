@@ -243,7 +243,6 @@ class ElementsService extends BaseApplicationComponent
 		$locale = $criteria->locale;
 		$elementType = $criteria->getElementType();
 		$indexBy = $criteria->indexBy;
-		$lastElement = null;
 
 		foreach ($results as $result)
 		{
@@ -320,27 +319,17 @@ class ElementsService extends BaseApplicationComponent
 
 			if ($indexBy)
 			{
-				$elements[$element->$indexBy] = $element;
+				// Cast to a string in the case of SingleOptionFieldData, so its
+				// __toString() method gets invoked.
+				$elements[(string)$element->$indexBy] = $element;
 			}
 			else
 			{
 				$elements[] = $element;
 			}
-
-			if ($lastElement)
-			{
-				$lastElement->setNext($element);
-				$element->setPrev($lastElement);
-			}
-			else
-			{
-				$element->setPrev(false);
-			}
-
-			$lastElement = $element;
 		}
 
-		$lastElement->setNext(false);
+		ElementHelper::setNextPrevOnElements($elements);
 
 		// Should we eager-load some elements onto these?
 		if ($criteria->with)
@@ -804,8 +793,8 @@ class ElementsService extends BaseApplicationComponent
 		// ---------------------------------------------------------------------
 
 		// Convert the old childOf and parentOf params to the relatedTo param
-		// childOf(element)  => relatedTo({ source: element })
-		// parentOf(element) => relatedTo({ target: element })
+		// childOf(element)  => relatedTo({ sourceElement: element })
+		// parentOf(element) => relatedTo({ targetElement: element })
 		if (!$criteria->relatedTo && ($criteria->childOf || $criteria->parentOf))
 		{
 			$relatedTo = array('and');
@@ -821,6 +810,7 @@ class ElementsService extends BaseApplicationComponent
 			}
 
 			$criteria->relatedTo = $relatedTo;
+			craft()->deprecator->log('element_old_relation_params', 'The ‘childOf’, ‘childField’, ‘parentOf’, and ‘parentField’ element params have been deprecated. Use ‘relatedTo’ instead.');
 		}
 
 		if ($criteria->relatedTo)
@@ -1145,11 +1135,16 @@ class ElementsService extends BaseApplicationComponent
 				}
 			}
 
-			if ($criteria->level || $criteria->depth)
+			if (!$criteria->level && $criteria->depth)
 			{
-				// TODO: 'depth' is deprecated; use 'level' instead.
-				$level = ($criteria->level ? $criteria->level : $criteria->depth);
-				$query->andWhere(DbHelper::parseParam('structureelements.level', $level, $query->params));
+				$criteria->level = $criteria->depth;
+				$criteria->depth = null;
+				craft()->deprecator->log('element_depth_param', 'The \'depth\' element param has been deprecated. Use \'level\' instead.');
+			}
+
+			if ($criteria->level)
+			{
+				$query->andWhere(DbHelper::parseParam('structureelements.level', $criteria->level, $query->params));
 			}
 		}
 
@@ -1550,6 +1545,12 @@ class ElementsService extends BaseApplicationComponent
 							// Don't bother with any of the other locales
 							$success = false;
 							break;
+						}
+
+						// Go ahead and re-do search index keywords to grab things like "title" in multi-locale installs.
+						if ($isNewElement)
+						{
+							craft()->search->indexElementAttributes($localizedElement);
 						}
 
 						ElementHelper::setUniqueUri($localizedElement);

@@ -196,10 +196,19 @@ class MatrixFieldType extends BaseFieldType implements IEagerLoadingFieldType
 
 			if (is_array($value))
 			{
+				$isLivePreview = craft()->request->isLivePreview();
+				$blocks = array();
 				$prevElement = null;
 
 				foreach ($value as $element)
 				{
+					// Skip disabled blocks on Live Preview requests
+					if ($isLivePreview && !$element->enabled) {
+						continue;
+					}
+
+					$blocks[] = $element;
+
 					if ($prevElement)
 					{
 						$prevElement->setNext($element);
@@ -209,7 +218,7 @@ class MatrixFieldType extends BaseFieldType implements IEagerLoadingFieldType
 					$prevElement = $element;
 				}
 
-				$criteria->setMatchedElements($value);
+				$criteria->setMatchedElements($blocks);
 			}
 			else if ($value === '')
 			{
@@ -264,6 +273,10 @@ class MatrixFieldType extends BaseFieldType implements IEagerLoadingFieldType
 	{
 		$id = craft()->templates->formatInputId($name);
 		$settings = $this->getSettings();
+
+		if ($this->element !== null && $this->element->hasEagerLoadedElements($name)) {
+			$value = $this->element->getEagerLoadedElements($name);
+		}
 
 		if ($value instanceof ElementCriteriaModel)
 		{
@@ -686,7 +699,8 @@ class MatrixFieldType extends BaseFieldType implements IEagerLoadingFieldType
 
 			$bodyHtml = craft()->templates->namespaceInputs(craft()->templates->render('_includes/fields', array(
 				'namespace' => null,
-				'fields'    => $fieldLayoutFields
+				'fields'    => $fieldLayoutFields,
+				'element'   => $block,
 			)));
 
 			// Reset $_isFresh's

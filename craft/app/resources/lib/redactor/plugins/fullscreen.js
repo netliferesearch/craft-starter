@@ -13,6 +13,7 @@
 				this.fullscreen.isOpen = false;
 
 				var button = this.button.add('fullscreen', this.lang.get('fullscreen'));
+				this.button.setIcon(button, '<i class="re-icon-expand"></i>');
 				this.button.addCallback(button, this.fullscreen.toggle);
 
 				if (this.opts.fullscreen)
@@ -24,7 +25,7 @@
 			enable: function()
 			{
 				this.fullscreen.isOpened = false;
-				this.button.setActive('fullscreen');
+				this.button.changeIcon('fullscreen', 'retract');
 				this.fullscreen.isOpen = true;
 
 				if (!this.opts.fullscreen)
@@ -44,20 +45,14 @@
 
 				this.fullscreen.height = this.core.editor().height();
 
-				if (this.opts.maxHeight)
-				{
-					this.core.editor().css('max-height', '');
-				}
+				if (this.opts.maxHeight) this.core.editor().css('max-height', '');
+				if (this.opts.minHeight) this.core.editor().css('min-height', '');
+				if (!this.$fullscreenPlaceholder) this.$fullscreenPlaceholder = $('<div/>');
 
-				if (this.opts.minHeight)
-				{
-					this.core.editor().css('min-height', '');
-				}
-
-				if (!this.$fullscreenPlaceholder)
-				{
-					this.$fullscreenPlaceholder = $('<div/>');
-				}
+                if (this.opts.toolbarExternal)
+                {
+                    $(this.opts.toolbarExternal).css({ 'position': 'absolute', 'top': 0, 'left': 0, 'width': '100%' });
+                }
 
 				this.$fullscreenPlaceholder.insertAfter(this.$box);
 
@@ -87,7 +82,7 @@
 			},
 			disable: function()
 			{
-				this.button.setInactive('fullscreen');
+				this.button.changeIcon('fullscreen', 'expand');
 				this.fullscreen.isOpened = undefined;
 				this.fullscreen.isOpen = false;
 				this.selection.save();
@@ -104,7 +99,7 @@
 				if (this.opts.toolbarExternal)
 				{
 					this.core.box().css('top', this.fullscreen.boxcss.top);
-					this.core.toolbar().css({
+					$(this.opts.toolbarExternal).css({
 						'width': this.fullscreen.toolcss.width,
 						'top': this.fullscreen.toolcss.top,
 						'position': this.fullscreen.toolcss.position

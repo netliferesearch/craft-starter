@@ -1,4 +1,3 @@
-@charset "UTF-8";
 /* Flexbox stuff */
 /* Other */
 /* RTL stuff */
@@ -88,19 +87,19 @@ body.rtl .widgetmanagerhud .colspan-picker:not(.hover) a.active { border-right: 
 body.ltr .widgetmanagerhud .colspan-picker:not(.hover) a.active { border-right: medium none; }
 body.rtl .widgetmanagerhud .colspan-picker:not(.hover) a.active { border-left: medium none; }
 
-body.ltr .widgetmanagerhud .colspan-picker:not(.hover) a.active.last { border-right: 1px solid #999999; }
-body.rtl .widgetmanagerhud .colspan-picker:not(.hover) a.active.last { border-left: 1px solid #999999; }
+body.ltr .widgetmanagerhud .colspan-picker:not(.hover) a.active.last { border-right: 1px solid #999; }
+body.rtl .widgetmanagerhud .colspan-picker:not(.hover) a.active.last { border-left: 1px solid #999; }
 
 .widgetmanagerhud .colspan-picker a { border: 1px solid rgba(0, 0, 0, 0.15); background-image: none; width: 7px; height: 13px; margin-left: 0; display: inline-block; margin-top: 1px; margin-bottom: 1px; box-sizing: border-box; }
 body.ltr .widgetmanagerhud .colspan-picker a { border-left: medium none; }
 body.rtl .widgetmanagerhud .colspan-picker a { border-right: medium none; }
 
 .widgetmanagerhud .colspan-picker a:first-child { width: 8px; }
-body.ltr .widgetmanagerhud .colspan-picker a:first-child { border-left: 1px solid #999999 !important; }
-body.rtl .widgetmanagerhud .colspan-picker a:first-child { border-right: 1px solid #999999 !important; }
+body.ltr .widgetmanagerhud .colspan-picker a:first-child { border-left: 1px solid #999 !important; }
+body.rtl .widgetmanagerhud .colspan-picker a:first-child { border-right: 1px solid #999 !important; }
 
-body.ltr .widgetmanagerhud .colspan-picker a:hover { border-right: 1px solid #999999 !important; }
-body.rtl .widgetmanagerhud .colspan-picker a:hover { border-left: 1px solid #999999 !important; }
+body.ltr .widgetmanagerhud .colspan-picker a:hover { border-right: 1px solid #999 !important; }
+body.rtl .widgetmanagerhud .colspan-picker a:hover { border-left: 1px solid #999 !important; }
 
 .widgetmanagerhud .colspan-picker a.highlight { border: 1px solid #999; height: 15px; margin-top: 0; margin-bottom: 0; }
 body.ltr .widgetmanagerhud .colspan-picker a.highlight { border-left: medium none; }
@@ -117,3 +116,5 @@ body.rtl .widgetmanagerhud .colspan-picker a.highlight.last { border-left: mediu
   .widgetmanagerhud .body { min-width: 300px; }
   .widgetmanagerhud .widgetmanagerhud-col-colspan-picker { display: none; }
   .widgetmanagerhud .widgetmanagerhud-col-move { display: none; } }
+
+/*# sourceMappingURL=dashboard.css.map */

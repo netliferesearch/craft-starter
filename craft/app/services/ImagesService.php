@@ -1,6 +1,7 @@
 <?php
 namespace Craft;
 
+use enshrined\svgSanitize\Sanitizer;
 use lsolesen\pel\PelJpeg;
 use lsolesen\pel\PelTag;
 use lsolesen\pel\PelDataWindow;
@@ -138,6 +139,11 @@ class ImagesService extends BaseApplicationComponent
 			craft()->config->maxPowerCaptain();
 		}
 
+		// Probably enough for a non-file.
+		if (!filesize($filePath)) {
+		    return true;
+		}
+
 		// Find out how much memory this image is going to need.
 		$imageInfo = getimagesize($filePath);
 		$K64 = 65536;
@@ -167,12 +173,33 @@ class ImagesService extends BaseApplicationComponent
 	 *
 	 * @param string $filePath
 	 *
-	 * @return bool
+	 * @return bool|null
 	 */
 	public function cleanImage($filePath)
 	{
 		$cleanedByRotation = false;
 		$cleanedByStripping = false;
+
+		// Special case for SVG files.
+		if (IOHelper::getExtension($filePath) === 'svg')
+		{
+			if (!extension_loaded('dom'))
+			{
+				throw new Exception('Craft needs the PHP DOM extension (http://www.php.net/manual/en/book.dom.php) enabled to upload SVG files.');
+			}
+
+			$sanitizer = new Sanitizer();
+			$svgContents = IOHelper::getFileContents($filePath);
+			$svgContents = $sanitizer->sanitize($svgContents);
+
+			if (!$svgContents)
+			{
+				throw new Exception('There was a problem sanitizing the SVG file contents. Likely due to not well-formed XML.');
+			}
+
+			IOHelper::writeToFile($filePath, $svgContents);
+			return true;
+		}
 
 		try
 		{
@@ -180,6 +207,7 @@ class ImagesService extends BaseApplicationComponent
 			{
 				$cleanedByRotation = $this->rotateImageByExifData($filePath);
 			}
+
 			$cleanedByStripping = $this->stripOrientationFromExifData($filePath);
 		}
 		catch (\Exception $e)
@@ -210,29 +238,27 @@ class ImagesService extends BaseApplicationComponent
 			return false;
 		}
 
-		$exif = $this->getExifData($filePath);
+		if (!($this->isImagick() && method_exists('Imagick', 'getImageOrientation'))) {
+			return false;
+		}
+
+		$image = new \Imagick($filePath);
+		$orientation = $image->getImageOrientation();
 
 		$degrees = false;
 
-		if (!empty($exif['ifd0.Orientation']))
-		{
-			switch ($exif['ifd0.Orientation'])
-			{
-				case ImageHelper::EXIF_IFD0_ROTATE_180:
-				{
-					$degrees = 180;
-					break;
-				}
-				case ImageHelper::EXIF_IFD0_ROTATE_90:
-				{
-					$degrees = 90;
-					break;
-				}
-				case ImageHelper::EXIF_IFD0_ROTATE_270:
-				{
-					$degrees = 270;
-					break;
-				}
+		switch ($orientation) {
+			case ImageHelper::EXIF_IFD0_ROTATE_180: {
+				$degrees = 180;
+				break;
+			}
+			case ImageHelper::EXIF_IFD0_ROTATE_90: {
+				$degrees = 90;
+				break;
+			}
+			case ImageHelper::EXIF_IFD0_ROTATE_270: {
+				$degrees = 270;
+				break;
 			}
 		}
 

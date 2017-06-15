@@ -1,0 +1,11 @@
+.externalToolBuilders
+.settings/*
+.buildpath
+.project
+locale/*
+doc/*
+vendor
+composer.lock
+ChangeLog
+build-base*
+.idea/*

@@ -101,14 +101,11 @@
 %}
 
 
-{% set task = craft.tasks.getRunningTask() %}
-{% if task %}
-	{% includejs 'Craft.cp.setRunningTaskInfo('~task.getInfo()|json_encode|raw~');' %}
-	{% includejs 'Craft.cp.trackTaskProgress();' %}
+{% includejs 'Craft.cp.setTaskInfo('~craft.tasks.getTaskInfo()|json_encode|raw~', false);' %}
+{% if craft.tasks.isTaskRunning() %}
+	{% includejs 'Craft.cp.trackTaskProgress(true);' %}
 {% elseif craft.tasks.areTasksPending() %}
 	{% includejs 'Craft.cp.runPendingTasks();' %}
-{% elseif craft.tasks.haveTasksFailed() %}
-	{% includejs 'Craft.cp.setRunningTaskInfo({ status: "error" });' %}
 {% endif %}
 
 
@@ -124,6 +121,14 @@
 		{% endspaceless -%}
 	{% endset %}
 {% endif %}
+
+{% set containerAttributes %}
+    {%- block containerAttributes -%}
+		id="container" {% if fullPageForm -%}
+			method="post" accept-charset="UTF-8" data-saveshortcut{% if saveShortcutRedirect is defined %} data-saveshortcut-redirect="{{ saveShortcutRedirect }}"{% endif %} data-confirm-unload
+		{%- endif %}
+    {%- endblock -%}
+{% endset %}
 
 
 {% block body %}
@@ -215,9 +220,6 @@
 
 					</li>
 				{% endfor %}
-
-				{#
-				#}
 			</ul>
 		</nav>
 
@@ -246,10 +248,10 @@
 	</header>
 
 	{% if fullPageForm %}
-		<form id="container" method="post" accept-charset="UTF-8" data-saveshortcut{% if saveShortcutRedirect is defined %} data-saveshortcut-redirect="{{ saveShortcutRedirect }}"{% endif %} data-confirm-unload>
+		<form {{ containerAttributes }}>
 			{{ getCsrfInput() }}
 	{% else %}
-		<div id="container">
+		<div {{ containerAttributes }}>
 	{% endif %}
 
 		<div id="notifications-wrapper">
@@ -373,7 +375,7 @@
 			{% endspaceless -%}
 
 			<ul>
-				<li>Craft CMS {{ craft.app.getVersion() }}.{{ craft.app.getBuild() }}</li>
+				<li>Craft CMS {{ craft.app.getVersion() }}</li>
 				<li>© Pixel &amp; Tonic</li>
 				{% if currentUser.can('performUpdates') %}
 					<li><a id="footer-updates" href="{{ url('updates') }}">{{ craft.app.isUpdateInfoCached() and totalUpdates is defined and totalUpdates ? updateText : "Check for updates"|t }}</a></li>
@@ -384,9 +386,9 @@
 			</ul>
 		</div>
 
-	{% if not fullPageForm %}
-		</div>
-	{% else %}
+	{% if fullPageForm %}
 		</form>
+	{% else %}
+		</div>
 	{% endif %}
 {% endblock %}

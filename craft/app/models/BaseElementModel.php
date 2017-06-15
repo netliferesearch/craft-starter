@@ -166,7 +166,8 @@ abstract class BaseElementModel extends BaseModel
 	 */
 	public function __toString()
 	{
-		return (string) $this->getTitle();
+		$title = (string) $this->getTitle();
+		return $title ?: ($this->id ?: get_class($this));
 	}
 
 	/**
@@ -1086,6 +1087,8 @@ abstract class BaseElementModel extends BaseModel
 	{
 		if (isset($this->_eagerLoadedElements[$handle]))
 		{
+			ElementHelper::setNextPrevOnElements($this->_eagerLoadedElements[$handle]);
+
 			return $this->_eagerLoadedElements[$handle];
 		}
 

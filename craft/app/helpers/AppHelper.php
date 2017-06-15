@@ -21,6 +21,11 @@ class AppHelper
 	 */
 	private static $_isPhpDevServer = null;
 
+	/**
+	 * @var null
+	 */
+	private static $_isWindows = null;
+
 	// Public Methods
 	// =========================================================================
 
@@ -45,6 +50,23 @@ class AppHelper
 
 		return static::$_isPhpDevServer;
 	}
+
+	/**
+	 * Returns whether Craft is running on a Windows server.
+	 *
+	 * @return bool Whether Craft is running on a Windows server or not.
+	 */
+	public static function isWindows()
+	{
+		if (!isset(static::$_isWindows))
+		{
+			static::$_isWindows = (strncmp(strtoupper(PHP_OS), 'WIN', 3) == 0);
+		}
+
+		return static::$_isWindows;
+	}
+
+
 
 	/**
 	 * Returns an array of all known Craft editions’ IDs.
@@ -112,7 +134,8 @@ class AppHelper
 	 * Retrieves a PHP config setting that represents a filesize and normalizes it to bytes.
 	 *
 	 * @param string $var The PHP config setting to retrieve.
-	 * @param int The size in bytes.
+	 *
+	 * @return int The size in bytes.
 	 */
 	public static function getPhpConfigValueInBytes($var)
 	{
@@ -162,6 +185,34 @@ class AppHelper
 		return null;
 	}
 
+	/**
+	 * Returns the major and minor (X.Y) versions from a given version number.
+	 *
+	 * @param string $version The full version number
+	 *
+	 * @return string The X.Y parts of the version number
+	 */
+	public static function getMajorMinorVersion($version)
+	{
+		preg_match('/^\d+\.\d+/', $version, $matches);
+
+		return $matches[0];
+	}
+
+	/**
+	 * Returns the Craft download URL for a given version.
+	 *
+	 * @param string $version The Craft version
+	 *
+	 * @return string The download URL
+	 */
+	public static function getCraftDownloadUrl($version)
+	{
+		$xy = self::getMajorMinorVersion($version);
+
+		return "https://download.craftcdn.com/craft/{$xy}/{$version}/Craft-{$version}.zip";
+	}
+
 	// Deprecated Methods
 	// -------------------------------------------------------------------------
 
@@ -187,7 +238,8 @@ class AppHelper
 	 *
 	 * Used by getPhpConfigValueInBytes() and getByteValueFromPhpSizeString() so long as we have to keep the latter around.
 	 *
-	 * @param mixed $var
+	 * @param $value
+	 *
 	 * @return int
 	 */
 	private static function _normalizePhpConfigValueToBytes($value)
@@ -195,13 +247,15 @@ class AppHelper
 		$matches = array();
 
 		// See if we can recognize that.
-		if (!preg_match('/[0-9]+(K|M|G|T)/i', $value, $matches))
+		if (!preg_match('/(\d+)(K|M|G|T)/i', $value, $matches))
 		{
 			return (int) $value;
 		}
 
+		$value = (int)$matches[1];
+
 		// Multiply! Falling through here is intentional.
-		switch (strtolower($matches[1]))
+		switch (strtolower($matches[2]))
 		{
 			case 't':
 				$value *= 1024;

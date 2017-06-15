@@ -58,7 +58,7 @@ class Et
 	 */
 	public function __construct($endpoint, $timeout = 30, $connectTimeout = 30)
 	{
-		$endpoint .= craft()->config->get('endpointSuffix');
+		$endpoint .= craft()->config->get('elliottUrlSuffix');
 
 		$this->_endpoint = $endpoint;
 		$this->_timeout = $timeout;
@@ -75,11 +75,9 @@ class Et
 			'requestIp'         => craft()->request->getIpAddress(),
 			'requestTime'       => DateTimeHelper::currentTimeStamp(),
 			'requestPort'       => craft()->request->getPort(),
-			'localBuild'        => CRAFT_BUILD,
 			'localVersion'      => CRAFT_VERSION,
 			'localEdition'      => craft()->getEdition(),
 			'userEmail'         => $userEmail,
-			'track'             => CRAFT_TRACK,
 			'showBeta'          => craft()->config->get('showBetaUpdates'),
 			'serverInfo'        => array(
 				'extensions'    => get_loaded_extensions(),
@@ -89,7 +87,7 @@ class Et
 			),
 		));
 
-		$this->_userAgent = 'Craft/'.craft()->getVersion().'.'.craft()->getBuild();
+		$this->_userAgent = 'Craft/'.craft()->getVersion();
 	}
 
 	/**

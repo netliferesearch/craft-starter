@@ -1,11 +1,3 @@
-/**
- * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
- * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://craftcms.com/license Craft License Agreement
- * @see       http://craftcms.com
- * @package   craft.app.resources
- */
-
 (function($) {
 
 var LoginForm = Garnish.Base.extend(
@@ -232,7 +224,9 @@ var LoginForm = Garnish.Base.extend(
 			newFormTopMargin = formTopMargin + Math.round(loginFieldsHeight/2);
 
 		this.$form.velocity({marginTop: newFormTopMargin}, 'fast');
-		this.$loginFields.velocity({height: 0}, 'fast');
+		this.$loginFields.velocity({height: 24}, 'fast', $.proxy(function() {
+			this.$loginFields.hide();
+		}, this));
 
 		this.$form.addClass('reset-password');
 		this.$submitBtn.addClass('reset-password');

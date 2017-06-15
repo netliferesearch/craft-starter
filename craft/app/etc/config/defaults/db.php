@@ -36,7 +36,8 @@ return array(
 	'database' => '',
 
 	/**
-	 * The prefix to use when naming tables. This can be no more than 5 characters.
+	 * The prefix to use when naming tables. This can be no more than 5 characters
+	 * and must be all lowercase.
 	 */
 	'tablePrefix' => 'craft',
 
@@ -73,8 +74,8 @@ return array(
 	 *
 	 *     array(
 	 *         PDO::MYSQL_ATTR_SSL_KEY    => '/path/to/my/client-key.pem',
-	           PDO::MYSQL_ATTR_SSL_CERT   => '/path/to/my/client-cert.pem',
-	           PDO::MYSQL_ATTR_SSL_CA     => '/path/to/my/ca-cert.pem',
+	 *         PDO::MYSQL_ATTR_SSL_CERT   => '/path/to/my/client-cert.pem',
+	 *         PDO::MYSQL_ATTR_SSL_CA     => '/path/to/my/ca-cert.pem',
 	 *     ),
 	 */
 	'attributes' => array(),

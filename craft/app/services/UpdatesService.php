@@ -128,11 +128,14 @@ class UpdatesService extends BaseApplicationComponent
 			return true;
 		}
 
-		foreach ($this->_updateModel->plugins as $pluginUpdateModel)
+		if (!empty($this->_updateModel->plugins))
 		{
-			if ($pluginUpdateModel->criticalUpdateAvailable)
+			foreach ($this->_updateModel->plugins as $pluginUpdateModel)
 			{
-				return true;
+				if ($pluginUpdateModel->criticalUpdateAvailable)
+				{
+					return true;
+				}
 			}
 		}
 
@@ -256,7 +259,6 @@ class UpdatesService extends BaseApplicationComponent
 
 		$updateModel = new UpdateModel();
 		$updateModel->app = new AppUpdateModel();
-		$updateModel->app->localBuild   = CRAFT_BUILD;
 		$updateModel->app->localVersion = CRAFT_VERSION;
 
 		$plugins = craft()->plugins->getPlugins();
@@ -286,7 +288,7 @@ class UpdatesService extends BaseApplicationComponent
 	 */
 	public function checkPluginReleaseFeeds(UpdateModel $updateModel)
 	{
-		$userAgent = 'Craft/'.craft()->getVersion().'.'.craft()->getBuild();
+		$userAgent = 'Craft/'.craft()->getVersion();
 
 		foreach ($updateModel->plugins as $pluginUpdateModel)
 		{
@@ -417,8 +419,17 @@ class UpdatesService extends BaseApplicationComponent
 
 					foreach ($release['notes'] as $line)
 					{
+						if (version_compare(PHP_VERSION, '5.4', '>='))
+						{
+							$flags = ENT_QUOTES | ENT_SUBSTITUTE;
+						}
+						else
+						{
+							$flags = ENT_QUOTES;
+						}
+
 						// Escape any HTML
-						$line = htmlspecialchars($line, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+						$line = htmlspecialchars($line, $flags, 'UTF-8');
 
 						// Is this a heading?
 						if (preg_match('/^#\s+(.+)/', $line, $match))
@@ -564,7 +575,7 @@ class UpdatesService extends BaseApplicationComponent
 
 				if ($handle == 'craft')
 				{
-					Craft::log('Updating from '.$updateModel->app->localVersion.'.'.$updateModel->app->localBuild.' to '.$updateModel->app->latestVersion.'.'.$updateModel->app->latestBuild.'.', LogLevel::Info, true);
+					Craft::log('Updating from '.$updateModel->app->localVersion.' to '.$updateModel->app->latestVersion.'.', LogLevel::Info, true);
 				}
 				else
 				{
@@ -859,24 +870,24 @@ class UpdatesService extends BaseApplicationComponent
 	}
 
 	/**
-	 * Returns whether a different Craft build has been uploaded.
+	 * Returns whether a different Craft version has been uploaded.
 	 *
 	 * @return bool
 	 */
-	public function hasCraftBuildChanged()
+	public function hasCraftVersionChanged()
 	{
-		return (CRAFT_BUILD != craft()->getBuild());
+		return (CRAFT_VERSION != craft()->getVersion());
 	}
 
 	/**
-	 * Returns true is the build stored in craft_info is less than the minimum required build on the file system. This
+	 * Returns true if the version stored in craft_info is less than the minimum required version on the file system. This
 	 * effectively makes sure that a user cannot manually update past a manual breakpoint.
 	 *
 	 * @return bool
 	 */
 	public function isBreakpointUpdateNeeded()
 	{
-		return (CRAFT_MIN_BUILD_REQUIRED > craft()->getBuild());
+		return version_compare(CRAFT_MIN_VERSION_REQUIRED, craft()->getVersion(), '>');
 	}
 
 	/**
@@ -908,10 +919,7 @@ class UpdatesService extends BaseApplicationComponent
 	{
 		$info = craft()->getInfo();
 		$info->version = CRAFT_VERSION;
-		$info->build = CRAFT_BUILD;
 		$info->schemaVersion = CRAFT_SCHEMA_VERSION;
-		$info->track = CRAFT_TRACK;
-		$info->releaseDate = CRAFT_RELEASE_DATE;
 
 		return craft()->saveInfo($info);
 	}

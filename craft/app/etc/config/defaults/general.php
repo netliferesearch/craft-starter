@@ -36,8 +36,8 @@ return array(
 	 * Possible values are:
 	 *
 	 * - `true` (all updates are allowed)
-	 * - `'minor-only'` (only minor and build updates are allowed)
-	 * - `'build-only'` (only build updates are allowed)
+	 * - `'minor-only'` (only minor and patch updates are allowed - the "Y" and "Z" in X.Y.Z)
+	 * - `'patch-only'` (only patch updates are allowed - the "Z" in X.Y.Z)
 	 * - `false` (no updates are allowed)
 	 */
 	'allowAutoUpdates' => true,
@@ -474,7 +474,7 @@ return array(
 	/**
 	 * The amount of time to wait before Craft purges pending users from the system that have not activated. Set to
 	 * false to disable this feature. Note that if you set this to a time interval, then any content assigned to
-     * a pending user will be deleted as well when the given time interval passes.
+	 * a pending user will be deleted as well when the given time interval passes.
 	 *
 	 * @see http://www.php.net/manual/en/dateinterval.construct.php
 	 */
@@ -535,12 +535,6 @@ return array(
 	 * If disabled, an alternate task running trigger *must* be set up separately.
 	 */
 	'runTasksAutomatically' => true,
-
-	/**
-	 * Words that should be ignored when indexing search keywords and preparing search terms to be matched against the
-	 * keyword index.
-	 */
-	'searchIgnoreWords' => array('the', 'and'),
 
 	/**
 	 * Whether the X-Powered-By header should be sent on each request, helping clients identify that the site is powered by Craft.

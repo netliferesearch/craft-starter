@@ -1,11 +1,3 @@
-/**
- * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
- * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://craftcms.com/license Craft License Agreement
- * @see       http://craftcms.com
- * @package   craft.app.resources
- */
-
 (function($){
 
 
@@ -37,7 +29,7 @@ Craft.MatrixInput = Garnish.Base.extend(
 
 	init: function(id, blockTypes, inputNamePrefix, maxBlocks)
 	{
-		this.id = id
+		this.id = id;
 		this.blockTypes = blockTypes;
 		this.inputNamePrefix = inputNamePrefix;
 		this.inputIdPrefix = Craft.formatInputId(this.inputNamePrefix);
@@ -474,7 +466,7 @@ var MatrixBlock = Garnish.Base.extend(
 		{
 			ev.preventDefault();
 			this.toggle();
-		}
+		};
 
 		this.addListener(this.$titlebar, 'doubletap', this._handleTitleBarClick);
 	},
@@ -511,7 +503,8 @@ var MatrixBlock = Garnish.Base.extend(
 
 			for (var j = 0; j < $inputs.length; j++)
 			{
-				var $input = $($inputs[j]);
+				var $input = $($inputs[j]),
+					value;
 
 				if ($input.hasClass('label'))
 				{
@@ -525,11 +518,11 @@ var MatrixBlock = Garnish.Base.extend(
 						continue;
 					}
 
-					var value = $input.text();
+					value = $input.text();
 				}
 				else
 				{
-					var value = Craft.getText(Garnish.getInputPostVal($input));
+					value = Craft.getText(Garnish.getInputPostVal($input));
 				}
 
 				if (value instanceof Array)

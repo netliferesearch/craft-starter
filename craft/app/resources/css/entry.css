@@ -1,4 +1,3 @@
-@charset "UTF-8";
 /* Flexbox stuff */
 /* Other */
 /* RTL stuff */
@@ -34,3 +33,5 @@ body.rtl #locales li .lightswitch { left: 9px; }
 #locales li .status { display: block; position: absolute; top: 50%; margin: -5px 0 0; }
 body.ltr #locales li .status { right: 16px; }
 body.rtl #locales li .status { left: 16px; }
+
+/*# sourceMappingURL=entry.css.map */

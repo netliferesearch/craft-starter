@@ -1,11 +1,3 @@
-/**
- * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
- * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://craftcms.com/license Craft License Agreement
- * @see       http://craftcms.com
- * @package   craft.app.resources
- */
-
 (function($) {
 
 
@@ -137,7 +129,7 @@ var Route = Garnish.Base.extend(
 
 			if (this.modal.urlInput.isText($elem))
 			{
-				urlHtml += $elem.val();
+				urlHtml += Craft.escapeHtml($elem.val());
 			}
 			else
 			{
@@ -146,7 +138,7 @@ var Route = Garnish.Base.extend(
 		}
 
 		this.$url.html(urlHtml);
-		this.$template.html(this.modal.$templateInput.val());
+		this.$template.text(this.modal.$templateInput.val());
 	}
 
 });
@@ -309,7 +301,7 @@ var RouteSettingsModal = Garnish.Modal.extend(
 
 			// Set the initial Template value
 			var templateVal = this.route.$template.text();
-			this.$templateInput.val(templateVal)
+			this.$templateInput.val(templateVal);
 		}
 		else
 		{
@@ -422,7 +414,7 @@ var RouteSettingsModal = Garnish.Modal.extend(
 			}
 		}
 
-		data['template'] = this.$templateInput.val();
+		data.template = this.$templateInput.val();
 
 		this.loading = true;
 		this.$saveBtn.addClass('active');
@@ -505,7 +497,7 @@ var RouteSettingsModal = Garnish.Modal.extend(
 			{
 				if (textStatus == 'success')
 				{
-					Craft.cp.displayNotice(Craft.t('Route deleted.'))
+					Craft.cp.displayNotice(Craft.t('Route deleted.'));
 				}
 			});
 
