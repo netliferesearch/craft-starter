@@ -7,7 +7,7 @@
   "scripts": {
     "start": "echo 'You probably want to $ npm run dev'",
     "init": "node scripts/initialize",
-    "dev": "npm run webpack & php -S localhost:5000 -t public",
+    "dev": "npm run webpack & php -S 127.0.0.1:5000 -t public",
     "test": "./node_modules/standard/bin/cmd.js",
     "build": "webpack -p",
     "sync": "sh scripts/dbsync.sh",
