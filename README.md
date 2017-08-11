@@ -39,6 +39,7 @@ Make sure you install global dependencies like Heroku toolbelt first.
 3. `heroku addons:create heroku-redis`
 4. `heroku config -s | tr -d "'" > .env`
 2. `heroku config:add NPM_CONFIG_PRODUCTION=false`
+2. `heroku config:add CRAFT_VALIDATION_KEY=anyuniquekey` <= generate this key yourself
 5. Update `general.php` with the heroku app {{name}}
 
 ## Up and running when somebody already set things up
