@@ -23,6 +23,10 @@ if(!empty($_ENV['REDIS_URL'])) {
 
 return array(
     '*' => array(
+        'defaultSearchTermOptions' => array( /* Fuzzy search, removes need to end search term with an asterix */
+            'subLeft' => false,
+            'subRight' => true,
+        ),      
         'generateTransformsBeforePageLoad' => true,
         'defaultCpLanguage' => 'en', /* Default language for Control Panel */
         'defaultWeekStartDay' => '1', /* Sets start of the week on Mondays */
