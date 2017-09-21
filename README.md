@@ -119,6 +119,9 @@ If you have problems with php70-magick, you can fix it with this command:
 brew uninstall imagemagick && brew install imagemagick@6 && brew link imagemagick@6 --force
 ```
 
+And if you still have problems, try this:
+`brew reinstall -s php70-imagick`
+
 ### Node Version Manager + tools
 
 * Install Heroku toolbelt <https://toolbelt.heroku.com/>
