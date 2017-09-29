@@ -16,8 +16,8 @@
     "heroku-postbuild": "mkdir public/admin && cp -R craft/app/resources public/admin"
   },
   "engines": {
-    "node": "6.2.1",
-    "npm": "3.9.3"
+    "node": "8.x",
+    "npm": "5.x"
   },
   "author": "Netlife Research",
   "license": "MIT",
