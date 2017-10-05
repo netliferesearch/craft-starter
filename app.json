@@ -12,7 +12,8 @@
     }],
     "env": {
         "NPM_CONFIG_PRODUCTION": false,
-        "CRAFT_VALIDATION_KEY": ""
+        "CRAFT_VALIDATION_KEY": "",
+        "STAGING_DATABASE_URL": "COPY JAWSDB_URL ON STAGING SERVER HERE"
     },
     "buildpacks": [{
         "url": "https://github.com/heroku/heroku-buildpack-nodejs"
