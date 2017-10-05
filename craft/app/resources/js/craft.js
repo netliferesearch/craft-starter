@@ -1,4 +1,4 @@
-/*! Craft  - 2017-04-12 */
+/*! Craft  - 2017-09-29 */
 (function($){
 
 // Set all the standard Craft.* stuff
@@ -2067,6 +2067,11 @@ Craft.BaseElementIndex = Garnish.Base.extend(
 
 		if (this.getSelectedSortAttribute() == 'structure')
 		{
+			if (typeof this.instanceState.collapsedElementIds === 'undefined')
+			{
+				this.instanceState.collapsedElementIds = [];
+			}
+
 			params.collapsedElementIds = this.instanceState.collapsedElementIds;
 		}
 
@@ -3585,6 +3590,7 @@ Craft.BaseElementIndexView = Garnish.Base.extend(
 				this.appendElements($newElements);
 				Craft.appendHeadHtml(response.headHtml);
 				Craft.appendFootHtml(response.footHtml);
+				picturefill();
 
 				if (this.elementSelect)
 				{
@@ -4717,11 +4723,11 @@ Craft.AdminTable = Garnish.Base.extend(
 			this.updateUI();
 			this.onDeleteObject(id);
 
-			Craft.cp.displayNotice(Craft.t(this.settings.deleteSuccessMessage, { name: name }));
+			Craft.cp.displayNotice(Craft.t(this.settings.deleteSuccessMessage, { name: Craft.escapeHtml(name) }));
 		}
 		else
 		{
-			Craft.cp.displayError(Craft.t(this.settings.deleteFailMessage, { name: name }));
+			Craft.cp.displayError(Craft.t(this.settings.deleteFailMessage, { name: Craft.escapeHtml(name) }));
 		}
 	},
 
@@ -5780,6 +5786,7 @@ Craft.AssetIndex = Craft.BaseElementIndex.extend(
 		this._positionProgressBar();
 		this.progressBar.resetProgressBar();
 		this.progressBar.showProgressBar();
+        this.promptHandler.resetPrompts();
 	},
 
 	/**
@@ -6835,14 +6842,13 @@ Craft.AuthManager = Garnish.Base.extend(
 			{
 				if (textStatus == 'success')
 				{
-					this.updateAuthTimeout(jqXHR.responseJSON.timeout);
-
-					this.submitLoginIfLoggedOut = false;
-
 					if (typeof jqXHR.responseJSON.csrfTokenValue !== 'undefined' && typeof Craft.csrfTokenValue !== 'undefined')
 					{
 						Craft.csrfTokenValue = jqXHR.responseJSON.csrfTokenValue;
 					}
+
+					this.updateAuthTimeout(jqXHR.responseJSON.timeout);
+					this.submitLoginIfLoggedOut = false;
 				}
 				else
 				{
@@ -7336,7 +7342,7 @@ Craft.CategoryIndex = Craft.BaseElementIndex.extend(
 			{
 				var href = this._getGroupTriggerHref(selectedGroup),
 					label = (this.settings.context == 'index' ? Craft.t('New category') : Craft.t('New {group} category', {group: selectedGroup.name}));
-				this.$newCategoryBtn = $('<a class="btn submit add icon" '+href+'>'+label+'</a>').appendTo(this.$newCategoryBtnGroup);
+				this.$newCategoryBtn = $('<a class="btn submit add icon" '+href+'>'+Craft.escapeHtml(label)+'</a>').appendTo(this.$newCategoryBtnGroup);
 
 				if (this.settings.context != 'index')
 				{
@@ -7368,7 +7374,7 @@ Craft.CategoryIndex = Craft.BaseElementIndex.extend(
 					{
 						var href = this._getGroupTriggerHref(group),
 							label = (this.settings.context == 'index' ? group.name : Craft.t('New {group} category', {group: group.name}));
-						menuHtml += '<li><a '+href+'">'+label+'</a></li>';
+						menuHtml += '<li><a '+href+'">'+Craft.escapeHtml(label)+'</a></li>';
 					}
 				}
 
@@ -10811,7 +10817,7 @@ Craft.EntryIndex = Craft.BaseElementIndex.extend(
 			{
 				var href = this._getSectionTriggerHref(selectedSection),
 					label = (this.settings.context == 'index' ? Craft.t('New entry') : Craft.t('New {section} entry', {section: selectedSection.name}));
-				this.$newEntryBtn = $('<a class="btn submit add icon" '+href+'>'+label+'</a>').appendTo(this.$newEntryBtnGroup);
+				this.$newEntryBtn = $('<a class="btn submit add icon" '+href+'>'+Craft.escapeHtml(label)+'</a>').appendTo(this.$newEntryBtnGroup);
 
 				if (this.settings.context != 'index')
 				{
@@ -10843,7 +10849,7 @@ Craft.EntryIndex = Craft.BaseElementIndex.extend(
 					{
 						var href = this._getSectionTriggerHref(section),
 							label = (this.settings.context == 'index' ? section.name : Craft.t('New {section} entry', {section: section.name}));
-						menuHtml += '<li><a '+href+'">'+label+'</a></li>';
+						menuHtml += '<li><a '+href+'">'+Craft.escapeHtml(label)+'</a></li>';
 					}
 				}
 
@@ -16258,6 +16264,12 @@ Craft.TagSelectInput = Craft.BaseElementSelectInput.extend(
 
 		this.addListener(this.$addTagInput, 'textchange', $.proxy(function()
 		{
+			var val = this.$addTagInput.val();
+			if (val !== (val = val.trim()))
+			{
+				this.$addTagInput.val(val).data('garnish-textchange-value', val);
+			}
+
 			if (this.searchTimeout)
 			{
 				clearTimeout(this.searchTimeout);
@@ -16814,7 +16826,7 @@ Craft.UpgradeModal = Garnish.Modal.extend(
 
 	init: function(settings)
 	{
-		this.$container = $('<div id="upgrademodal" class="modal loading"/>').appendTo(Garnish.$bod),
+		this.$container = $('<div id="upgrademodal" class="modal loading"/>').appendTo(Garnish.$bod);
 
 		this.base(this.$container, $.extend({
 			resizable: true

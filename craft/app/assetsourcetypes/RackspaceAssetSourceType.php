@@ -710,7 +710,7 @@ class RackspaceAssetSourceType extends BaseAssetSourceType
 	 */
 	protected function copySourceFile($sourceUri, $targetUri)
 	{
-		$this->_copyFile($sourceUri, $targetUri);
+		$this->_copyFile($this->_getPathPrefix().$sourceUri, $this->_getPathPrefix().$targetUri);
 
 		// Optimist much?
 		return true;
@@ -798,7 +798,8 @@ class RackspaceAssetSourceType extends BaseAssetSourceType
 	 */
 	private static function _extractRequestResponse($response)
 	{
-		return rtrim(mb_substr($response, mb_strpos($response, "\r\n\r\n") + 4));
+	    $length = static::_extractHeader($response, 'Content-Length');
+		return mb_substr($response, mb_strpos($response, "\r\n\r\n") + 4, $length);
 	}
 
 	/**

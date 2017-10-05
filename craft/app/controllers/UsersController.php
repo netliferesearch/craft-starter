@@ -420,17 +420,21 @@ class UsersController extends BaseController
 			$userToProcess = $info['userToProcess'];
 			$userIsPending = $userToProcess->status == UserStatus::Pending;
 
-			craft()->users->verifyEmailForUser($userToProcess);
-
-			if ($userIsPending)
+			if (craft()->users->verifyEmailForUser($userToProcess))
 			{
-				// They were just activated, so treat this as an activation request
-				$this->_onAfterActivateUser($userToProcess);
+
+				if ($userIsPending)
+				{
+					// They were just activated, so treat this as an activation request
+					$this->_onAfterActivateUser($userToProcess);
+				}
+
+				// Redirect to the site/CP root
+				$url = UrlHelper::getUrl('');
+				$this->redirect($url);
 			}
 
-			// Redirect to the site/CP root
-			$url = UrlHelper::getUrl('');
-			$this->redirect($url);
+			$this->renderTemplate('_special/emailtaken', array('email' => $userToProcess->unverifiedEmail));
 		}
 	}
 
@@ -1153,28 +1157,29 @@ class UsersController extends BaseController
 
 				$user = craft()->users->getUserById($userId);
 				$userName = AssetsHelper::cleanAssetName($user->username, false, true);
-
 				$folderPath = craft()->path->getTempUploadsPath().'userphotos/'.$userName.'/';
+				$fullPath = $folderPath.$fileName;
 
 				IOHelper::clearFolder($folderPath);
-
 				IOHelper::ensureFolderExists($folderPath);
 
-				move_uploaded_file($file->getTempName(), $folderPath.$fileName);
+				move_uploaded_file($file->getTempName(), $fullPath);
 
 				// Test if we will be able to perform image actions on this image
-				if (!craft()->images->checkMemoryForImage($folderPath.$fileName))
+				if (!craft()->images->checkMemoryForImage($fullPath))
 				{
-					IOHelper::deleteFile($folderPath.$fileName);
+					IOHelper::deleteFile($fullPath);
 					$this->returnErrorJson(Craft::t('The uploaded image is too large'));
 				}
 
-				craft()->images->
-					loadImage($folderPath.$fileName)->
-					scaleToFit(500, 500, false)->
-					saveAs($folderPath.$fileName);
+				craft()->images->cleanImage($fullPath);
 
-				list ($width, $height) = ImageHelper::getImageSize($folderPath.$fileName);
+				craft()->images->
+					loadImage($fullPath)->
+					scaleToFit(500, 500, false)->
+					saveAs($fullPath);
+
+				list ($width, $height) = ImageHelper::getImageSize($fullPath);
 
 				// If the file is in the format badscript.php.gif perhaps.
 				if ($width && $height)
@@ -1194,6 +1199,8 @@ class UsersController extends BaseController
 		}
 		catch (Exception $exception)
 		{
+			// Don't leave the file hanging around in a temp folder in case it was malicious.
+			IOHelper::deleteFile($fullPath);
 			$this->returnErrorJson($exception->getMessage());
 		}
 
