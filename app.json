@@ -13,7 +13,7 @@
     "env": {
         "NPM_CONFIG_PRODUCTION": false,
         "CRAFT_VALIDATION_KEY": "",
-        "STAGING_DATABASE_URL": "COPY JAWSDB_URL ON STAGING SERVER HERE"
+        "STAGING_DATABASE_URL": "INSERT THE STAGING DB URL HERE WHEN YOU SET UP YOUR PRODUCTION APP"
     },
     "buildpacks": [{
         "url": "https://github.com/heroku/heroku-buildpack-nodejs"
