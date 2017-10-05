@@ -40,6 +40,7 @@ return array(
       'server' => $local_url['host'],
       'user' => $local_url['user'],
       'password' => $local_url['pass'],
-      'database' => substr($local_url['path'],1)
+      'database' => substr($local_url['path'],1),
+      'port' => $local_url['port']
   )
 );
