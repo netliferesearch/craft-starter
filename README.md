@@ -64,28 +64,15 @@ If you e.g. have installed a new add-on and just want to _append_ this to the .e
 
 ## Developing on a local database
 
-_You should probably use Docker_.
+Download [Craft Starter DB](https://github.com/netliferesearch/craft-starter-db) as a zip, either in a separate folder or in your craft-project (remember to ignore it in git). Read its README. It's pretty handy!
 
-This project is set up to use the JAWSDB as the mysql addon on Heroku. Provided that it is used, you can run this command in bash from your project folder to download a dump of the database:
+TIPS:
+- Set fields and sections and other setup on the heroku Craft, and download the changes locally. You will thank us later.
+- Also work mainly with content on the remote database.
+- Treat your local database as something that can disappear at any moment.
 
-```bash
-heroku config:get JAWSDB_URL|sed -E 's%mysql:\/\/(.+):(.+)@(.+)(:3306| )\/(.+)(\?reconnect=true)%mysqldump --host=\3 --user=\1 --password=\2 \5 > dump.sql%'|sh
-```
+Run the oneliner `docker-compose down && ./download-prop && docker-compose-up` in your craft-starter-db-docker-folder to do a quick down sync of the remote database. Note: You'll loose any changes you have done locally in the database.
 
-This command first gets the mysql-url for JAWSDB in the Heroku config. Then it pipes it to `sed`, which [parses it through regex](https://regex101.com/r/EeO9HR/1) and outputs the `mysqldump` command with proper credentials. This text string is piped into `sh` which runs it. With `> dump.sql` we make sure that the output (which is a bunch of sql insert commands) is saved to a file with the name dump.sql.
-
-This file can then be imported into any mysql database, including your local.
-
-1. If typing `mysql` in the terminal does nothing, install it with `brew install mysql`
-2. Make sure it runs by typing `mysql.server start`
-3. Set `LOCAL_DATABASE_URL=mysql://user:password@127.0.0.1/databasename` in your .env-file. The username is usually `root`. If your database has no password, just omit colon and password-string (`user@127…`)
-4. Run this command from the folder with the dump.sql file to import the database dump, assuming that both username and password is `root`:
-
-```bash
-mysql --host=127.0.0.1 --user=root --password=root databasename < dump.sql
-```
-
-Done!
 
 ## Install craft
 Go to [http://localhost:5000/admin](http://localhost:5000/admin) and follow the wizard to install craft.
@@ -99,6 +86,10 @@ If you want to change this URL, you'll have to change it in `start.sh`. If you w
 Edit Sass and JavaScript in the `/resources/`-folder. Webpack will compile, transpile, minify it into the `public` folder, ready for production. If you put files in the assets-folder, Webpack will handle those too. The `style.scss` is built into `public/style.css` and it injects vendor prefixes and inlines smaller static resources (icon fonts for example). The file `resources/js/app.js` is built into `public/js/min/app.min.js`, and it uses Browserify + Babel, allowing you to both write ES6 as well as using a Node.js style if you prefer.
 
 Both files are properly included in `craft/templates/_layout.twig`
+
+## What about assets?!
+
+We usually use S3 on Amazone Web Services. Ask [@kmelve](https://github.com/kmelve) about access to a bucket.
 
 ## Global dependencies for the starter-pack
 
