@@ -124,3 +124,5 @@ And if you still have problems, try this:
 >Peow peow!
 
 - Amazon S3: Craft CMS 2.x doesn't support bucket location Frankfurt because it uses a newer authentication method.
+
+- Redis: Remember to uncomment Redis-settings in `general.php`. If not Heroku will fail miserably. 
