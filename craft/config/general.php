@@ -31,7 +31,7 @@ return array(
         'defaultCpLanguage' => 'en', /* Default language for Control Panel */
         'defaultWeekStartDay' => '1', /* Sets start of the week on Mondays */
         'allowAutoUpdates' => false, /* Prevents updating Craft on Heroku */
-        'cache' => true,
+        'enableTemplateCaching' => false,
         'cacheMethod' => 'redis', /* Default caching to Redis, but not on localhost */
         'enableCsrfProtection' => false, /* This should be true, but read  https://craftcms.com/support/csrf-protection first */
         'useCompressedJs' => false, /* Craft can compress JS, haven't been tested */
@@ -41,7 +41,6 @@ return array(
     ),
     'localhost' => array(
         'devMode' => true, /* better for debugging, never in production */
-        'cache' => false,
         'cacheMethod' => 'file', /* Default caching to Redis, but not on localhost */
         'siteUrl' => 'http://localhost:5000/',
         'allowAutoUpdates' => true,
