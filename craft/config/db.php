@@ -14,7 +14,8 @@ $local_url = parse_url(getenv('LOCAL_DATABASE_URL'));
 return array(
   '*' => array(
     'tablePrefix' => 'craft',
-    'initSQLs' => array("SET SESSION sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';"), /* MySQL 5.7 Hack */
+    /* MySQL 5.7 Hack */
+    'initSQLs' => array("SET SESSION sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';"),
     'server' => $staging_url['host'],
     'user' => $staging_url['user'],
     'password' => $staging_url['pass'],
