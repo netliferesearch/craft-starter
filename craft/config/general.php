@@ -20,7 +20,6 @@ if(!empty($_ENV['REDIS_URL'])) {
  * Read more about config settings
  * at https://craftcms.com/docs/config-settings
  * */
-
 return array(
     '*' => array(
         'defaultSearchTermOptions' => array( /* Fuzzy search, removes need to end search term with an asterix */
@@ -36,11 +35,16 @@ return array(
         'useCompressedJs' => false, /* Craft can compress JS, haven't been tested */
         'maxUploadFileSize' => 10000000, /* Set to 100MB, see also public/.user.ini */
         'usePathInfo' => true, /* This fixes the Heroku no resources found issue*/
-	      'limitAutoSlugsToAscii' => true /* Prevent generating urls with æ,ø,å. */
+	      'limitAutoSlugsToAscii' => true, /* Prevent generating urls with æ,ø,å. */
+        'appId' => 'anUniqueAppId',
+        'validationKey' => $_ENV['CRAFT_VALIDATION_KEY'],
+        'cacheMethod' => 'redis',
+        'overridePhpSessionLocation' => $prodRedisUrl,
+        'siteUrl' => $protocol . '://' . $_SERVER['HTTP_HOST'] . '/'
     ),
     'localhost' => array(
         'devMode' => true, /* better for debugging, never in production */
-        'cacheMethod' => 'file', /* Default caching to Redis, but not on localhost */
+        'cacheMethod' => 'redis', /* Default caching to Redis, but not on localhost */
         'siteUrl' => 'http://localhost:5000/',
         'allowAutoUpdates' => true,
         'environmentVariables' => array(
@@ -56,14 +60,7 @@ return array(
         'environmentVariables' => array(
             'siteUrl' => 'https://{{name}}.herokuapp.com', /* remember to change {{name}} to your heroku app */
             'basePath' => realpath(getcwd() . '/public/')
-        ),/*
-        Enable these config settings to properly store php sessions in Redis
-        for this to work you'll need to add the Heroku Redis addon to your
-        heroku app.
-        'cacheMethod' => 'redis',
-        'appId' => 'anUniqueAppId', // Must be set since Craft uses this to fingerprint its data caching and sessions
-        'overridePhpSessionLocation' => $prodRedisUrl, // See above for how the redis url is fetched and prepared.
-        'validationKey' => $_ENV['CRAFT_VALIDATION_KEY'], */ // Should be set to a long string in your environment
+        ),
     )/*,
     'production.url' => array(
         'omitScriptNameInUrls' => true,
