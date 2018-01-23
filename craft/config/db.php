@@ -7,9 +7,8 @@
  * You can see a list of the default settings in craft/app/etc/config/defaults/db.php
  */
 
-
-$production_url = parse_url(getenv('JAWSDB_URL'));
-$staging_url = parse_url(getenv('JAWSDB_URL')); /* remember to change this if you have a prod environment */
+$production_url = parse_url(getenv('DATABASE_URL'));
+$staging_url = parse_url(getenv('JAWSDB_URL'));
 $local_url = parse_url(getenv('LOCAL_DATABASE_URL'));
 
 return array(
