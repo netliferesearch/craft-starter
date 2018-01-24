@@ -1717,7 +1717,7 @@ class PclZip
                     $v_function_name = $p_options_list[$i + 1];
 
                     // ----- Check that the value is a valid existing function
-                    if (!function_exists($v_function_name)) {
+                    if (!function_exists($v_function_name) && !function_exists($v_function_name) && !is_callable($v_function_name)) {
                         // ----- Error log
                         PclZip::privErrorLog(PCLZIP_ERR_INVALID_OPTION_VALUE, "Function '" . $v_function_name . "()' is not an existing function for option '" . PclZipUtilOptionText($p_options_list[$i]) . "'");
 
@@ -1784,9 +1784,9 @@ class PclZip
         }
 
         // ----- Get 'memory_limit' configuration value
-        $v_memory_limit = ini_get('memory_limit');
-        $v_memory_limit = trim($v_memory_limit);
+        $v_memory_limit = trim(ini_get('memory_limit'));
         $last           = strtolower(substr($v_memory_limit, -1));
+        $v_memory_limit = intval($v_memory_limit);
 
         if ($last == 'g') {
             //$v_memory_limit = $v_memory_limit*1024*1024*1024;
@@ -5398,7 +5398,7 @@ function PclZipUtilOptionText($p_option)
 // --------------------------------------------------------------------------------
 function PclZipUtilTranslateWinPath($p_path, $p_remove_disk_letter = true)
 {
-    if (stristr(php_uname(), 'windows')) {
+    if (stristr(PHP_OS, 'windows')) {
         // ----- Look for potential disk letter
         if (($p_remove_disk_letter) && (($v_position = strpos($p_path, ':')) != false)) {
             $p_path = substr($p_path, $v_position + 1);

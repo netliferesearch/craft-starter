@@ -713,3 +713,5 @@ abstract class Twig_Template implements Twig_TemplateInterface
         return $ret;
     }
 }
+
+class_alias('Twig_Template', 'Twig\Template', false);
