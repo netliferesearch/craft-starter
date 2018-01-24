@@ -252,19 +252,19 @@ final class Image extends AbstractImage
      * reduced file size.
      *
      * @param BoxInterface $size
-     * @param boolean      $optimize   Whether you intend to perform optimization on the resulting image.
-     *                                 Note that setting this to `true` doesn’t actually perform any optimization.
+     * @param boolean      $keepImageProfiles Whether to keep ICP and ICM image profiles. Defaults to false.
+     * @param boolean      $keepExifData      Whether to keep EXIF data. Defaults to false.
      * @param integer      $quality    Defaults to 82 which produces a very similar image.
      *
      * @return ImageInterface
      * @throws \Imagine\Exception\RuntimeException
      */
-    public function smartResize(BoxInterface $size, $optimize = false, $quality = 82)
+    public function smartResize(BoxInterface $size, $keepImageProfiles = false, $keepExifData = false, $quality = 82)
     {
         try {
             if ($this->imagick instanceof Imagick)
             {
-                $this->imagick->smartResize($size->getWidth(), $size->getHeight(), $optimize, $quality);
+                $this->imagick->smartResize($size->getWidth(), $size->getHeight(), $keepImageProfiles, $keepExifData, $quality);
             }
             else
             {

@@ -51,6 +51,11 @@ class HttpRequestService extends \CHttpRequest
 	/**
 	 * @var bool
 	 */
+	private $_isSingleActionRequest = false;
+
+	/**
+	 * @var bool
+	 */
 	private $_checkedRequestType = false;
 
 	/**
@@ -329,6 +334,15 @@ class HttpRequestService extends \CHttpRequest
 	{
 		$this->_checkRequestType();
 		return $this->_isActionRequest;
+	}
+
+	/**
+	 * Returns whether the current request is solely an action request.
+	 */
+	public function isSingleActionRequest()
+	{
+		$this->_checkRequestType();
+		return $this->_isSingleActionRequest;
 	}
 
 	/**
@@ -1140,11 +1154,20 @@ class HttpRequestService extends \CHttpRequest
 	 */
 	public function getQueryStringWithoutPath()
 	{
-		$queryData = $this->getQuery();
+		// Get the full query string
+		$queryString = $this->getQueryString();
+		$parts = explode('&', $queryString);
 
-		unset($queryData[craft()->urlManager->pathParam]);
+		foreach ($parts as $key => $part)
+		{
+			if (strpos($part, craft()->urlManager->pathParam.'=') === 0)
+			{
+				unset($parts[$key]);
+				break;
+			}
+		}
 
-		return http_build_query($queryData);
+		return implode('&', $parts);
 	}
 
 	/**
@@ -1539,25 +1562,34 @@ class HttpRequestService extends \CHttpRequest
 
 				$verifyEmailPath = 'verifyemail';
 
-				if (
-					($triggerMatch = ($firstSegment == craft()->config->get('actionTrigger') && count($this->_segments) > 1)) ||
-					($actionParam = $this->getParam('action')) !== null ||
-					($specialPath = in_array($this->_path, array($loginPath, $logoutPath, $setPasswordPath, $verifyEmailPath)))
-				)
+				$hasTriggerMatch = ($firstSegment == craft()->config->get('actionTrigger') && count($this->_segments) > 1);
+				$hasActionParam = ($actionParam = $this->getParam('action')) !== null;
+				$hasSpecialPath = in_array($this->_path, array($loginPath, $logoutPath, $setPasswordPath, $verifyEmailPath));
+
+				if ($hasTriggerMatch || $hasActionParam || $hasSpecialPath)
 				{
 					$this->_isActionRequest = true;
 
-					if ($triggerMatch)
+					// Important we check in this specific order:
+					// 1) /actions/some/action
+					// 2) any/uri?action=some/action
+					// 3) special/uri
+
+					if ($hasTriggerMatch)
 					{
 						$this->_actionSegments = array_slice($this->_segments, 1);
+						$this->_isSingleActionRequest = true;
 					}
-					else if ($actionParam)
+					else if ($hasActionParam)
 					{
 						$actionParam = $this->decodePathInfo($actionParam);
 						$this->_actionSegments = array_values(array_filter(explode('/', $actionParam)));
+						$this->_isSingleActionRequest = empty($this->_path);
 					}
 					else
 					{
+						$this->_isSingleActionRequest = true;
+
 						if ($this->_path == $loginPath)
 						{
 							$this->_actionSegments = array('users', 'login');

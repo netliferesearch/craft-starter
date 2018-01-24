@@ -85,14 +85,23 @@ class TasksService extends BaseApplicationComponent
 		}
 		else
 		{
-			$taskRecord = $this->_getTaskRecordById($task->id);
+			try
+            {
+                $taskRecord = $this->_getTaskRecordById($task->id);
+            }
+            catch (\Exception $e)
+            {
+                // Maybe another task runner already beat us to it. Bail early.
+                Craft::log('Tried to save an existing task with an ID of '.$task->id.', but it no longer exists.', LogLevel::Warning);
+                return false;
+            }
 		}
 
-		$taskRecord->type        = $task->type;
-		$taskRecord->status      = $task->status;
-		$taskRecord->settings    = $task->settings;
+		$taskRecord->type = $task->type;
+		$taskRecord->status = $task->status;
+		$taskRecord->settings = $task->settings;
 		$taskRecord->description = $task->description;
-		$taskRecord->totalSteps  = $task->totalSteps;
+		$taskRecord->totalSteps = $task->totalSteps;
 		$taskRecord->currentStep = $task->currentStep;
 		$taskRecord->dateUpdated = new DateTime();
 
@@ -121,11 +130,10 @@ class TasksService extends BaseApplicationComponent
 
 			return true;
 		}
-		else
-		{
-			$task->addErrors($taskRecord->getErrors());
-			return false;
-		}
+
+
+		$task->addErrors($taskRecord->getErrors());
+		return false;
 	}
 
 	/**
@@ -225,7 +233,7 @@ class TasksService extends BaseApplicationComponent
 				$task->totalSteps = $taskType->getTotalSteps();
 				$task->status = TaskStatus::Running;
 
-				Craft::Log('Starting task '.$taskRecord->type.' that has a total of '.$task->totalSteps.' steps.', LogLevel::Info, true);
+				Craft::log('Starting task '.$taskRecord->type.' that has a total of '.$task->totalSteps.' steps.', LogLevel::Info, true);
 
 				for ($step = 0; $step < $task->totalSteps; $step++)
 				{
@@ -233,7 +241,7 @@ class TasksService extends BaseApplicationComponent
 					$task->currentStep = $step+1;
 					$this->saveTask($task);
 
-					Craft::Log('Starting step '.($step+1).' of '.$task->totalSteps.' total steps.', LogLevel::Info, true);
+					Craft::log('Starting step '.($step+1).' of '.$task->totalSteps.' total steps.', LogLevel::Info, true);
 
 					// Run it.
 					if (($result = $taskType->runStep($step)) !== true)
@@ -549,7 +557,15 @@ class TasksService extends BaseApplicationComponent
 	 */
 	public function deleteTaskById($taskId)
 	{
-		$taskRecord = $this->_getTaskRecordById($taskId);
+		try
+		{
+			$taskRecord = $this->_getTaskRecordById($taskId);
+		}
+		catch (Exception $e)
+		{
+			Craft::log('Tried to delete a task with an ID of '.$taskId.', but it does not exist.', LogLevel::Warning);
+			return false;
+		}
 
 		if ($taskRecord)
 		{
@@ -565,23 +581,20 @@ class TasksService extends BaseApplicationComponent
 	 */
 	public function handleRequestEnd()
 	{
-		// Make sure a future call to craft()->end() dosen't trigger this a second time
-		craft()->detachEventHandler('onEndRequest', array($this, '_onEndRequest'));
-
 		// Make sure nothing has been output to the browser yet, and there's no pending response body
- 		if (!headers_sent() && !ob_get_length())
- 		{
- 			$this->closeAndRun();
- 		}
- 		// Is this a non-AJAX site request and are we responding with HTML or XHTML?
- 		// (CP requests don't need to be told to run pending tasks)
- 		else if (
- 			craft()->request->isSiteRequest() &&
- 			in_array(HeaderHelper::getMimeType(), array('text/html', 'application/xhtml+xml')) &&
+		if (!headers_sent() && !ob_get_length())
+		{
+			$this->closeAndRun();
+		}
+		// Is this a non-AJAX site request and are we responding with HTML or XHTML?
+		// (CP requests don't need to be told to run pending tasks)
+		else if (
+			craft()->request->isSiteRequest() &&
+			in_array(HeaderHelper::getMimeType(), array('text/html', 'application/xhtml+xml')) &&
 			!craft()->request->isAjaxRequest()
- 		)
- 		{
- 			// Just output JS that tells the browser to fire an Ajax request to kick off task running
+		)
+		{
+			// Just output JS that tells the browser to fire an Ajax request to kick off task running
 			$url = JsonHelper::encode(UrlHelper::getActionUrl('tasks/runPendingTasks'));
 
 			// Ajax request code adapted from http://www.quirksmode.org/js/xmlhttp.html - thanks ppk!
@@ -613,7 +626,7 @@ class TasksService extends BaseApplicationComponent
 /*]]>*/
 </script>
 EOT;
- 		}
+		}
 	}
 
 	// Private Methods
@@ -625,17 +638,20 @@ EOT;
 	 * @param int $taskId
 	 *
 	 * @return TaskRecord|null
+	 * @throws Exception
 	 */
 	private function _getTaskRecordById($taskId)
 	{
 		if (!isset($this->_taskRecordsById[$taskId]))
 		{
-			$this->_taskRecordsById[$taskId] = TaskRecord::model()->findById($taskId);
+			$taskRecord = TaskRecord::model()->findById($taskId);
 
-			if (!$this->_taskRecordsById[$taskId])
+			if (!$taskRecord)
 			{
-				$this->_taskRecordsById[$taskId] = false;
+				throw new Exception('Could not find a task record with an ID of '.$taskId);
 			}
+
+			$this->_taskRecordsById[$taskId] = $taskRecord;
 		}
 
 		return $this->_taskRecordsById[$taskId] ?: null;

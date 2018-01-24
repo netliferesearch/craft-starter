@@ -8,5 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'lsolesen\\pel\\' => array($vendorDir . '/lsolesen/pel/src'),
     'enshrined\\svgSanitize\\' => array($vendorDir . '/enshrined/svg-sanitize/src'),
+    'Twig\\' => array($vendorDir . '/twig/twig/src'),
     'Symfony\\Component\\EventDispatcher\\' => array($vendorDir . '/symfony/event-dispatcher'),
+    'LitEmoji\\' => array($vendorDir . '/elvanto/litemoji/src'),
 );

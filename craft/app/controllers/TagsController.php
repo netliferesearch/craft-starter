@@ -182,7 +182,6 @@ class TagsController extends BaseController
 			$search = StringHelper::normalizeKeywords($search);
 		}
 
-
 		foreach ($tags as $tag)
 		{
 			$return[] = array(
@@ -213,6 +212,11 @@ class TagsController extends BaseController
 		}
 
 		array_multisort($exactMatches, SORT_DESC, $tagTitleLengths, $return);
+
+		foreach ($return as $key => $row)
+		{
+			$return[$key]['title'] = HtmlHelper::encode($row['title']);
+		}
 
 		$this->returnJson(array(
 			'tags'       => $return,
