@@ -2,8 +2,6 @@ version: '2'
 services:
   database:
     image: mysql:5.7
-    ports:
-      - "3307:3306"
     volumes:
       - ./docker-src/db-dump:/docker-entrypoint-initdb.d:cached
     environment:
