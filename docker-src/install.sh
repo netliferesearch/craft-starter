@@ -1,8 +1,7 @@
 #!/bin/bash
 
-echo "Starting install script"
-
-# Installs composer dependencies if they were to be missing.
+# This is a startup script that gets added by the Dockerfile
+# so that composer dependencies will be installed on startup.
 composer install -d /var/www/html
 
 apache2-foreground
