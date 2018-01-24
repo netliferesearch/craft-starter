@@ -22,16 +22,17 @@ class Imagick extends \Imagick {
     /**
      * Resizes the image using smart defaults for high quality and low file size.
      *
-     * @param	integer	$columns		    The number of columns in the output image. 0 = maintain aspect ratio based on $rows.
-     * @param	integer	$rows			    The number of rows in the output image. 0 = maintain aspect ratio based on $columns.
-     * @param	bool	$preserveColorInfo  Whether the color information should be preserved
-     * @param   integer $quality            Defaults to 82 which produces a very similar image.
+     * @param	integer	$columns		   The number of columns in the output image. 0 = maintain aspect ratio based on $rows.
+     * @param	integer	$rows			   The number of rows in the output image. 0 = maintain aspect ratio based on $columns.
+     * @param   boolean $keepImageProfiles Whether to keep ICP and ICM image profiles. Defaults to false.
+     * @param   boolean $keepExifData      Whether to keep EXIF data. Defaults to false.
+     * @param   integer $quality           Defaults to 82 which produces a very similar image.
      */
-    public function smartResize($columns, $rows, $preserveColorInfo = false, $quality = 82)
+    public function smartResize($columns, $rows, $keepImageProfiles = false, $keepExifData = false, $quality = 82)
     {
 
         $this->setOption('filter:support', '2.0');
-        $this->thumbnailImage($columns, $rows, false, false, \Imagick::FILTER_TRIANGLE);
+        $this->thumbnailImage($columns, $rows, false, false, \Imagick::FILTER_TRIANGLE, $keepImageProfiles, $keepExifData);
 
         $this->unsharpMaskImage(0.25, 0.25, 8, 0.065);
 
@@ -50,7 +51,7 @@ class Imagick extends \Imagick {
         $this->setInterlaceScheme(\Imagick::INTERLACE_NO);
 
         // Older Imagick versions might not have this. Better make sure.
-        if (!$preserveColorInfo &&  method_exists($this, 'transformimagecolorspace'))
+        if (!$keepImageProfiles && !$keepExifData && method_exists($this, 'transformimagecolorspace'))
         {
             $this->stripImage();
             $this->transformimagecolorspace(\Imagick::COLORSPACE_SRGB);
@@ -73,16 +74,18 @@ class Imagick extends \Imagick {
      *
      * @access	public
      *
-     * @param	integer	$columns		The number of columns in the output image. 0 = maintain aspect ratio based on $rows.
-     * @param	integer	$rows			The number of rows in the output image. 0 = maintain aspect ratio based on $columns.
-     * @param	bool	$bestfit		Treat $columns and $rows as a bounding box in which to fit the image.
-     * @param	bool	$fill			Fill in the bounding box with the background colour.
-     * @param	integer	$filter			The resampling filter to use. Refer to the list of filter constants at <http://php.net/manual/en/imagick.constants.php>.
+     * @param	integer	$columns    		The number of columns in the output image. 0 = maintain aspect ratio based on $rows.
+     * @param	integer	$rows	   	    	The number of rows in the output image. 0 = maintain aspect ratio based on $columns.
+     * @param	bool	$bestfit   	    	Treat $columns and $rows as a bounding box in which to fit the image.
+     * @param	bool	$fill		       	Fill in the bounding box with the background colour.
+     * @param	integer	$filter			    The resampling filter to use. Refer to the list of filter constants at <http://php.net/manual/en/imagick.constants.php>.
+     * @param   boolean $keepImageProfiles  Whether to keep ICP and ICM image profiles. Defaults to false.
+     * @param   boolean $keepExifData       Whether to keep EXIF data. Defaults to false.
      *
      * @return	bool	Indicates whether the operation was performed successfully.
      */
 
-    public function thumbnailImage($columns, $rows, $bestfit = false, $fill = false, $filter = \Imagick::FILTER_TRIANGLE)
+    public function thumbnailImage($columns, $rows, $bestfit = false, $fill = false, $filter = \Imagick::FILTER_TRIANGLE, $keepImageProfiles = false, $keepExifData = false)
     {
 
         // sample factor; defined in original ImageMagick thumbnailImage function
@@ -201,7 +204,17 @@ class Imagick extends \Imagick {
 
         // Strip all profiles except color profiles.
         foreach ($this->getImageProfiles('*', true) as $key => $value) {
-            if ($key != 'icc' && $key != 'icm') {
+            $remove = false;
+
+            if ($key == 'icc' || $key == 'icm') {
+                $remove = !$keepImageProfiles;
+            } elseif ($key == 'exif' || $key == 'iptc') {
+                $remove = !$keepExifData;
+            } else {
+               $remove = true;
+           }
+
+           if ($remove) {
                 try
                 {
                     $this->removeImageProfile($key);
