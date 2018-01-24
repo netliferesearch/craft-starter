@@ -1,7 +1,8 @@
-#!bin/bash
+#!/bin/bash
 
-echo "test"
+echo "Starting install script"
 
+# Installs composer dependencies if they were to be missing.
 composer install -d /var/www/html
 
-#/usr/local/bin/docker-php-entrypoint apache2-foreground
+apache2-foreground
