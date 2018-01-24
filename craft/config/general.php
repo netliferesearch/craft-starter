@@ -10,10 +10,10 @@ if (file_exists(BASEPATH . '.env')) {
 
 // Use redis to cache php session data
 // source: https://york.io/2016/07/22/redis-persist-sessions-php-heroku.html
-$prodRedisUrl = '';
+$parsedRedisUrl = '';
 if(!empty($_ENV['REDIS_URL'])) {
   $redisUrlParts = parse_url($_ENV['REDIS_URL']);
-  $prodRedisUrl = "tcp://$redisUrlParts[host]:$redisUrlParts[port]?auth=$redisUrlParts[pass]";
+  $parsedRedisUrl = "tcp://$redisUrlParts[host]:$redisUrlParts[port]?auth=$redisUrlParts[pass]";
 }
 
 /*
@@ -39,37 +39,27 @@ return array(
         'appId' => 'anUniqueAppId',
         'validationKey' => $_ENV['CRAFT_VALIDATION_KEY'],
         'cacheMethod' => 'redis',
-        'overridePhpSessionLocation' => $prodRedisUrl,
-        'siteUrl' => $protocol . '://' . $_SERVER['HTTP_HOST'] . '/'
+        'overridePhpSessionLocation' => $parsedRedisUrl,
+        'siteUrl' => $protocol . '://' . $_SERVER['HTTP_HOST'] . '/',
+        'environmentVariables' => array(
+            'basePath' => realpath(getcwd() . '/public/')
+        ),
+        'postLoginRedirect' => '/',
     ),
     'localhost' => array(
         'devMode' => true, /* better for debugging, never in production */
         'cacheMethod' => 'redis', /* Default caching to Redis, but not on localhost */
         'siteUrl' => 'http://localhost:5000/',
         'allowAutoUpdates' => true,
-        'environmentVariables' => array(
-            'siteUrl' => 'http://localhost:5000',
-            'basePath' => realpath(getcwd() . '/public/')
-        )
     ),
     'herokuapp.com' => array(
         'omitScriptNameInUrls' => true,
-        'devMode' => false, /* set this to true if you want more verbose error messages on herkou */
-        'siteUrl' => 'https://{{name}}.herokuapp.com/', /* remember to change {{name}} to your heroku app */
-        'postLoginRedirect' => '/',
-        'environmentVariables' => array(
-            'siteUrl' => 'https://{{name}}.herokuapp.com', /* remember to change {{name}} to your heroku app */
-            'basePath' => realpath(getcwd() . '/public/')
-        ),
-    )/*,
-    'production.url' => array(
+        'devMode' => false, /* set this to true if you want more verbose error messages on Herokou */
+    ),
+    /*
+    'productionurl.com' => array(
         'omitScriptNameInUrls' => true,
-        'siteUrl' => 'https://www.production.url/',
-        'postLoginRedirect' => '/',
-        'allowAutoUpdates' => false,
-        'environmentVariables' => array(
-            'siteUrl' => 'https://www.production.url/',
-            'basePath' => realpath(getcwd() . '/public/')
-        )
+        'devMode' => false, // set this to true if you want more verbose error messages on Herokou
+    ),
     */
 );
