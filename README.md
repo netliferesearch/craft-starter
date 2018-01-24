@@ -7,7 +7,7 @@
 1. Clone, or download this repository
 1. If you haven't already install Docker and Node, see guide below.
 1. Run `npm install` to install NPM dependencies.
-1. Run `docker-compose up` to start three containers:
+1. Run `docker-compose up` to start three containers (details found in docker-compose.yml):
     - Apache Server, to mirror production environment.
     - Redis, used for caching logins included so that we mirror production.
     - Mysql, the database.
