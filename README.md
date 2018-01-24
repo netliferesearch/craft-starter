@@ -8,9 +8,9 @@
 1. If you haven't already install Docker and Node, see guide below.
 1. Run `npm install` to install NPM dependencies.
 1. Run `docker-compose up` to start three containers:
-  - Apache Server, to mirror production environment.
-  - Redis, used for caching logins included so that we mirror production.
-  - Mysql, the database.
+    - Apache Server, to mirror production environment.
+    - Redis, used for caching logins included so that we mirror production.
+    - Mysql, the database.
 1. It might/will take some time for the containers to finish building and there will be no complete message. So, just wait 2min until the text stops flowing and then go to `http://localhost:5000/admin` to install Craft. 
 
 ### Start livereloading and asset building on localhost:3000
