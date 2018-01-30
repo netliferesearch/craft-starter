@@ -89,7 +89,7 @@ Both files are properly included in `craft/templates/_layout.twig`
 
 ## What about assets?!
 
-We usually use S3 on Amazone Web Services. Ask [@kmelve](https://github.com/kmelve) about access to a bucket.
+We usually use S3 on Amazon Web Services. Ask [@kmelve](https://github.com/kmelve) about access to a bucket.
 
 ## Global dependencies for the starter-pack
 
