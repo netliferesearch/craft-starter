@@ -7,13 +7,14 @@
   "scripts": {
     "start": "echo 'You probably want to $ npm run dev'",
     "init": "node scripts/initialize",
-    "dev": "npm run webpack & php -S 127.0.0.1:5000 -t public",
+    "dev": "npm run webpack",
     "test": "./node_modules/standard/bin/cmd.js",
     "build": "webpack -p",
     "sync": "sh scripts/dbsync.sh",
     "webpack": "webpack --watch",
     "postinstall": "webpack -p --progress --colors",
-    "heroku-postbuild": "mkdir public/admin && cp -R craft/app/resources public/admin"
+    "heroku-postbuild":
+      "mkdir public/admin && cp -R craft/app/resources public/admin"
   },
   "engines": {
     "node": "8.x",
@@ -21,29 +22,22 @@
   },
   "author": "Netlife Research",
   "license": "MIT",
-  "devDependencies": {
+  "dependencies": {
     "babel-core": "^6.14.0",
     "babel-eslint": "^7.0.0",
     "babel-loader": "^6.2.5",
     "babel-polyfill": "^6.16.0",
     "babel-preset-es2015": "^6.16.0",
     "babel-preset-stage-0": "^6.16.0",
-    "bluebird": "^3.4.6",
     "browser-sync": "^2.10.0",
     "browser-sync-webpack-plugin": "^1.1.2",
     "browserify": "^13.1.0",
-    "chalk": "^1.1.1",
     "css-loader": "^0.25.0",
     "dotenv": "^2.0.0",
     "extract-text-webpack-plugin": "^1.0.1",
-    "inquirer": "^1.2.2",
-    "lodash": "^4.16.4",
-    "mysqldump": "^1.0.2",
     "node-sass": "^3.10.0",
-    "path": "^0.12.7",
     "sass": "^0.5.0",
     "sass-loader": "^4.0.0",
-    "shelljs": "^0.7.4",
     "standard": "^8.4.0",
     "standard-loader": "^5.0.0",
     "svg-url-loader": "^1.1.0",
@@ -53,10 +47,6 @@
     "webpack-hot-middleware": "^2.12.2"
   },
   "standard": {
-    "ignore": [
-      "craft",
-      "public/js/dist.js",
-      "public/vendor"
-    ]
+    "ignore": ["craft", "public/js/dist.js", "public/vendor"]
   }
 }
