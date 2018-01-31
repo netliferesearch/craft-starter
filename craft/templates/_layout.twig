@@ -6,11 +6,12 @@
 <head>
 	<meta charset="utf-8" />
   <meta name="viewport" content="width=device-width" />
+  <link rel="shortcut icon" href="/favicon.ico" />
 
   <title>{% if title is defined %}{{ title }} - {% endif %}{{ siteName }}</title>
 
   <link rel="home" href="{{ siteUrl }}" />
-  <link rel="stylesheet" href="/css/min/screen.css">
+  <link rel="stylesheet" href="/webpack-dist/screen.css">
 </head>
 
 <body>
@@ -31,5 +32,5 @@
     {% include 'partials/footer' %}
   {% endcache %}
 
-  {% includeJsFile "/js/dist.js" %}
+  {% includeJsFile "/webpack-dist/bundle.js" %}
 </body>
