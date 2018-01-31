@@ -1,0 +1,7 @@
+.u-padding {
+  padding: var(--spacing);
+}
+
+.u-padding-large {
+  padding: var(--spacingLarge);
+}
