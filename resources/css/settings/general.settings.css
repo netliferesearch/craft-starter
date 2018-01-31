@@ -1,0 +1,13 @@
+:root {
+  --siteWidth: 1280px;
+
+  --spacing: 24px;
+  --spacingLarge: 48px;
+
+  --fonts: sans-serif;
+
+  // colors
+
+  --colorBlack: #000;
+  --colorWhite: #fff;
+}
