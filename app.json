@@ -1,23 +1,26 @@
 {
-    "name": "Craft CMS Starter",
-    "description": "Starter for Craft CMS on Heroku.",
-    "keywords": [
-        "Craft CMS"
-    ],
-    "repository": "https://github.com/netliferesearch/craft-starter",
-    "addons": [{
-        "plan": "jawsdb"
-    }, {
-        "plan": "heroku-redis"
-    }],
-    "env": {
-        "NPM_CONFIG_PRODUCTION": false,
-        "CRAFT_VALIDATION_KEY": "",
-        "STAGING_DATABASE_URL": "INSERT THE STAGING DB URL HERE WHEN YOU SET UP YOUR PRODUCTION APP"
+  "name": "Craft CMS Starter",
+  "description": "Starter for Craft CMS on Heroku.",
+  "keywords": ["Craft CMS"],
+  "repository": "https://github.com/netliferesearch/craft-starter",
+  "addons": [
+    {
+      "plan": "jawsdb"
     },
-    "buildpacks": [{
-        "url": "https://github.com/heroku/heroku-buildpack-nodejs"
-    }, {
-        "url": "https://github.com/heroku/heroku-buildpack-php"
-    }]
+    {
+      "plan": "heroku-redis"
+    }
+  ],
+  "env": {
+    "NPM_CONFIG_PRODUCTION": false,
+    "CRAFT_VALIDATION_KEY": ""
+  },
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-nodejs"
+    },
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-php"
+    }
+  ]
 }
