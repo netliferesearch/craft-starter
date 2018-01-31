@@ -6,15 +6,16 @@
   "private": true,
   "scripts": {
     "start": "echo 'You probably want to $ npm run dev'",
-    "init": "node scripts/initialize",
     "dev": "npm run webpack",
-    "test": "./node_modules/standard/bin/cmd.js",
     "build": "webpack -p",
-    "sync": "sh scripts/dbsync.sh",
     "webpack": "webpack --watch",
     "postinstall": "webpack -p --progress --colors",
     "heroku-postbuild":
-      "mkdir public/admin && cp -R craft/app/resources public/admin"
+      "mkdir public/admin && cp -R craft/app/resources public/admin",
+    "db:prod:download": "./docker-src/db-prod-download.sh",
+    "db:prod:tunnel": "./docker-src/db-prod-tunnel.sh",
+    "db:stage:push": "./docker-src/db-stage-push.sh",
+    "docker:db:rebuild": "./docker-src/docker-db-rebuild.sh"
   },
   "engines": {
     "node": "8.x",
