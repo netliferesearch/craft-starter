@@ -1,6 +1,6 @@
 # Netlife Research: Craft Starter
 
-*Read through the readme*, and if you are stuck, don't hesitate to ask in either #frontend or #craft in Slack. If you have made some smart improvement to the tooling or setup of in your Craft procject, _please contribute to this starter by making a pull request_.
+_Read through the readme_, and if you are stuck, don't hesitate to ask in either #frontend or #craft in Slack. If you have made some smart improvement to the tooling or setup of in your Craft project, _please contribute to this starter by making a pull request_.
 
 ## Getting started
 
@@ -8,10 +8,10 @@
 1. If you haven't already install Docker and Node, see guide below.
 1. Run `npm install` to install NPM dependencies.
 1. Run `docker-compose up` to start three containers (details found in docker-compose.yml):
-    - Apache Server, to mirror production environment.
-    - Redis, used for caching logins included so that we mirror production.
-    - Mysql, the database.
-1. It might/will take some time for the containers to finish building and there will be no complete message. So, just wait 2min until the text stops flowing and then go to `http://localhost:5000/admin` to install Craft. 
+   * Apache Server, to mirror production environment.
+   * Redis, used for caching logins included so that we mirror production.
+   * Mysql, the database.
+1. It might/will take some time for the containers to finish building and there will be no complete message. So, just wait 2min until the text stops flowing and then go to `http://localhost:5000/admin` to install Craft.
 
 ### Start livereloading and asset building on localhost:3000
 
@@ -40,13 +40,14 @@ Make sure you install global dependencies like Heroku toolbelt first.
 
 1. `heroku create <name> --region eu`
 2. `heroku buildpacks:add heroku/php`
-2. `heroku buildpacks:add heroku/nodejs`
-3. `heroku addons:create jawsdb`
-3. `heroku addons:create heroku-redis`
-2. `heroku config:add NPM_CONFIG_PRODUCTION=false`
-2. `heroku config:add CRAFT_VALIDATION_KEY=anyuniquekey` <= generate this key yourself
+3. `heroku buildpacks:add heroku/nodejs`
+4. `heroku addons:create jawsdb`
+5. `heroku addons:create heroku-redis`
+6. `heroku config:add NPM_CONFIG_PRODUCTION=false`
+7. `heroku config:add CRAFT_VALIDATION_KEY=anyuniquekey` <= generate this key yourself
 
 ## Up and running when somebody already set things up
+
 1. `heroku git:remote <name>`
 2. `heroku config -s | tr -d "'" > .env`
 3. Get your local database up and running or connect to the remote database
@@ -68,6 +69,6 @@ You only need to do this once per system.
 
 ### Troubleshooting
 
->Peow peow!
+> Peow peow!
 
-- Amazon S3: Craft CMS 2.x doesn't support bucket location Frankfurt because it uses a newer authentication method.
+* Amazon S3: Craft CMS 2.x doesn't support bucket location Frankfurt because it uses a newer authentication method.
