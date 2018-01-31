@@ -1,7 +1,7 @@
 public/vendor/
 public/images/*
-public/css
-public/js
+public/webpack-dist/*
+!public/webpack-dist/.gitkeep
 yarn.lock
 node_modules
 .DS_Store
