@@ -76,3 +76,9 @@ You only need to do this once per system.
 > Peow peow!
 
 * Amazon S3: Craft CMS 2.x doesn't support bucket location Frankfurt because it uses a newer authentication method.
+
+## Updating from and old Craft starter setup
+
+1. Get to know this project's `webpack.config.js` and `docker-compose.yml`.
+2. Inside your old project start a new git branch for upgrading. And then try to copy over the build setup for asset building and docker container setup. You should also compare general.php and .htaccess setups to see if there are lessons to learn from the more up to date craft-starter.
+3. Try, try, try until you get it right. Be methodical and commit your progress steadily within the upgrade branch. After some thorough testing you can merge the upgrade branch back into master.
