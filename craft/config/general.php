@@ -40,7 +40,7 @@ return array(
     'validationKey' => $_ENV['CRAFT_VALIDATION_KEY'],
     'cacheMethod' => 'redis',
     'overridePhpSessionLocation' => $parsedRedisUrl,
-    'siteUrl' => $protocol . '://' . $_SERVER['HTTP_HOST'] . '/',
+    'siteUrl' => ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? 'http') . '://' . $_SERVER['HTTP_HOST'] . '/',
     'environmentVariables' => array(
         'basePath' => realpath(getcwd() . '/public/')
     ),
