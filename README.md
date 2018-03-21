@@ -15,11 +15,15 @@ _Read through the readme_, and if you are stuck, don't hesitate to ask in either
 
 ### Start livereloading and asset building on localhost:3000
 
-Then run `npm run dev` to start a process that will be building our frontend dependencies. Our build setup provides a localhost:3000 address that shows the same as localhost:5000 but also has livereloading.
+When you have docker-compose running in one terminal window please open a second window where you run `npm run dev`. This will start a process that will be building our frontend dependencies. Our build setup provides a localhost:3000 address that shows the same as localhost:5000 but also has livereloading.
 
-Edit Sass and JavaScript in the `/resources/`-folder. Webpack will compile, transpile, minify it into the `public` folder, ready for production. If you put files in the assets-folder, Webpack will handle those too. The `style.scss` is built into `public/style.css` and it injects vendor prefixes and inlines smaller static resources (icon fonts for example). The file `resources/js/app.js` is built into `public/js/min/app.min.js`, and it uses Browserify + Babel, allowing you to both write ES6 as well as using a Node.js style if you prefer.
+Edit CSS and JavaScript in the `/resources/`-folder. Webpack will compile, transpile, minify it into the `public` folder, ready for production. If you put files in the assets-folder, Webpack will handle those too. The `style.scss` is built into `public/screen.css` and it injects vendor prefixes and inlines smaller static resources (icon fonts for example). The file `resources/js/app.js` is built into `public/js/min/app.min.js`, and it uses Browserify + Babel, allowing you to both write ES6 as well as using a Node.js style if you prefer.
 
 Both files are properly included in `craft/templates/_layout.twig`
+
+When you want to login into Craft you'll need to go to localhost:5000/admin, because localhost:3000 is just a livereloading proxy that can't handle logins.
+
+After deploying the site to a remote server chances are that you'll see a login prompt instead of the frontpage you saw when running the site locally. This is just a "requireLogin" helper found in `_layout.twig` used to prevent others from viewing the site early in the process.
 
 ## Changing the remote git repository
 
