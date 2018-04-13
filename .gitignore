@@ -15,3 +15,4 @@ craft/storage/userphotos
 /vendor
 .env
 *.hot-update.*
+*.sql
