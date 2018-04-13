@@ -45,21 +45,19 @@ return array(
         'basePath' => realpath(getcwd() . '/public/')
     ),
     'postLoginRedirect' => '/',
+    'omitScriptNameInUrls' => true,
   ),
   'localhost' => array(
     'devMode' => true, /* better for debugging, never in production */
-    'cacheMethod' => 'redis', /* Default caching to Redis, but not on localhost */
     'siteUrl' => 'http://localhost:5000/',
     'allowAutoUpdates' => true,
   ),
   'herokuapp.com' => array(
-    'omitScriptNameInUrls' => true,
     'devMode' => false, /* set this to true if you want more verbose error messages on Herokou */
   ),
   /*
   'productionurl.com' => array(
-    'omitScriptNameInUrls' => true,
-    'devMode' => false, // set this to true if you want more verbose error messages on Herokou
+    'devMode' => false,
   ),
   */
 );
