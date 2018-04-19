@@ -31,7 +31,7 @@ return array(
     'defaultWeekStartDay' => '1', /* Sets start of the week on Mondays */
     'allowAutoUpdates' => false, /* Prevents updating Craft on Heroku */
     'enableTemplateCaching' => false,
-    'enableCsrfProtection' => false, /* This should be true, but read  https://craftcms.com/support/csrf-protection first */
+    'enableCsrfProtection' => true, /* Trouble delivering forms? See https://craftcms.com/support/csrf-protection */
     'useCompressedJs' => false, /* Craft can compress JS, haven't been tested */
     'maxUploadFileSize' => 10000000, /* Set to 100MB, see also public/.user.ini */
     'usePathInfo' => true, /* This fixes the Heroku no resources found issue*/
