@@ -10,10 +10,12 @@ if (file_exists(BASEPATH . '.env')) {
 
 // Use redis to cache php session data
 // source: https://york.io/2016/07/22/redis-persist-sessions-php-heroku.html
-$parsedRedisUrl = '';
+$redisUrl = '';
 if(!empty($_ENV['REDIS_URL'])) {
   $redisUrlParts = parse_url($_ENV['REDIS_URL']);
-  $parsedRedisUrl = "tcp://$redisUrlParts[host]:$redisUrlParts[port]?auth=$redisUrlParts[pass]";
+  $redisUrl = "tcp://$redisUrlParts[host]:$redisUrlParts[port]";
+  // add password if present
+  $redisUrl .= $redisUrlParts[pass] ? '?auth=' . $redisUrlParts[pass] : '';
 }
 
 /*
@@ -39,7 +41,7 @@ return array(
     'appId' => 'anUniqueAppId',
     'validationKey' => $_ENV['CRAFT_VALIDATION_KEY'],
     'cacheMethod' => 'redis',
-    'overridePhpSessionLocation' => $parsedRedisUrl,
+    'overridePhpSessionLocation' => $redisUrl,
     'siteUrl' => ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? 'http') . '://' . $_SERVER['HTTP_HOST'] . '/',
     'environmentVariables' => array(
         'basePath' => realpath(getcwd() . '/public/')
