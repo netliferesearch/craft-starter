@@ -16,3 +16,4 @@ craft/storage/userphotos
 .env
 *.hot-update.*
 *.sql
+.idea
