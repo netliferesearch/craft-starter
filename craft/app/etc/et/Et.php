@@ -84,6 +84,7 @@ class Et
 				'phpVersion'    => PHP_VERSION,
 				'mySqlVersion'  => craft()->db->getServerVersion(),
 				'proc'          => function_exists('proc_open') ? 1 : 0,
+				'totalLocales'  => count(craft()->i18n->getSiteLocales()),
 			),
 		));
 
@@ -318,7 +319,11 @@ class Et
 
 		if (($keyFile = IOHelper::fileExists($licenseKeyPath)) !== false)
 		{
-			return trim(preg_replace('/[\r\n]+/', '', IOHelper::getFileContents($keyFile)));
+			$key = trim(preg_replace('/[\r\n]+/', '', IOHelper::getFileContents($keyFile)));
+			if (strlen($key) === 250)
+			{
+				return $key;
+			}
 		}
 
 		return null;
@@ -350,7 +355,7 @@ class Et
 	private function _setLicenseKey($key)
 	{
 		// Make sure the key file does not exist first. Et will never overwrite a license key.
-		if (($keyFile = IOHelper::fileExists(craft()->path->getLicenseKeyPath())) == false)
+		if ($this->_getLicenseKey() === null)
 		{
 			$keyFile = craft()->path->getLicenseKeyPath();
 

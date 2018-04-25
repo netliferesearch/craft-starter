@@ -83,31 +83,6 @@ class AppController extends BaseController
 	}
 
 	/**
-	 * Transfers the Craft license to the current domain.
-	 *
-	 * @return null
-	 */
-	public function actionTransferLicenseToCurrentDomain()
-	{
-		$this->requireAjaxRequest();
-		$this->requirePostRequest();
-		craft()->userSession->requireAdmin();
-
-		$response = craft()->et->transferLicenseToCurrentDomain();
-
-		if ($response === true)
-		{
-			$this->returnJson(array(
-				'success' => true
-			));
-		}
-		else
-		{
-			$this->returnErrorJson($response);
-		}
-	}
-
-	/**
 	 * Returns the edition upgrade modal.
 	 *
 	 * @return null
@@ -141,12 +116,22 @@ class AppController extends BaseController
 			$this->returnErrorJson(Craft::t('Your license has an invalid Craft edition associated with it.'));
 		}
 
-		$editions = array();
+		$editions = array(
+			'0' => array(
+				'price' => 0,
+				'renewalPrice' => null,
+				'formattedPrice' => null,
+				'formattedRenewalPrice' => null,
+				'salePrice' => null,
+			),
+		);
 
 		foreach ($etResponse->data->editions as $edition => $info)
 		{
-			$editions[$edition]['price']          = $info['price'];
+			$editions[$edition]['price'] = $info['price'];
+			$editions[$edition]['renewalPrice'] = $info['renewalPrice'];
 			$editions[$edition]['formattedPrice'] = craft()->numberFormatter->formatCurrency($info['price'], 'USD', true);
+			$editions[$edition]['formattedRenewalPrice'] = craft()->numberFormatter->formatCurrency($info['renewalPrice'], 'USD', true);
 
 			if (isset($info['salePrice']) && $info['salePrice'] < $info['price'])
 			{

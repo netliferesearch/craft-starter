@@ -693,6 +693,19 @@ class WebApp extends \CWebApplication
 		parent::handleError($code, $message, $file, $line);
 	}
 
+	/**
+	 * Raised right AFTER the application processes the request.
+	 *
+	 * @param \CEvent $event The event parameter.
+	 */
+	public function onEndRequest($event)
+	{
+		// Related to: https://github.com/craftcms/cms/issues/2245
+		$this->elements->handleRequestEnd();
+
+		parent::onEndRequest($event);
+	}
+
 	// Private Methods
 	// =========================================================================
 

@@ -1250,7 +1250,7 @@ body #redactor-modal-overlay {
 
 /* tag select fields */
 .tagselect .element.small { clear: none; }
-.tagselect .add { position: relative; z-index: 1; display: inline-block; width: 12em; }
+.tagselect .add { position: relative; z-index: 1; @include margin(7px, 7px, 0, 0); display: inline-block; width: 12em; }
 .tagselect .add .text { @include padding-right(30px); }
 .tagselect .add .spinner { position: absolute; top: 0; @include right(5px); }
 body.ltr .tagselect.elementselect .element,
@@ -1458,7 +1458,6 @@ input:-ms-input-placeholder { @include placeholder-styles; }
 .input .redactor-box.redactor-box-fullscreen { z-index: 100 !important; }
 .input .redactor-toolbar { top: 0; background: none; @include box-shadow(none); }
 .input .redactor-toolbar.toolbar-fixed-box { @include pane; z-index: 1 !important; }
-.input .redactor-toolbar.toolbar-fixed-box + span + .redactor-layer { padding-top: 48px; }
 .input .redactor-toolbar li a { color: $textcolor; }
 .input .redactor-toolbar li a:hover { background-color: $lightselcolor; color: $textcolor; }
 .input .redactor-toolbar li a:active,

@@ -46,13 +46,18 @@ class CpHelper
 			{
 				$alerts[] = Craft::t('Your license key is invalid.');
 			}
-			else if (craft()->hasWrongEdition())
+			else if (!craft()->canTestEditions())
 			{
-				$alerts[] = Craft::t('You’re running Craft {edition} with a Craft {licensedEdition} license.', array(
-						'edition' => craft()->getEditionName(),
-						'licensedEdition' => craft()->getLicensedEditionName()
-					)) .
-					' <a class="go edition-resolution">'.Craft::t('Resolve').'</a>';
+				$edition = craft()->getEdition();
+				$licensedEdition = craft()->getLicensedEdition();
+				if ($edition > $licensedEdition)
+				{
+					$alerts[] = Craft::t('You’re running Craft {edition} with a Craft {licensedEdition} license.', array(
+							'edition' => craft()->getEditionName(),
+							'licensedEdition' => craft()->getLicensedEditionName()
+						)) .
+						' <a class="go edition-resolution">'.Craft::t('Resolve').'</a>';
+				}
 			}
 
 			if ($path != 'updates' && $user->can('performUpdates'))
@@ -74,22 +79,11 @@ class CpHelper
 				$licenseKeyPath = craft()->path->getLicenseKeyPath();
 				$licenseKeyFile = IOHelper::getFolderName($licenseKeyPath, false).'/'.IOHelper::getFileName($licenseKeyPath);
 
-				$message = Craft::t('The license located at {file} belongs to {domain}.', array(
-					'file'   => $licenseKeyFile,
-					'domain' => '<a href="http://'.$licensedDomain.'" target="_blank">'.$licensedDomain.'</a>'
-				));
-
-				// Can they actually do something about it?
-				if ($user->admin)
-				{
-					$action = '<a class="go domain-mismatch">'.Craft::t('Transfer it to this domain').'</a>';
-				}
-				else
-				{
-					$action = Craft::t('Please notify one of your site’s admins.');
-				}
-
-				$alerts[] = $message.' '.$action;
+				$alerts[] = Craft::t('The license located at {file} belongs to {domain}.', array(
+						'file' => $licenseKeyFile,
+						'domain' => '<a href="http://'.$licensedDomain.'" target="_blank">'.$licensedDomain.'</a>'
+					)).
+					' <a class="go" href="https://craftcms.com/support/resolving-mismatched-licenses">'.Craft::t('Learn more').'</a>';
 			}
 		}
 

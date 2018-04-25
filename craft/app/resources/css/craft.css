@@ -1338,6 +1338,8 @@ body.rtl .menu hr.padded { margin-right: 10px; }
 .tagselect .element.small { clear: none; }
 
 .tagselect .add { position: relative; z-index: 1; display: inline-block; width: 12em; }
+body.ltr .tagselect .add { margin: 7px 7px 0 0 ; }
+body.rtl .tagselect .add { margin: 7px 0 0 7px ; }
 
 body.ltr .tagselect .add .text { padding-right: 30px; }
 body.rtl .tagselect .add .text { padding-left: 30px; }
@@ -1578,8 +1580,6 @@ input:-ms-input-placeholder { color: #b9bfc6; }
 .input .redactor-toolbar { top: 0; background: none; -webkit-box-shadow: none; -moz-box-shadow: none; box-shadow: none; }
 
 .input .redactor-toolbar.toolbar-fixed-box { background: #fff; -webkit-box-shadow: 0 0 0 1px #e3e5e8; -moz-box-shadow: 0 0 0 1px #e3e5e8; box-shadow: 0 0 0 1px #e3e5e8; z-index: 1 !important; }
-
-.input .redactor-toolbar.toolbar-fixed-box + span + .redactor-layer { padding-top: 48px; }
 
 .input .redactor-toolbar li a { color: #29323d; }
 

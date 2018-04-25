@@ -19,30 +19,6 @@
 {% includecssresource "css/profile.css" %}
 
 
-{% set saveUserButtons %}
-
-	<div class="buttons">
-		{% if not currentUser.can('registerUsers') or CraftEdition != CraftPro %}
-			<input type="submit" class="btn submit" value="{{ 'Save'|t }}">
-		{% else %}
-			<div class="btngroup">
-				<input type="submit" class="btn submit" value="{{ 'Save'|t }}">
-				<div class="btn submit menubtn"></div>
-				<div class="menu">
-					<ul>
-						<li><a class="formsubmit" data-redirect="users/{id}">
-							{{ forms.optionShortcutLabel('S') }}
-							{{ "Save and continue editing"|t }}
-						</a></li>
-						<li><a class="formsubmit" data-redirect="users/new">{{ "Save and add another"|t }}</a></li>
-					</ul>
-				</div>
-			</div>
-		{% endif %}
-	</div>
-
-{% endset %}
-
 {% set requireEmailVerification = craft.systemSettings.users.requireEmailVerification %}
 
 {% set hiddenInputs %}
@@ -156,8 +132,6 @@
 							value: account.weekStartDay
 						}) }}
 					{% endif %}
-
-					{{ saveUserButtons }}
 				</div>
 
 				{% if CraftEdition == CraftPro %}
@@ -171,10 +145,10 @@
 					{% endfor %}
 				{% endif %}
 
-				{% if CraftEdition >= CraftClient and currentUser.can('assignUserPermissions') %}
+				{% if CraftEdition >= CraftClient and (currentUser.can('assignUserGroups') or currentUser.can('assignUserPermissions')) %}
 					<div id="perms" class="hidden">
 
-						{% if CraftEdition == CraftPro %}
+						{% if CraftEdition == CraftPro and currentUser.can('assignUserGroups') %}
 							<h2>{{ "User Groups"|t }}</h2>
 
 							{% set assignableGroups = craft.userGroups.getAssignableGroups(account) %}
@@ -209,31 +183,50 @@
 							<hr>
 						{% endif %}
 
-						<h2>{{ "Permissions"|t }}</h2>
+						{% if currentUser.can('assignUserPermissions') %}
+							<h2>{{ "Permissions"|t }}</h2>
 
-						{% if currentUser.admin and CraftEdition == CraftPro %}
-							{{ forms.checkboxField({
-								label: '<strong>' ~ "Admin"|t ~ '</strong>',
-								name: 'admin',
-								id: 'admin',
-								checked: account.admin,
-								reverseToggle: 'permissions'
-							}) }}
+							{% if currentUser.admin and CraftEdition == CraftPro %}
+								{{ forms.checkboxField({
+									label: '<strong>' ~ "Admin"|t ~ '</strong>',
+									name: 'admin',
+									id: 'admin',
+									checked: account.admin,
+									reverseToggle: 'permissions'
+								}) }}
+							{% endif %}
+
+							<input type="hidden" name="permissions" value="">
+
+							<div id="permissions" class="field{% if account.admin %} hidden{% endif %}">
+								{% include "_includes/permissions" with {
+									userOrGroup: (account.admin ? null : account),
+									groupPermissions: craft.userPermissions.getGroupPermissionsByUserId(account.id)
+								} only %}
+							</div>
 						{% endif %}
-
-						<input type="hidden" name="permissions" value="">
-
-						<div id="permissions" class="field{% if account.admin %} hidden{% endif %}">
-							{% include "_includes/permissions" with {
-								userOrGroup: (account.admin ? null : account),
-								groupPermissions: craft.userPermissions.getGroupPermissionsByUserId(account.id)
-							} only %}
-						</div>
-
-						{{ saveUserButtons }}
-
 					</div>
 				{% endif %}
+
+				<div class="buttons">
+                    {% if not currentUser.can('registerUsers') or CraftEdition != CraftPro %}
+						<input type="submit" class="btn submit" value="{{ 'Save'|t }}">
+                    {% else %}
+						<div class="btngroup">
+							<input type="submit" class="btn submit" value="{{ 'Save'|t }}">
+							<div class="btn submit menubtn"></div>
+							<div class="menu">
+								<ul>
+									<li><a class="formsubmit" data-redirect="users/{id}">
+                                            {{ forms.optionShortcutLabel('S') }}
+                                            {{ "Save and continue editing"|t }}
+										</a></li>
+									<li><a class="formsubmit" data-redirect="users/new">{{ "Save and add another"|t }}</a></li>
+								</ul>
+							</div>
+						</div>
+                    {% endif %}
+				</div>
 			</form>
 		</div><!--/item-->
 
