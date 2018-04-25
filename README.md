@@ -50,6 +50,12 @@ Make sure you install global dependencies like Heroku toolbelt first.
 6. `heroku config:add NPM_CONFIG_PRODUCTION=false`
 7. `heroku config:add CRAFT_VALIDATION_KEY=anyuniquekey` <= generate this key yourself
 
+## Buying a license
+
+1. Before buying a license. Uncomment license.key in the file .gitignore. This will allow you to commit the license file to the repository.
+2. Buy the license. 
+3. Commit the file to the repository.
+
 ## Up and running when somebody already set things up
 
 1. `heroku git:remote <name>`
@@ -58,7 +64,7 @@ Make sure you install global dependencies like Heroku toolbelt first.
 
 ## What about assets?!
 
-We usually use S3 on Amazon Web Services. Ask [@kmelve](https://github.com/kmelve) about access to a bucket.
+We usually use S3 on Amazon Web Services. Ask [@kodepoeten](https://github.com/nilsnh) about access to a bucket.
 
 ## Global dependencies for the starter-pack
 

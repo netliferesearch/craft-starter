@@ -17,3 +17,4 @@ craft/storage/userphotos
 *.hot-update.*
 *.sql
 .idea
+license.key
