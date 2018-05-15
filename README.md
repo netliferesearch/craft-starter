@@ -17,9 +17,9 @@ _Read through the readme_, and if you are stuck, don't hesitate to ask in either
 
 When you have docker-compose running in one terminal window please open a second window where you run `npm run dev`. This will start a process that will be building our frontend dependencies. Our build setup provides a localhost:3000 address that shows the same as localhost:5000 but also has livereloading.
 
-Edit CSS and JavaScript in the `/resources/`-folder. Webpack will compile, transpile, minify it into the `public` folder, ready for production. If you put files in the assets-folder, Webpack will handle those too. The `style.scss` is built into `public/screen.css` and it injects vendor prefixes and inlines smaller static resources (icon fonts for example). The file `resources/js/app.js` is built into `public/js/min/app.min.js`, and it uses Browserify + Babel, allowing you to both write ES6 as well as using a Node.js style if you prefer.
+Edit CSS and JavaScript in the `/resources/`-folder. Webpack will compile, transpile, minify it into the `public` folder, ready for production. If you put files in the assets-folder, Webpack will handle those too (see file-loader). The `main.css` is built into `public/screen.css` and it injects vendor prefixes and inlines smaller static resources (icon fonts for example). The file `resources/js/app.js` is built into `public/js/min/app.min.js`, and it uses Browserify + Babel, allowing you to both write ES6 as well as using a Node.js style if you prefer.
 
-Both files are properly included in `craft/templates/_layout.twig`
+Both files are included in `craft/templates/_layout.twig`
 
 When you want to login into Craft you'll need to go to localhost:5000/admin, because localhost:3000 is just a livereloading proxy that can't handle logins.
 
@@ -53,7 +53,7 @@ Make sure you install global dependencies like Heroku toolbelt first.
 ## Buying a license
 
 1. Before buying a license. Uncomment license.key in the file .gitignore. This will allow you to commit the license file to the repository.
-2. Buy the license. 
+2. Buy the license.
 3. Commit the file to the repository.
 
 ## Up and running when somebody already set things up
