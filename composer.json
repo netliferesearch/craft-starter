@@ -12,7 +12,8 @@
       "ext-imagick": "*",
       "ext-mcrypt": "*",
       "ext-redis": "*",
-      "vlucas/phpdotenv": "*"
+      "vlucas/phpdotenv": "*",
+        "phpzip/phpzip": "^2.0"
     },
     "require-dev": {
         "heroku/heroku-buildpack-php": "^83.0"
