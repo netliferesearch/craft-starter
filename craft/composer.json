@@ -1,5 +1,20 @@
 {
     "require": {
-        "craftcms/cms": "^3.0.0"
+        "craftcms/cms": "^3.0.0-RC1",
+        "yiisoft/yii2-redis": "~2.0.0",
+        "craftcms/plugin-installer": "^1.5",
+        "craftcms/aws-s3": "^1.0",
+        "craftcms/redactor": "^1.0",
+        "wbrowar/adminbar": "^3.1"
+    },
+    "config": {
+        "optimize-autoloader": true
+    },
+    "minimum-stability": "beta",
+    "repositories": [
+    {
+      "type": "composer",
+      "url": "https://asset-packagist.org"
     }
+  ]
 }
