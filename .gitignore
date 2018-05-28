@@ -13,6 +13,7 @@ craft/storage/runtime
 craft/storage/backups
 craft/storage/userphotos
 /vendor
+craft/vendor
 .env
 *.hot-update.*
 *.sql
