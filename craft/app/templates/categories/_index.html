@@ -1,9 +1,0 @@
-{% extends "_layouts/elementindex" %}
-{% set title = "Categories"|t %}
-{% set elementType = 'Category' %}
-{% set showStatusMenu = false %}
-
-
-{% if groupHandle is defined %}
-	{% includejs 'window.defaultGroupHandle = "'~groupHandle~'";' %}
-{% endif %}
