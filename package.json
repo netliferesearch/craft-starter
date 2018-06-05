@@ -1,0 +1,45 @@
+{
+  "name": "netlife-craft-starter",
+  "version": "3.0.0",
+  "description": "Good defaults for Craft CMS 3",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "start": "echo 'You probably want to $ npm run dev'",
+    "dev": "webpack --watch --devtool eval-source-map",
+    "build": "webpack -p --devtool source-map --progress",
+    "postinstall": "npm run build",
+    "heroku-postbuild":
+      "mkdir public/admin && cp -R craft/app/resources public/admin",
+    "db:prod:download": "./docker-src/db-prod-download.sh",
+    "db:prod:tunnel": "./docker-src/db-prod-tunnel.sh",
+    "db:stage:push": "./docker-src/db-stage-push.sh",
+    "docker:db:rebuild": "./docker-src/docker-db-rebuild.sh"
+  },
+  "engines": {
+    "node": "8.x",
+    "npm": "5.x"
+  },
+  "author": "Netlife Design",
+  "license": "MIT",
+  "dependencies": {},
+  "standard": {
+    "ignore": ["craft", "public/js/dist.js", "public/vendor"]
+  },
+  "devDependencies": {
+    "css-loader": "^0.28.11",
+    "postcss-cssnext": "^3.1.0",
+    "postcss-import": "^11.1.0",
+    "postcss-loader": "^2.1.5",
+    "style-loader": "^0.21.0",
+    "webpack": "^4.11.0",
+    "webpack-cli": "^3.0.2"
+  },
+  "postcss": {
+    "plugins": {
+      "postcss-import": {},
+      "postcss-cssnext": {},
+      "cssnano": {}
+    }
+  }
+}
