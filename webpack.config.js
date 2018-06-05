@@ -1,4 +1,5 @@
 const path = require('path')
+const webpack = require('webpack')
 
 module.exports = {
   entry: ['./web-src/app.js', './web-src/style.css'],
@@ -17,5 +18,13 @@ module.exports = {
         ]
       }
     ]
+  },
+  devServer: {
+    contentBase: '/',
+    inline: true,
+    port: 3000,
+    proxy: {
+      '**': 'http://0.0.0.0:5000/'
+    }
   }
 }
