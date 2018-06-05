@@ -25,6 +25,12 @@ return [
 
         // The secure key Craft will use for hashing and encrypting data
         'securityKey' => getenv('SECURITY_KEY'),
+
+        // avoid æøå in slugs.
+        'limitAutoSlugsToAscii' => true,
+
+        // be sure to update php upload limit also
+        'maxUploadFileSize' => '20M'
     ],
 
     // Dev environment settings
