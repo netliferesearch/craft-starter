@@ -3,4 +3,5 @@
 /vendor
 .DS_Store
 license.key
+/node_modules/
 
