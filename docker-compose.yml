@@ -1,0 +1,21 @@
+version: '2'
+services:
+  database:
+    image: mysql:5.7
+    volumes:
+      - ./docker-src/db-dump:/docker-entrypoint-initdb.d:cached
+    environment:
+      - MYSQL_ROOT_PASSWORD=somegloriouspassword
+      - MYSQL_DATABASE=craft_cms
+  redis_service:
+    image: redis:4-alpine
+  server:
+    image: nilsnh/craft-composer-base:latest
+    ports:
+      - "5000:80"
+    volumes:
+      - ./:/var/www/html/:cached
+    environment:
+      - DATABASE_URL=mysql://root:somegloriouspassword@database:3306/craft_cms
+      - APACHE_DOCUMENT_ROOT=/var/www/html/web
+      - REDIS_URL=redis://redis_service:6379

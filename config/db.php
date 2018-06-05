@@ -8,13 +8,13 @@
  * @see craft\config\DbConfig
  */
 
+$db_url = parse_url(getenv('DATABASE_URL'));
+
 return [
-    'driver' => getenv('DB_DRIVER'),
-    'server' => getenv('DB_SERVER'),
-    'user' => getenv('DB_USER'),
-    'password' => getenv('DB_PASSWORD'),
-    'database' => getenv('DB_DATABASE'),
-    'schema' => getenv('DB_SCHEMA'),
-    'tablePrefix' => getenv('DB_TABLE_PREFIX'),
-    'port' => getenv('DB_PORT')
+    'driver' => $db_url['scheme'], // set mysql or psql
+    'server' => $db_url['host'],
+    'user' => $db_url['user'],
+    'password' => $db_url['pass'],
+    'database' => substr($db_url['path'],1),
+    'tablePrefix' => 'craft'
 ];
