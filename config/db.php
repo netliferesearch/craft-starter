@@ -8,7 +8,7 @@
  * @see craft\config\DbConfig
  */
 
-$db_url = parse_url(getenv('DATABASE_URL'));
+$db_url = parse_url(getenv('JAWSDB_URL') ?: getenv('DATABASE_URL'));
 
 return [
     'driver' => $db_url['scheme'], // set mysql or psql
