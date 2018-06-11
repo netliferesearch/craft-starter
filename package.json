@@ -9,7 +9,8 @@
     "dev": "npm run clean && webpack --watch --mode development --progress",
     "build": "npm run clean && webpack --mode production --progress --devtool source-map",
     "postinstall": "npm run build",
-    "db:prod:download": "hamstr mysqldump --tunnel -p docker-src/db-dump/dump.sql prod",
+    "db:heroku:download": "mysqldump $(mysql-parse $(heroku config:get JAWSDB_URL)) > docker-src/db-dump/dump.sql",
+    "db:arcustech:download": "hamstr mysqldump --tunnel -p docker-src/db-dump/dump.sql prod",
     "docker:rebuild": "docker-compose down && docker-compose up",
     "clean": "rimraf ./web/dist"
   },
