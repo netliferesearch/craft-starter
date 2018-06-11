@@ -8,7 +8,7 @@
   <title>{% if title is defined %}{{ title }} - {% endif %}{{ siteName }}</title>
 
   <link rel="home" href="{{ siteUrl }}" />
-	{% includeCssFile "/dist/styles.css" %}
+	<link rel="stylesheet" href="/dist/styles.css">
 </head>
 
 <body>
@@ -26,5 +26,5 @@
     {% include 'partials/footer' %}
   {% endcache %}
 
-  {% includeJsFile "/dist/bundle.js" %}
+	<script src="/dist/bundle.js"></script>
 </body>
