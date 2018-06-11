@@ -4,4 +4,5 @@
 .DS_Store
 license.key
 /node_modules/
-/web/*.js
+/web/dist
+/.cache/
