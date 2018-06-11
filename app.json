@@ -5,15 +5,10 @@
   "repository": "https://github.com/netliferesearch/craft-starter/tree/craft3",
   "success_url": "/admin/login",
   "env": {
-    "CRAFT_SECRET_KEY": {
+    "CRAFT_SECURITY_KEY": {
       "description":
         "The secure key Craft will use for hashing and encrypting data.",
       "generator": "secret"
-    },
-    "NPM_CONFIG_PRODUCTION": {
-      "description":
-        "Setting this to 'false' ensures that we have devDependencies available for building js and css.",
-      "value": false
     }
   },
   "formation": {
