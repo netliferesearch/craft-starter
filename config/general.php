@@ -24,7 +24,7 @@ return [
         'cpTrigger' => 'admin',
 
         // The secure key Craft will use for hashing and encrypting data
-        'securityKey' => getenv('SECURITY_KEY'),
+        'securityKey' => getenv('CRAFT_SECURITY_KEY'),
 
         // avoid æøå in slugs.
         'limitAutoSlugsToAscii' => true,
@@ -34,18 +34,12 @@ return [
     ],
 
     // Dev environment settings
-    'dev' => [
+    'localhost' => [
         // Base site URL
         'siteUrl' => null,
 
         // Dev Mode (see https://craftcms.com/support/dev-mode)
         'devMode' => true,
-    ],
-
-    // Staging environment settings
-    'staging' => [
-        // Base site URL
-        'siteUrl' => null,
     ],
 
     // Production environment settings
