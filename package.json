@@ -9,9 +9,7 @@
     "dev": "npm run clean && webpack --watch --mode development --progress",
     "build": "npm run clean && webpack --mode production --progress --devtool source-map",
     "postinstall": "npm run build",
-    "heroku-postbuild": "mkdir public/admin && cp -R craft/app/resources public/admin",
     "db:prod:download": "hamstr mysqldump --tunnel -p docker-src/db-dump/dump.sql prod",
-    "db:stage:push": "echo 'command not implemented'",
     "docker:rebuild": "docker-compose down && docker-compose up",
     "clean": "rimraf ./web/dist"
   },
