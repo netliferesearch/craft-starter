@@ -6,14 +6,14 @@
   "private": true,
   "scripts": {
     "start": "echo 'You probably want to $ npm run dev'",
-    "dev": "webpack --watch --mode development --progress",
-    "build": "webpack --mode production --progress",
+    "dev": "npm run clean && webpack --watch --mode development --progress",
+    "build": "npm run clean && webpack --mode production --progress --devtool source-map",
     "postinstall": "npm run build",
     "heroku-postbuild": "mkdir public/admin && cp -R craft/app/resources public/admin",
     "db:prod:download": "hamstr mysqldump --tunnel -p docker-src/db-dump/dump.sql prod",
     "db:stage:push": "echo 'command not implemented'",
     "docker:rebuild": "docker-compose down && docker-compose up",
-    "clean": "rimraf .cache ./web/dist"
+    "clean": "rimraf ./web/dist"
   },
   "engines": {
     "node": "8.x",
@@ -34,6 +34,7 @@
     "postcss-cssnext": "^3.1.0",
     "postcss-import": "^11.1.0",
     "postcss-loader": "^2.1.5",
+    "rimraf": "^2.6.2",
     "webpack": "^4.12.0",
     "webpack-command": "^0.2.1"
   },
