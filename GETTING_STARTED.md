@@ -43,6 +43,10 @@ Press this button to deploy to Heroku and be sure to select Europe as the region
 
 To learn more about what's deployed see the `app.json` file.
 
+## Updating composer.json dependencies
+
+Running `npm run composer` will spin up a docker container with composer installed so that you do neat things like `npm run composer update` without having composer nor php-extensions installed.
+
 ## Buying a license
 
 1.  Before buying a license. Uncomment license.key in the file .gitignore. This will allow you to commit the license file to the repository.
