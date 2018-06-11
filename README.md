@@ -1,4 +1,4 @@
-- Using this for a new project? See [getting started](GETTING_STARTED.md).
+Using this for a new project? [See getting started](GETTING_STARTED.md).
 
 Below is a template that you should fill out as you embark on a new project, or upgrade an old Craft CMS setup.
 
