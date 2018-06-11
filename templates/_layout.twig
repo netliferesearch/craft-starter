@@ -1,6 +1,3 @@
-{% if not craft.app.config.general.devMode %}
-{% requireLogin %}
-{% endif %}
 <!doctype html>
 
 <head>
@@ -11,7 +8,7 @@
   <title>{% if title is defined %}{{ title }} - {% endif %}{{ siteName }}</title>
 
   <link rel="home" href="{{ siteUrl }}" />
-	{% includeCssFile "/dist/app.css" %}
+	{% includeCssFile "/dist/screen.css" %}
 </head>
 
 <body>
@@ -29,5 +26,5 @@
     {% include 'partials/footer' %}
   {% endcache %}
 
-  {% includeJsFile "/dist/app.js" %}
+  {% includeJsFile "/dist/bundle.js" %}
 </body>
