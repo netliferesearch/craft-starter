@@ -22,7 +22,7 @@
     "craftcms/cms": "3.0.10.3",
     "vlucas/phpdotenv": "^2.4.0",
     "ext-imagick": "*",
-    "ext-redis": "*"
+    "yiisoft/yii2-redis": "~2.0.0"
   },
   "autoload": {
     "psr-4": {

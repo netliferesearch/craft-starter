@@ -17,9 +17,26 @@
  * your config/ folder, alongside this one.
  */
 
+ // Use redis to cache php session data
+ // source: https://docs.craftcms.com/v3/configuration.html#redis
+ $redisUrlParts = '';
+ if(!empty($_ENV['REDIS_URL'])) {
+   $redisUrlParts = parse_url($_ENV['REDIS_URL']);
+ }
+
 return [
     'modules' => [
         'my-module' => \modules\Module::class,
+        'cache' => [
+            'class' => yii\redis\Cache::class,
+            'defaultDuration' => 86400,
+            'redis' => [
+                'hostname' => $redisUrlParts[host],
+                'port' => $redisUrlParts[port],
+                'password' => $redisUrlParts[pass] ?: '',
+                'database' => 0,
+            ],
+        ],
     ],
     //'bootstrap' => ['my-module'],
 ];
