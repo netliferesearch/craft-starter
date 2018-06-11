@@ -37,27 +37,17 @@ If you have cloned this project, the git remote `origin` is set to the craft-sta
 
 ## Setting up the project on Heroku for the first time
 
-Make sure you install global dependencies first. Then you can run these commands in order:
+Press this button to deploy to Heroku and be sure to select Europe as the region to deploy to.
 
-1.  `heroku create <name> --region eu`
-2.  `heroku buildpacks:add heroku/php`
-3.  `heroku buildpacks:add heroku/nodejs`
-4.  `heroku addons:create jawsdb`
-5.  `heroku addons:create heroku-redis`
-6.  `heroku config:add NPM_CONFIG_PRODUCTION=false`
-7.  `heroku config:add CRAFT_VALIDATION_KEY=anyuniquekey` <= generate this key yourself
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/netliferesearch/craft-starter/tree/craft3)
+
+To learn more about what's deployed see the `app.json` file.
 
 ## Buying a license
 
 1.  Before buying a license. Uncomment license.key in the file .gitignore. This will allow you to commit the license file to the repository.
 2.  Buy the license.
 3.  Commit the file to the repository.
-
-## Up and running when somebody already set things up
-
-1.  `heroku git:remote -a <heroku-app-name>`
-2.  `heroku config -s | tr -d "'" > .env`
-3.  Get your local database up and running or connect to the remote database
 
 ## What about assets?!
 
