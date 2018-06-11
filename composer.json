@@ -20,7 +20,9 @@
   },
   "require": {
     "craftcms/cms": "3.0.10.3",
-    "vlucas/phpdotenv": "^2.4.0"
+    "vlucas/phpdotenv": "^2.4.0",
+    "ext-imagick": "*",
+    "ext-redis": "*"
   },
   "autoload": {
     "psr-4": {
