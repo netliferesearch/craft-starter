@@ -6,15 +6,15 @@
   "private": true,
   "scripts": {
     "start": "echo 'You probably want to $ npm run dev'",
-    "dev": "webpack-dev-server --mode development --hot",
-    "build": "webpack --mode production --progress",
+    "dev": "npm run clean && parcel watch web/js/app.js -d web/dist --hmr-port 9999",
+    "build": "parcel build web/js/app.js -d web/dist",
     "postinstall": "npm run build",
-    "heroku-postbuild":
-      "mkdir public/admin && cp -R craft/app/resources public/admin",
+    "heroku-postbuild": "mkdir public/admin && cp -R craft/app/resources public/admin",
     "db:prod:download": "./docker-src/db-prod-download.sh",
     "db:prod:tunnel": "./docker-src/db-prod-tunnel.sh",
     "db:stage:push": "./docker-src/db-stage-push.sh",
-    "docker:db:rebuild": "./docker-src/docker-db-rebuild.sh"
+    "docker:db:rebuild": "./docker-src/docker-db-rebuild.sh",
+    "clean": "rimraf .cache ./web/dist"
   },
   "engines": {
     "node": "8.x",
@@ -23,24 +23,19 @@
   "author": "Netlife Design",
   "license": "MIT",
   "dependencies": {},
-  "standard": {
-    "ignore": ["craft", "public/js/dist.js", "public/vendor"]
-  },
   "devDependencies": {
-    "css-loader": "^0.28.11",
+    "babel-preset-env": "^1.7.0",
+    "parcel-bundler": "^1.8.1",
     "postcss-cssnext": "^3.1.0",
     "postcss-import": "^11.1.0",
-    "postcss-loader": "^2.1.5",
-    "style-loader": "^0.21.0",
-    "webpack": "^4.11.0",
-    "webpack-cli": "^3.0.2",
-    "webpack-dev-server": "^3.1.4"
+    "postcss-parcel-import": "0.0.2",
+    "postcss-preset-env": "^5.1.0",
+    "rimraf": "^2.6.2"
   },
   "postcss": {
     "plugins": {
       "postcss-import": {},
-      "postcss-cssnext": {},
-      "cssnano": {}
+      "postcss-cssnext": {}
     }
   }
 }
