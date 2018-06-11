@@ -42,6 +42,15 @@ return [
         'devMode' => true,
     ],
 
+    // Dev environment settings
+    'herokuapp' => [
+        // Base site URL
+        'siteUrl' => null,
+
+        // Dev Mode (see https://craftcms.com/support/dev-mode)
+        'devMode' => true,
+    ],
+
     // Production environment settings
     'production' => [
         // Base site URL
