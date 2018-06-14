@@ -1,47 +1,47 @@
 {
   "name": "netlife-craft-starter",
-  "version": "2.1.0",
-  "description": "Craft CMS project starter",
+  "version": "3.0.0",
+  "description": "Good defaults for Craft CMS 3",
   "main": "index.js",
   "private": true,
   "scripts": {
     "start": "echo 'You probably want to $ npm run dev'",
-    "dev": "webpack --watch --devtool eval-source-map",
-    "build": "webpack -p --devtool source-map --progress",
+    "dev": "npm run clean && webpack --watch --mode development --progress",
+    "build": "npm run clean && webpack --mode production --progress --devtool source-map",
     "postinstall": "npm run build",
-    "heroku-postbuild": "mkdir public/admin && cp -R craft/app/resources public/admin",
-    "db:prod:download": "./docker-src/db-prod-download.sh",
-    "db:prod:tunnel": "./docker-src/db-prod-tunnel.sh",
-    "db:stage:push": "./docker-src/db-stage-push.sh",
-    "docker:db:rebuild": "./docker-src/docker-db-rebuild.sh"
+    "db:heroku:download": "mysqldump $(mysql-parse $(heroku config:get JAWSDB_URL)) > docker-src/db-dump/dump.sql",
+    "db:arcustech:download": "hamstr mysqldump --tunnel -p docker-src/db-dump/dump.sql prod",
+    "docker:rebuild": "docker-compose down && docker-compose up",
+    "clean": "rimraf ./web/dist",
+    "composer": "docker run -v $(pwd):/var/www/html -it --rm nilsnh/craft-composer-base:latest composer"
   },
   "engines": {
     "node": "8.x",
     "npm": "5.x"
   },
-  "author": "Netlife Research",
+  "author": "Netlife Design",
   "license": "MIT",
-  "dependencies": {
-    "@babel/core": "^7.0.0-beta.39",
-    "@babel/preset-env": "^7.0.0-beta.39",
-    "babel-loader": "^8.0.0-beta.0",
-    "browser-sync": "^2.23.6",
-    "browser-sync-webpack-plugin": "^1.2.0",
-    "css-loader": "^0.28.9",
-    "extract-text-webpack-plugin": "^3.0.2",
-    "file-loader": "^1.1.6",
+  "dependencies": {},
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.7.0",
+    "browser-sync": "^2.24.4",
+    "browser-sync-webpack-plugin": "^2.2.2",
+    "css-loader": "^0.28.11",
+    "hamstr": "^1.0.3",
+    "mini-css-extract-plugin": "^0.4.0",
     "postcss-cssnext": "^3.1.0",
-    "postcss-import": "^11.0.0",
-    "postcss-loader": "^2.0.10",
-    "postcss-nested": "^3.0.0",
-    "style-loader": "^0.20.1",
-    "webpack": "^3.10.0"
+    "postcss-import": "^11.1.0",
+    "postcss-loader": "^2.1.5",
+    "rimraf": "^2.6.2",
+    "webpack": "^4.12.0",
+    "webpack-command": "^0.2.1"
   },
-  "standard": {
-    "ignore": [
-      "craft",
-      "public/js/dist.js",
-      "public/vendor"
-    ]
+  "postcss": {
+    "plugins": {
+      "postcss-import": {},
+      "postcss-cssnext": {}
+    }
   }
 }

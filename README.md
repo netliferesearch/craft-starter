@@ -1,90 +1,21 @@
-# Netlife Research: Craft Starter
+Using this for a new project? [See getting started](GETTING_STARTED.md).
 
-_Read through the readme_, and if you are stuck, don't hesitate to ask in either #frontend or #craft in Slack. If you have made some smart improvement to the tooling or setup of in your Craft project, _please contribute to this starter by making a pull request_.
+Below is a template that you should fill out as you embark on a new project, or upgrade an old Craft CMS setup.
 
-## Getting started
+# Your project title
 
-1. Clone, or download this repository
-1. If you haven't already install Docker and Node, see guide below.
-1. Run `npm install` to install NPM dependencies.
-1. Run `docker-compose up` to start three containers (details found in docker-compose.yml):
-   * Apache Server, to mirror production environment.
-   * Redis, used for caching logins included so that we mirror production.
-   * Mysql, the database.
-1. It might/will take some time for the containers to finish building and there will be no complete message. So, just wait 2min until the text stops flowing and then go to `http://localhost:5000/admin` to install Craft.
+## Usage
 
-### Start livereloading and asset building on localhost:3000
+1.  Explain
+2.  In
+3.  Simple terms how to get started developing.
 
-When you have docker-compose running in one terminal window please open a second window where you run `npm run dev`. This will start a process that will be building our frontend dependencies. Our build setup provides a localhost:3000 address that shows the same as localhost:5000 but also has livereloading.
+## Deployment
 
-Edit CSS and JavaScript in the `/resources/`-folder. Webpack will compile, transpile, minify it into the `public` folder, ready for production. If you put files in the assets-folder, Webpack will handle those too (see file-loader). The `main.css` is built into `public/screen.css` and it injects vendor prefixes and inlines smaller static resources (icon fonts for example). The file `resources/js/app.js` is built into `public/js/min/app.min.js`, and it uses Browserify + Babel, allowing you to both write ES6 as well as using a Node.js style if you prefer.
+1.  How and where
+2.  is
+3.  this project deployed?
 
-Both files are included in `craft/templates/_layout.twig`
+## Things to know
 
-When you want to login into Craft you'll need to go to localhost:5000/admin, because localhost:3000 is just a livereloading proxy that can't handle logins.
-
-After deploying the site to a remote server chances are that you'll see a login prompt instead of the frontpage you saw when running the site locally. This is just a "requireLogin" helper found in `_layout.twig` used to prevent others from viewing the site early in the process.
-
-## Changing the remote git repository
-
-If you have cloned this project, the git remote `origin` is set to the craft-starter repository. Unless you're actually working on improving the craft-starter, you should set the remote `origin` to your project repository.
-
-1. Remove the current `origin` with `git remote rm origin`
-2. Add the new origin with `git remote add origin git@github.com:netliferesearch/repository-name`
-3. Push to the new origin with `git push --set-upstream origin master`
-
-## Setting up the project on Heroku for the first time
-
-Push this button (remember to set the correct region)
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/netliferesearch/craft-starter/tree/master)
-
-### Manually (like a pro)
-
-Make sure you install global dependencies like Heroku toolbelt first.
-
-1. `heroku create <name> --region eu`
-2. `heroku buildpacks:add heroku/php`
-3. `heroku buildpacks:add heroku/nodejs`
-4. `heroku addons:create jawsdb`
-5. `heroku addons:create heroku-redis`
-6. `heroku config:add NPM_CONFIG_PRODUCTION=false`
-7. `heroku config:add CRAFT_VALIDATION_KEY=anyuniquekey` <= generate this key yourself
-
-## Buying a license
-
-1. Before buying a license. Uncomment license.key in the file .gitignore. This will allow you to commit the license file to the repository.
-2. Buy the license.
-3. Commit the file to the repository.
-
-## Up and running when somebody already set things up
-
-1. `heroku git:remote <name>`
-2. `heroku config -s | tr -d "'" > .env`
-3. Get your local database up and running or connect to the remote database
-
-## What about assets?!
-
-We usually use S3 on Amazon Web Services. Ask [@kodepoeten](https://github.com/nilsnh) about access to a bucket.
-
-## Global dependencies for the starter-pack
-
-Perform the following steps in a terminal:
-You only need to do this once per system.
-
-### Node Version Manager + tools
-
-* Install Heroku toolbelt <https://toolbelt.heroku.com/>
-* `brew install heroku`
-* `brew install nvm`
-
-### Troubleshooting
-
-> Peow peow!
-
-* Amazon S3: Craft CMS 2.x doesn't support bucket location Frankfurt because it uses a newer authentication method.
-
-## Updating from an old Craft starter setup
-
-1. Get to know this project's `webpack.config.js` and `docker-compose.yml`.
-2. Inside your old project start a new git branch for upgrading. And then try to copy over the build setup for asset building and docker container setup. You should also compare general.php and .htaccess setups to see if there are lessons to learn from the more up to date craft-starter.
-3. Try, try, try until you get it right. Be methodical and commit your progress steadily within the upgrade branch. After some thorough testing you can merge your "upgrade" branch back into master.
+What should future developers be aware about when developing on this rig?
