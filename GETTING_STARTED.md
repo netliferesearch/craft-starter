@@ -19,9 +19,9 @@ When you have docker-compose running in one terminal window please open a second
 
 Edit CSS and JavaScript in the `/web/`-folder. Webpack will compile, transpile, minify it into the `web` folder, ready for production. If you put files in the assets-folder, Webpack will handle those too (see file-loader).
 
-The `main.css` is built into `web/dist/styles.css` and it injects vendor prefixes and inlines smaller static resources (icon fonts for example).
+The `main.css` is built into `web/dist/main.dist.css` and it injects vendor prefixes and inlines smaller static resources (icon fonts for example).
 
-The file `web/js/main.js` is built into `web/dist/bundle.js`, and it uses Babel, allowing you to both write ES6 as well as using a Node.js style if you prefer.
+The file `web/js/main.js` is built into `web/dist/main.dist.js`, and it uses Babel, allowing you to both write ES6 as well as using a Node.js style if you prefer.
 
 Both files are included in `./templates/_layout.twig`
 

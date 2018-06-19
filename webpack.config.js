@@ -4,9 +4,9 @@ const BrowserSyncPlugin = require('browser-sync-webpack-plugin')
 
 module.exports = {
   context: path.resolve(__dirname),
-  entry: ['./web/js/main.js', './web/css/style.css'],
+  entry: ['./web/js/main.js', './web/css/main.css'],
   output: {
-    filename: 'bundle.js',
+    filename: '[name].dist.js',
     path: path.resolve(__dirname, 'web/dist')
   },
   module: {
@@ -36,21 +36,9 @@ module.exports = {
       }
     ]
   },
-  optimization: {
-    splitChunks: {
-      cacheGroups: {
-        styles: {
-          name: 'styles',
-          test: /\.css$/,
-          chunks: 'all',
-          enforce: true
-        }
-      }
-    }
-  },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: '[name].css'
+      filename: '[name].dist.css'
     }),
     new BrowserSyncPlugin({
       host: 'localhost',
