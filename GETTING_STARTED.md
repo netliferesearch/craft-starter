@@ -7,6 +7,7 @@ _Read through the readme_, and if you are stuck, don't hesitate to ask in either
 1.  Clone, or download this repository
 1.  If you haven't already install [global dependencies for the craft-starter](#global-deps).
 1.  Run `npm install` to install NPM dependencies.
+1.  Make a copy of `.env.example` and rename it to `.env`
 1.  Run `docker-compose up` to start three containers (details found in docker-compose.yml):
     - Apache Server, to mirror production environment.
     - Redis, used for caching logins included so that we mirror production.
@@ -34,14 +35,6 @@ If you have cloned this project, the git remote `origin` is set to the craft-sta
 1.  Remove the current `origin` with `git remote rm origin`
 2.  Add the new origin with `git remote add origin git@github.com:netliferesearch/repository-name`
 3.  Push to the new origin with `git push --set-upstream origin master`
-
-## Setting up the project on Heroku for the first time
-
-Press this button to deploy to Heroku and be sure to select Europe as the region to deploy to.
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/netliferesearch/craft-starter/tree/craft3)
-
-To learn more about what's deployed see the `app.json` file.
 
 ## Updating composer.json dependencies
 
