@@ -10,7 +10,7 @@ services:
   redis_service:
     image: redis:4-alpine
   server:
-    image: nilsnh/craft-composer-base:latest
+    image: nilsnh/craft-composer-base:7.2-apache
     ports:
       - "5000:80"
     volumes:
