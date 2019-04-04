@@ -7,7 +7,7 @@ _Read through the readme_, and if you are stuck, don't hesitate to ask in either
 1.  Clone, or download this repository
 1.  If you haven't already install [global dependencies for the craft-starter](#global-deps).
 1.  Run `npm install` to install NPM dependencies.
-1.  Make a copy of `.env.example` and rename it to `.env`
+1.  Copy and paste `.env.example` and rename it to `.env` to avoid `Internal server error`
 1.  Run `docker-compose up` to start three containers (details found in docker-compose.yml):
     - Apache Server, to mirror production environment.
     - Redis, used for caching logins included so that we mirror production.
