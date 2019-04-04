@@ -36,14 +36,6 @@ If you have cloned this project, the git remote `origin` is set to the craft-sta
 2.  Add the new origin with `git remote add origin git@github.com:netliferesearch/repository-name`
 3.  Push to the new origin with `git push --set-upstream origin master`
 
-## Setting up the project on Heroku for the first time
-
-Press this button to deploy to Heroku and be sure to select Europe as the region to deploy to.
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/netliferesearch/craft-starter/tree/craft3)
-
-To learn more about what's deployed see the `app.json` file.
-
 ## Updating composer.json dependencies
 
 Running `npm run composer` will spin up a docker container with composer installed so that you do neat things like `npm run composer update` without having composer nor php-extensions installed.
