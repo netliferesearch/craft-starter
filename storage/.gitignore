@@ -1,3 +1,5 @@
 backups
 logs
 runtime
+composer-backups
+config-backups
