@@ -1,4 +1,4 @@
-version: '2'
+version: "2"
 services:
   database:
     image: mysql:5.7
@@ -17,5 +17,5 @@ services:
       - ./:/var/www/html/:cached
     environment:
       - DATABASE_URL=mysql://root:somegloriouspassword@database:3306/craft_cms
-      - APACHE_DOCUMENT_ROOT=/var/www/html/web
+      - APACHE_DOCUMENT_ROOT=/var/www/html/public
       - REDIS_URL=redis://redis_service:6379

@@ -18,11 +18,11 @@ _Read through the readme_, and if you are stuck, don't hesitate to ask in either
 
 When you have docker-compose running in one terminal window please open a second window where you run `npm run dev`. This will start a process that will be building our frontend dependencies. Our build setup provides a localhost:3000 address that shows the same as localhost:5000 but also has livereloading.
 
-Edit CSS and JavaScript in the `/web/`-folder. Webpack will compile, transpile, minify it into the `web` folder, ready for production. If you put files in the assets-folder, Webpack will handle those too (see file-loader).
+Edit CSS and JavaScript in the `/public/`-folder. Webpack will compile, transpile, minify it into the `public` folder, ready for production. If you put files in the assets-folder, Webpack will handle those too (see file-loader).
 
-The `main.css` is built into `web/dist/main.dist.css` and it injects vendor prefixes and inlines smaller static resources (icon fonts for example).
+The `main.css` is built into `public/dist/main.dist.css` and it injects vendor prefixes and inlines smaller static resources (icon fonts for example).
 
-The file `web/js/main.js` is built into `web/dist/main.dist.js`, and it uses Babel, allowing you to both write ES6 as well as using a Node.js style if you prefer.
+The file `public/js/main.js` is built into `public/dist/main.dist.js`, and it uses Babel, allowing you to both write ES6 as well as using a Node.js style if you prefer.
 
 Both files are included in `./templates/_layout.twig`
 
