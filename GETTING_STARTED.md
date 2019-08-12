@@ -48,7 +48,9 @@ Running `npm run composer` will spin up a docker container with composer install
 
 ## What about assets?!
 
-We usually use S3 on Amazon Web Services. Ask [@kodepoeten](https://github.com/nilsnh) about access to a bucket.
+We usually use S3 on Amazon Web Services. By storing assets in S3 we have an easier time switching between various server environments without manually copying assets around.
+
+S3 is a bit complicated to configure so we have created [AWS helper scripts here](https://github.com/netliferesearch/aws-helper-scripts). Be sure to use Netlife's AWS account.
 
 ## <a name="global-deps"></a> Global dependencies for the craft-starter
 
