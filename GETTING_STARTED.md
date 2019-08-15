@@ -55,7 +55,6 @@ We usually use S3 on Amazon Web Services. Ask [@kodepoeten](https://github.com/n
 Perform the following steps in a terminal: You only need to do this once per laptop.
 
 - Start by [installing brew](https://brew.sh/)
-- Run `brew install heroku` for Heroku command line
 - Run `brew install nvm` for Node version manager.
 - Run `brew install mysql` for the MySQL command line tools.
 - Run `brew cask install docker` for Docker. Open Docker App, so later you can continue in terminal.
