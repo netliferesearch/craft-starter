@@ -25,18 +25,17 @@
  }
 
 return [
-    'modules' => [
-        'my-module' => \modules\Module::class,
-        'cache' => [
-            'class' => yii\redis\Cache::class,
-            'defaultDuration' => 86400,
-            'redis' => [
-                'hostname' => $redisUrlParts[host],
-                'port' => $redisUrlParts[port],
-                'password' => $redisUrlParts[pass] ?: '',
-                'database' => 0,
-            ],
+    'components' => [
+        'redis' => [
+          'class' => yii\redis\Connection::class,
+          'hostname' => $redisUrlParts[host],
+          'port' => $redisUrlParts[port],
+          'password' => $redisUrlParts[pass],
+          'database' => 0,
         ],
-    ],
-    //'bootstrap' => ['my-module'],
+        'cache' => [
+          'class' => yii\redis\Cache::class,
+          'defaultDuration' => 86400,
+        ],
+    ]
 ];
