@@ -1,3 +1,2 @@
-backups
-logs
-runtime
+*
+!.gitignore
