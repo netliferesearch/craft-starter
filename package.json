@@ -12,7 +12,7 @@
     "db:heroku:download": "mysqldump $(mysql-parse $(heroku config:get JAWSDB_URL)) > docker-src/db-dump/dump.sql",
     "db:arcustech:download": "hamstr mysqldump --tunnel -p docker-src/db-dump/dump.sql prod",
     "docker:rebuild": "docker-compose down && docker-compose up",
-    "clean": "rimraf ./web/dist",
+    "clean": "rimraf ./public/dist",
     "composer": "docker run -v $(pwd):/var/www/html -it --rm nilsnh/craft-composer-base:latest composer"
   },
   "engines": {
