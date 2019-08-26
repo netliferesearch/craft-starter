@@ -4,6 +4,8 @@ _Read through the readme_, and if you are stuck, don't hesitate to ask in either
 
 ## Getting started
 
+![Docker Automated build](https://img.shields.io/docker/automated/netlifedesign/craft-starter-base)
+
 1.  Clone, or download this repository
 1.  If you haven't already install [global dependencies for the craft-starter](#global-deps).
 1.  Run `npm install` to install NPM dependencies.
