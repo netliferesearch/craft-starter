@@ -1,5 +1,7 @@
 # Craft CMS Composer base docker image.
 
+![Docker Automated build](https://img.shields.io/docker/automated/netlifedesign/craft-starter-base)
+
 Not for use in production, only development. When starting up the user `www-data` is given heightened privileges (usermod uid set to 1000), this was done to help ease local development on Linux.
 
 When building the container installs PHP support for a number of php extensions, including: gd, mcrypt, mysql, imagick, redis and enables mod_rewrite in Apache.
