@@ -23,9 +23,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 RUN a2enmod rewrite headers
 
-ADD ./src/install.sh /install.sh
-RUN chmod +x /install.sh
+ADD ./src/bootstrap-composer-apache.sh /bootstrap-composer-apache.sh
+RUN chmod +x /bootstrap-composer-apache.sh
 
 ADD ./src/php.ini /usr/local/etc/php/php.ini
 
-CMD ["/install.sh"]
+CMD ["/bootstrap-composer-apache.sh"]
