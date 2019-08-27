@@ -6,6 +6,6 @@ usermod --non-unique --uid 1000 www-data
 
 # This is a startup script that gets added by the Dockerfile
 # so that composer dependencies will be installed on startup.
-composer install -d /var/www/html
+composer install
 
 apache2-foreground
