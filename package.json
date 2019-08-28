@@ -12,7 +12,7 @@
     "db:arcustech:download": "hamstr mysqldump --tunnel -p docker-src/db-dump/dump.sql prod",
     "docker:rebuild": "docker-compose down && docker-compose up",
     "clean": "rimraf ./public/dist",
-    "composer": "docker run -v $(pwd):/var/www/html -it --rm nilsnh/craft-composer-base:7.2-apache composer"
+    "composer": "docker run -v $(pwd):/var/www/html -it --rm netlifedesign/craft-starter-base composer"
   },
   "engines": {
     "node": "8.x",
