@@ -1,6 +1,6 @@
 {
   "require": {
-    "craftcms/cms": "3.2.10",
+    "craftcms/cms": "3.3.11",
     "vlucas/phpdotenv": "^3.4.0",
     "yiisoft/yii2-redis": "~2.0.0"
   },
