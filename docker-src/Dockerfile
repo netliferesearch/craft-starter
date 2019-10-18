@@ -8,7 +8,7 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 # Install dependencies required by php-extensions
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl git zip \
   libc-client-dev libkrb5-dev libpng-dev libmagickwand-dev \
-  libmemcached-dev libicu-dev \
+  libmemcached-dev libicu-dev default-mysql-client \
   # deps needed for mcrypt
   gcc make autoconf libc-dev pkg-config libmcrypt-dev
 
