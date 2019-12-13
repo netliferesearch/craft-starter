@@ -11,7 +11,7 @@
 $db_url = parse_url(getenv('JAWSDB_URL') ?: getenv('DATABASE_URL'));
 
 return [
-    'driver' => $db_url['scheme'], // set mysql or psql
+    'driver' => "mysql", // set mysql or psql
     'server' => $db_url['host'],
     'user' => $db_url['user'],
     'password' => $db_url['pass'],
