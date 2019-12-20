@@ -1,6 +1,9 @@
 {
   "require": {
-    "craftcms/cms": "3.3.15",
+    "craftcms/cms": "3.3.18.1",
+    "craftcms/redactor": "2.4.0",
+    "pennebaker/craft-architect": "^2.3",
+    "sebastianlenz/linkfield": "^1.0",
     "vlucas/phpdotenv": "^3.4.0",
     "yiisoft/yii2-redis": "~2.0.0"
   },
