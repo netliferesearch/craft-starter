@@ -15,7 +15,10 @@
 
 <body>
 
-  {% cache if not craft.app.config.general.devMode %}
+{# Use cache key to prevent caching header for every single url, and cache only once
+    read more here https://nystudio107.com/blog/the-craft-cache-tag-in-depth
+#}
+  {% cache globally using key "page-header" if not craft.app.config.general.devMode %}
     {% include 'partials/header' %}
   {% endcache %}
 
@@ -24,7 +27,7 @@
     {% endblock content %}
   </main>
 
-  {% cache if not craft.app.config.general.devMode %}
+  {% cache globally using key "page-footer" if not craft.app.config.general.devMode %}
     {% include 'partials/footer' %}
   {% endcache %}
 
