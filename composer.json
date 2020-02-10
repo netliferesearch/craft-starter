@@ -1,7 +1,7 @@
 {
   "require": {
     "craftcms/cms": "3.4.5",
-    "craftcms/redactor": "2.4.0",
+    "craftcms/redactor": "2.5.0",
     "jalendport/craft-queuemanager": "1.2.0",
     "ostark/craft-async-queue": "2.0.0",
     "pennebaker/craft-architect": "^2.3",
