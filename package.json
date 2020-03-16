@@ -15,8 +15,8 @@
     "composer": "docker run -v $(pwd):/var/www/html -it --rm netlifedesign/craft-starter-base composer"
   },
   "engines": {
-    "node": "8.x",
-    "npm": "5.x"
+    "node": "12.x",
+    "npm": "6.x"
   },
   "author": "Netlife Design",
   "license": "MIT",
