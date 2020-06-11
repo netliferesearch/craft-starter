@@ -2,13 +2,13 @@ version: "2"
 services:
   database:
     image: mysql:5.7
+    ports:
+      - "4306:3306"
     volumes:
       - ./docker-src/db-dump:/docker-entrypoint-initdb.d:cached
     environment:
       - MYSQL_ROOT_PASSWORD=somegloriouspassword
       - MYSQL_DATABASE=craft_cms
-  redis_service:
-    image: redis:4-alpine
   server:
     image: netlifedesign/craft-starter-base
     ports:
