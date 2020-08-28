@@ -14,7 +14,7 @@ services:
     ports:
       - "5000:80"
     volumes:
-      - ./:/var/www/html/:cached
+      - ./:/var/www/html/
       - ./storage/:/var/www/html/storage/:delegated
     environment:
       - DATABASE_URL=mysql://root:somegloriouspassword@database:3306/craft_cms
