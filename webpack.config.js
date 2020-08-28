@@ -1,3 +1,4 @@
+require('dotenv').config()
 const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const BrowserSyncPlugin = require("browser-sync-webpack-plugin");
@@ -45,7 +46,7 @@ module.exports = {
       port: 3000,
       cors: true,
       notify: false,
-      proxy: "http://localhost:5000",
+      proxy: process.env.PROXY_SITE_URL || "http://localhost:5000",
       files: ["./config", "./templates"]
     })
   ]

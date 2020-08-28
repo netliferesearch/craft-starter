@@ -2,6 +2,8 @@ Using this for a new project? [See getting started](GETTING_STARTED.md).
 
 Need to upgrade an old Craft project? [See upgrading legacy stuff](UPGRADING_LEGACY_RIG.md).
 
+Need more speed? [See going native](GOING_NATIVE.md)
+
 Below is a template that you should fill out as you embark on a new project, or upgrade an old Craft CMS setup.
 
 # Your project title
