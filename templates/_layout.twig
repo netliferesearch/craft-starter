@@ -1,35 +1,33 @@
 <!doctype html>
 
-<head>
-	<meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width" />
-  <link rel="shortcut icon" href="/favicon.ico" />
+<html lang="{{ currentSite.language }}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <title>{% if title is defined %}{{ title }} - {% endif %}{{ siteName }}</title>
+    <link rel="home" href="{{ siteUrl }}" />
+    <link rel="stylesheet" href="/dist/main.dist.css">
+  </head>
 
-  <title>{% if title is defined %}{{ title }} - {% endif %}{{ siteName }}</title>
+  <body>
 
-  <link rel="home" href="{{ siteUrl }}" />
+    {# Use cache key to prevent caching header for every single url, and cache only once
+        read more here https://nystudio107.com/blog/the-craft-cache-tag-in-depth
+    #}
+    {% cache globally using key "page-header" if not craft.app.config.general.devMode %}
+      {% include 'partials/header' %}
+    {% endcache %}
 
-	<link rel="stylesheet" href="/dist/main.dist.css">
+    <main id="top">
+      {% block content %}
+      {% endblock content %}
+    </main>
 
-</head>
+    {% cache globally using key "page-footer" if not craft.app.config.general.devMode %}
+      {% include 'partials/footer' %}
+    {% endcache %}
 
-<body>
-
-{# Use cache key to prevent caching header for every single url, and cache only once
-    read more here https://nystudio107.com/blog/the-craft-cache-tag-in-depth
-#}
-  {% cache globally using key "page-header" if not craft.app.config.general.devMode %}
-    {% include 'partials/header' %}
-  {% endcache %}
-
-  <main id="top">
-    {% block content %}
-    {% endblock content %}
-  </main>
-
-  {% cache globally using key "page-footer" if not craft.app.config.general.devMode %}
-    {% include 'partials/footer' %}
-  {% endcache %}
-
-	<script src="/dist/main.dist.js"></script>
-</body>
+    <script src="/dist/main.dist.js"></script>
+  </body>
+</html>
