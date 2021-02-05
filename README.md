@@ -28,8 +28,4 @@ We've included some plugins that we use in a lot of projects. Most of them are f
 
 - [Admin bar](https://plugins.craftcms.com/admin-bar) - Add edit link to the frontend for easier editing for users
 - [Redactor](https://plugins.craftcms.com/redactor) - Adds Redactor WYSIWIG editor field, see config files in config/redactor
-- [Queue Manager](https://plugins.craftcms.com/queue-manager) - Better overview and logging of pending and failed background jobs
-- [Async Queue](https://plugins.craftcms.com/async-queue) - Handles queued background jobs better than native Craft
 - [Seomatic](https://plugins.craftcms.com/seomatic) - Paid plugin, but really worth it.
-- [Archtect](https://plugins.craftcms.com/architect) - Import/export of fields and sections for easier development
-- [Linkfield](https://plugins.craftcms.com/typedlinkfield) - Adds link field type to Craft.

@@ -14,7 +14,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl git
 
 # Install composer and the php-extensions themselves.
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
-  docker-php-ext-install gd pdo_mysql zip intl && \
+  docker-php-ext-install gd pdo_mysql zip intl bcmath && \
   docker-php-ext-configure imap --with-kerberos --with-imap-ssl && docker-php-ext-install imap && \
   echo '' | pecl install imagick && docker-php-ext-enable imagick && \
   echo '' | pecl install memcached && docker-php-ext-enable memcached && \
