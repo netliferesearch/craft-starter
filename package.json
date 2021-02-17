@@ -28,6 +28,7 @@
     "browser-sync": "^2.26.12",
     "browser-sync-webpack-plugin": "^2.2.2",
     "css-loader": "^4.2.2",
+    "file-loader": "^6.2.0",
     "hamstr": "^1.0.3",
     "mini-css-extract-plugin": "^0.11.0",
     "postcss-cssnext": "^3.1.0",
