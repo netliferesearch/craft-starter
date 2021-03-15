@@ -7,7 +7,7 @@
   "scripts": {
     "start": "echo 'You probably want to $ npm run dev'",
     "dev": "npm run clean && webpack --watch --mode development --progress",
-    "build": "npm run clean && webpack --mode production --progress --devtool source-map",
+    "build": "npm run clean && NODE_ENV=production webpack --mode production --progress --devtool source-map",
     "postinstall": "npm run build",
     "db:arcustech:download": "hamstr mysqldump --tunnel -p docker-src/db-dump/dump.sql prod",
     "docker:rebuild": "docker-compose down && docker-compose up",
