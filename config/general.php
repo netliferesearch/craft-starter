@@ -35,16 +35,13 @@ return [
 
     // Dev environment settings
     'dev' => [
-        // Base site URL
-        'siteUrl' => null,
-
+        // siteUrl is deprecated, use .env-vars instead
         // Dev Mode (see https://craftcms.com/support/dev-mode)
         'devMode' => true,
     ],
-
+    
     // Production environment settings
     'production' => [
-        // Base site URL
-        'siteUrl' => null,
+        // siteUrl is deprecated, use .env-vars instead PRIMARY_SITE_URL
     ],
 ];
