@@ -12,11 +12,11 @@ _Read through the readme_, and if you are stuck, don't hesitate to ask in either
     - Apache Server, to mirror production environment.
     - Redis, used for caching logins included so that we mirror production.
     - Mysql, the database.
-1.  It might/will take some time for the containers to finish building and there will be no complete message. So, just wait a bit until the text stops flowing and then go to `http://localhost:5000/admin` to install Craft.
+1.  It might/will take some time for the containers to finish building and there will be no complete message. So, just wait a bit until the text stops flowing and then go to [`localhost:5000/admin`](http://localhost:5000/admin) to install Craft.
 
 ### Start livereloading and asset building on localhost:3000
 
-When you have docker-compose running in one terminal window please open a second window where you run `npm run dev`. This will start a process that will be building our frontend dependencies. Our build setup provides a localhost:3000 address that shows the same as localhost:5000 but also has livereloading.
+When you have docker-compose running in one terminal window please open a second window where you run `npm run dev`. This will start a process that will be building our frontend dependencies. Our build setup provides a [`localhost:3000`](http://localhost:3000) address that shows the same as localhost:5000 but also has livereloading.
 
 Edit CSS and JavaScript in the `/resources/`-folder. Webpack will compile, transpile, minify it into the `public` folder, ready for production. If you put files in the assets-folder, Webpack will handle those too (see file-loader).
 
@@ -26,7 +26,7 @@ The file `resources/js/main.js` is built into `public/dist/main.dist.js`, and it
 
 Both files are included in `./templates/_layout.twig`
 
-When you want to login into Craft you'll need to go to localhost:5000/admin, because localhost:3000 is just a livereloading proxy that can't handle logins.
+When you want to login into Craft you'll need to go to [`localhost:5000/admin`](http://localhost:5000/admin), because [`localhost:3000`](http://localhost:3000) is just a livereloading proxy that can't handle logins.
 
 ## Changing the remote git repository
 
