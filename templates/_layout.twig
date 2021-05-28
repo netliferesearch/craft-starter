@@ -7,7 +7,7 @@
     <link rel="shortcut icon" href="/favicon.ico" />
     <title>{% if title is defined %}{{ title }} - {% endif %}{{ siteName }}</title>
     <link rel="home" href="{{ siteUrl }}" />
-    <link rel="stylesheet" href="/dist/main.dist.css">
+    <link rel="stylesheet" href="/dist/main.dist.css?v={{ alias('@deployId') }}">
   </head>
 
   <body>
@@ -28,6 +28,6 @@
       {% include 'partials/footer' %}
     {% endcache %}
 
-    <script src="/dist/main.dist.js"></script>
+    <script src="/dist/main.dist.js?v={{ alias('@deployId') }}"></script>
   </body>
 </html>
