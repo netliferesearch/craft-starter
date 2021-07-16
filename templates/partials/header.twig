@@ -1,2 +1,1 @@
-<header>
-</header>
+<header></header>
