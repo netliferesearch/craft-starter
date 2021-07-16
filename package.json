@@ -15,12 +15,15 @@
     "composer": "docker run -v $(pwd):/var/www/html -it --rm netlifedesign/craft-starter-base composer"
   },
   "engines": {
-    "node": "12.x",
-    "npm": "6.x"
+    "node": "16.x",
+    "npm": "8.x"
   },
   "author": "Netlife Design",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "prettier": "^2.3.2",
+    "prettier-plugin-twig-melody": "^0.4.6"
+  },
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
