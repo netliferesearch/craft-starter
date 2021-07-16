@@ -1,0 +1,20 @@
+# COMPOSER
+/vendor
+
+# CRAFT 
+/config/*
+/modules/*
+/craft/storage/*
+/storage/*
+
+# Docker
+/docker-src/*
+
+# Public
+/public/*
+
+# BUILD FILES
+/bower_components/*
+/node_modules/*
+/build/*
+/yarn-error.log
