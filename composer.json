@@ -1,6 +1,6 @@
 {
   "require": {
-    "craftcms/cms": "3.5.7",
+    "craftcms/cms": "3.7.14",
     "craftcms/redactor": "2.5.0",
     "nystudio107/craft-seomatic": "3.2.42",
     "sebastianlenz/linkfield": "^1.0",
