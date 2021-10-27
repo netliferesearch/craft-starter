@@ -12,7 +12,8 @@
     "db:arcustech:download": "hamstr mysqldump --tunnel -p docker-src/db-dump/dump.sql prod",
     "docker:rebuild": "docker-compose down && docker-compose up",
     "clean": "rimraf ./public/dist",
-    "composer": "docker run -v $(pwd):/var/www/html -it --rm netlifedesign/craft-starter-base composer"
+    "composer": "docker run -v $(pwd):/var/www/html -it --rm netlifedesign/craft-starter-base composer",
+    "prepare": "husky install"
   },
   "engines": {
     "node": "16.x",
@@ -20,10 +21,6 @@
   },
   "author": "Netlife Design",
   "license": "MIT",
-  "dependencies": {
-    "prettier": "^2.3.2",
-    "prettier-plugin-twig-melody": "^0.4.6"
-  },
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
@@ -33,10 +30,14 @@
     "css-loader": "^4.2.2",
     "file-loader": "^6.2.0",
     "hamstr": "^1.0.3",
+    "husky": "^7.0.4",
+    "lint-staged": "^11.2.6",
     "mini-css-extract-plugin": "^0.11.0",
     "postcss-cssnext": "^3.1.0",
     "postcss-import": "^11.1.0",
     "postcss-loader": "^2.1.5",
+    "prettier": "^2.3.2",
+    "prettier-plugin-twig-melody": "^0.4.6",
     "rimraf": "^2.6.2",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12"
@@ -46,5 +47,21 @@
       "postcss-import": {},
       "postcss-cssnext": {}
     }
+  },
+  "prettier": {
+    "tabWidth": 2,
+    "semi": false,
+    "singleQuote": true,
+    "twigPrintWidth": 120,
+    "twigMultiTags": [
+      "nav,endnav",
+      "switch,case,default,endswitch",
+      "ifchildren,endifchildren",
+      "cache,endcache",
+      "js,endjs"
+    ]
+  },
+  "lint-staged": {
+    "*.{js,css,md,twig}": "prettier --write"
   }
 }
