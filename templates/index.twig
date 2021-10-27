@@ -17,12 +17,18 @@
  # http://buildwithcraft.com/docs/routing
  #}
 
-{% extends "_layout" %}
+{% extends '_layout' %}
 
 {% block content %}
-	{# Remove this bit when you get to work :) #}
-	<h1>Hello Craft3!</h1>
-	<p>Get to work in "(projectfolder)/templates" and inside the Craft3 dashboard to build pages.</p>
-	<p>Ask a friend for help if you're stuck.</p>
-	{% if entry is defined %}{{ entry.title }}{% endif %}
+  {# Remove this bit when you get to work :) #}
+  <h1>
+    Hello Craft3!
+  </h1>
+  <p>
+    Get to work in "(projectfolder)/templates" and inside the Craft3 dashboard to build pages.
+  </p>
+  <p>
+    Ask a friend for help if you're stuck.
+  </p>
+  {% if entry is defined %}{{ entry.title }}{% endif %}
 {% endblock %}
