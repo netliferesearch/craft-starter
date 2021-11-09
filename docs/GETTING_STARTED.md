@@ -7,12 +7,16 @@ _Read through the readme_, and if you are stuck, don't hesitate to ask in either
 1.  Clone, or download this repository
 1.  If you haven't already install [global dependencies for the craft-starter](#global-deps).
 1.  Run `npm install` to install NPM dependencies.
+1.  Update `.env.example` with the projects localhost domain.
 1.  Run `cp .env.example .env` to avoid `Internal server error`
-1.  Run `docker-compose up` to start three containers (details found in docker-compose.yml):
-    - Apache Server, to mirror production environment.
-    - Redis, used for caching logins included so that we mirror production.
-    - Mysql, the database.
-1.  It might/will take some time for the containers to finish building and there will be no complete message. So, just wait a bit until the text stops flowing and then go to [`localhost:5000/admin`](http://localhost:5000/admin) to install Craft.
+1.  Run `valet link <name-of-project>` to link the repository.
+1.  Run `valet secure <name-of-project>` to add a SSL-certificate.
+1.  Check if the project is running with `valet links`. You should be able to
+    see your project; `https://<name-of-project>.test`
+1.  Create a new database locally;
+1.  `mysql -u root`
+1.  `CREATE DATABASE <name-of-project> CHARACTER SET UTF8mb4 COLLATE utf8mb4_danish_ci;`
+1.  Go to `https://<name-of-project>.test/admin` to install Craft.
 
 ### Start livereloading and asset building on localhost:3000
 
@@ -42,8 +46,8 @@ Running `npm run composer` will spin up a docker container with composer install
 ## Buying a license
 
 1.  Before buying a license. Uncomment license.key in the file .gitignore. This will allow you to commit the license file to the repository.
-2.  Buy the license.
-3.  Commit the file to the repository.
+1.  Buy the license.
+1.  Commit the file to the repository.
 
 ## What about assets?!
 
@@ -55,10 +59,12 @@ S3 is a bit complicated to configure so we have created [AWS helper scripts here
 
 Perform the following steps in a terminal: You only need to do this once per laptop.
 
-- Start by [installing brew](https://brew.sh/)
+- Start by [installing Homebrew (`brew`)](https://brew.sh/)
 - Run `brew install nvm` for Node version manager.
-- Run `brew install mysql` for the MySQL command line tools.
-- Run `brew install --cask docker` for Docker. Open Docker App, so later you can continue in terminal.
+- Run `brew install php` for PHP.
+- Run `brew install mariadb` for the MySQL command line tools with MariaDB.
+- Run `brew install composer` for [Composer](https://getcomposer.org/).
+- Run `composer global require laravel/valet` for [Valet](https://laravel.com/docs/8.x/valet)
 
 ### Troubleshooting
 
