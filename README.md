@@ -1,10 +1,8 @@
 Using this for a new project? [See getting started](docs/GETTING_STARTED.md).
 
-Want to use docker? [See Using Docker](docs/USING_DOCKER.md)
+Need to upgrade an old Craft 2 project? [See upgrading legacy stuff](docs/UPGRADING_LEGACY_RIG.md).
 
-Need to upgrade an old Craft project? [See upgrading legacy stuff](docs/UPGRADING_LEGACY_RIG.md).
-
-Below is a template that you should fill out as you embark on a new project, or upgrade an old Craft CMS setup.
+Below is a template that you must fill out as you embark on a new project, or upgrade an old Craft CMS setup.
 
 # Your project title
 

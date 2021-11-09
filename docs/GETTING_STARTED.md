@@ -2,6 +2,8 @@
 
 _Read through the readme_, and if you are stuck, don't hesitate to ask in either #frontend or #craft in Slack. If you have made some smart improvement to the tooling or setup of in your Craft project, _please contribute to this starter by making a pull request_.
 
+Looking to get started with Docker instead? See [USING_DOCKER.md](USING_DOCKER.md).
+
 ## Getting started
 
 1.  Clone, or download this repository
