@@ -1,8 +1,8 @@
-Using this for a new project? [See getting started](GETTING_STARTED.md).
+Using this for a new project? [See getting started](docs/GETTING_STARTED.md).
 
-Need to upgrade an old Craft project? [See upgrading legacy stuff](UPGRADING_LEGACY_RIG.md).
+Need to upgrade an old Craft project? [See upgrading legacy stuff](docs/UPGRADING_LEGACY_RIG.md).
 
-Need more speed? [See going native](GOING_NATIVE.md)
+Need more speed? [See going native](docs/GOING_NATIVE.md)
 
 Below is a template that you should fill out as you embark on a new project, or upgrade an old Craft CMS setup.
 

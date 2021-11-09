@@ -1,11 +1,10 @@
-
 # Upgrading a legacy rig
 
 You are reading this because you have a legacy Craft project on your hands. And you would like to upgrade it a little bit into the future so that you get nice things like containerisation and better build setup. Read on dear reader, read on:
 
 ## Adding docker
 
-*Why:* We use docker so that we do not have to install and re-install all sorts of php dependencies on our machine. We need to be able to quickly jump between Craft projects and get up and running.
+_Why:_ We use docker so that we do not have to install and re-install all sorts of php dependencies on our machine. We need to be able to quickly jump between Craft projects and get up and running.
 
 How: Essentially we need to copy code from [the current craft-starter](https://github.com/netliferesearch/craft-starter), and adjust as we go along.
 
@@ -13,7 +12,7 @@ How: Essentially we need to copy code from [the current craft-starter](https://g
 2. Copy the `docker-src/` folder from the craft-starter into the legacy project.
 3. Place a copy of the production data (an .sql file) into the `docker-src/db-dump`. You can grab a copy of the data by logging into the dashboard of the service you are upgrading, and finding the option for backing up the database.
 4. Run `docker-compose up`. This will start up a number of services such as a database and a php-enabled apache server.
-5. GOTO `localhost:5000` and see if your site is running. Most likely php will have trouble finding the database. The solution is to compare configuration between the new and the old rig, namely have a look at the  files `db.php` and `general.php`.
+5. GOTO `localhost:5000` and see if your site is running. Most likely php will have trouble finding the database. The solution is to compare configuration between the new and the old rig, namely have a look at the files `db.php` and `general.php`.
 6. Once you get things working be sure to update the project readme based on the craft-starter readme template.
 7. Delete files that are no longer needed. Tidy things up. :sparkles:
 
