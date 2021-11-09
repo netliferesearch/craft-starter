@@ -8,6 +8,7 @@ services:
     volumes:
       - ./:/var/www/html/
       - ./storage/:/var/www/html/storage/:delegated
+      - ./docker-src/src/php.ini:/usr/local/etc/php/php.ini
     environment:
       - DATABASE_URL=mysql://root:somegloriouspassword@database:3306/craft_cms
       - APACHE_DOCUMENT_ROOT=/var/www/html/public

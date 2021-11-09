@@ -3,10 +3,8 @@
     "craftcms/cms": "3.5.7",
     "craftcms/redactor": "2.5.0",
     "nystudio107/craft-seomatic": "3.2.42",
-    "pennebaker/craft-architect": "^2.3",
     "sebastianlenz/linkfield": "^1.0",
-    "vlucas/phpdotenv": "^3.4.0",
-    "wbrowar/adminbar": "3.1.10"
+    "vlucas/phpdotenv": "^3.4.0"
   },
   "autoload": {
     "psr-4": {
