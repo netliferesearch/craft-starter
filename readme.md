@@ -5,6 +5,7 @@ See also the [docs/](docs) folder for useful guides including:
 - [Getting started](docs/getting-started.md).
 - [Activating livereload in development](docs/livereload.md).
 - [Handling assets across environments](docs/assets.md).
+- [Testing email locally](https://ryangjchandler.co.uk/posts/setup-mailhog-with-laravel-valet).
 - [Upgrading legacy stuff](docs/upgrading-legacy-rig.md).
 
 # Your project title
