@@ -1,6 +1,6 @@
-Using this for a new project? [See getting started](docs/GETTING_STARTED.md).
+Using this for a new project? [See getting started](docs/getting-started.md).
 
-Need to upgrade an old Craft 2 project? [See upgrading legacy stuff](docs/UPGRADING_LEGACY_RIG.md).
+Need to upgrade an old Craft 2 project? [See upgrading legacy stuff](docs/upgrading-legacy-rig.md).
 
 Below is a template that you must fill out as you embark on a new project, or upgrade an old Craft CMS setup.
 

@@ -1,6 +1,6 @@
 # Upgrading a legacy rig
 
-**Heads up:** This guide was written back when we still recommended using Docker for local development. This document is old, yet potentially useful. See [GETTING_STARTED.md](GETTING_STARTED.md) for our current best practise recommendations.
+**Heads up:** This guide was written back when we still recommended using Docker for local development. This document is old, yet potentially useful. See [getting-started.md](getting-started.md) for our current best practise recommendations.
 
 You are reading this because you have a legacy Craft 2 project on your hands. And you would like to upgrade it a little bit into the future so that you get nice things like containerisation and better build setup. Read on dear reader, read on:
 

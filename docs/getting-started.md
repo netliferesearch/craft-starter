@@ -2,23 +2,27 @@
 
 _Read through the readme_, and if you are stuck, don't hesitate to ask in either #frontend or #craft in Slack. If you have made some smart improvement to the tooling or setup of in your Craft project, _please contribute to this starter by making a pull request_.
 
-Looking to get started with Docker instead? See [USING_DOCKER.md](USING_DOCKER.md).
+Looking to get started with Docker instead? See [using-docker.md](using-docker.md).
 
 ## Getting started
 
 1.  Clone, or download this repository
 1.  If you haven't already install [global dependencies for the craft-starter](#global-deps).
 1.  Run `npm install` to install NPM dependencies.
-1.  Update `.env.example` with the projects localhost domain.
-1.  Run `cp .env.example .env` to avoid `Internal server error`
 1.  Run `valet link <name-of-project>` to link the repository.
 1.  Run `valet secure <name-of-project>` to add a SSL-certificate.
 1.  Check if the project is running with `valet links`. You should be able to
     see your project; `https://<name-of-project>.test`
-1.  Create a new database locally;
-1.  `mysql -u root`
-1.  `CREATE DATABASE <name-of-project> CHARACTER SET UTF8mb4 COLLATE utf8mb4_danish_ci;`
+1.  Run `mysql` to log into the locally running mariadb database.
+    - Inside the MySQL prompt create a new database by calling `CREATE DATABASE <name-of-project> CHARACTER SET UTF8mb4 COLLATE utf8mb4_danish_ci;` Trivia: We use `utf8mb4_danish_ci` to ensure proper ordering of ÆØÅ.
+    - To learn your mysql username run `SELECT USER(),CURRENT_USER();` inside the mysql prompt.
+1.  Run `cp .env.example .env` to create a `.env` configuration file based on the example file and complete its configuration.
+    - DATABASE_URL=mysql://username@localhost/<name-of-project>
 1.  Go to `https://<name-of-project>.test/admin` to install Craft.
+
+### Troubleshooting getting started
+
+Running PHP, Nginx and MySQL natively on the host machine can definitely be tricky.
 
 ### Start livereloading and asset building on localhost:3000
 
@@ -41,41 +45,23 @@ If you have cloned this project, the git remote `origin` is set to the craft-sta
 1.  Update the current `origin` with `git remote set-url origin git@github.com:netliferesearch/repository-name.git`
 2.  Push to the new origin with `git push --set-upstream origin master`
 
-## Updating composer.json dependencies
-
-Running `npm run composer` will spin up a docker container with composer installed so that you do neat things like `npm run composer update` without having composer nor php-extensions installed.
-
-## Buying a license
-
-1.  Before buying a license. Uncomment license.key in the file .gitignore. This will allow you to commit the license file to the repository.
-1.  Buy the license.
-1.  Commit the file to the repository.
-
 ## What about assets?!
 
 We usually use S3 on Amazon Web Services. By storing assets in S3 we have an easier time switching between various server environments without manually copying assets around.
 
 S3 is a bit complicated to configure so we have created [AWS helper scripts here](https://github.com/netliferesearch/aws-helper-scripts). Be sure to use Netlife's AWS account.
 
+**Gotcha:** Craft CMS doesn't support bucket location Frankfurt because it uses a newer authentication method.
+
 ## <a name="global-deps"></a> Global dependencies for the craft-starter
 
 Perform the following steps in a terminal: You only need to do this once per laptop.
 
 - Start by [installing Homebrew (`brew`)](https://brew.sh/)
-- Run `brew install nvm` for Node version manager.
-- Run `brew install php` for PHP.
+- Run `brew install nvm` for [Node Version Manager](https://github.com/nvm-sh/nvm). This is a nice to have for administrating Node versions.
+- Run `brew install php` for the latest version of PHP.
 - Run `brew install mariadb` for the MySQL command line tools with MariaDB.
 - Run `brew install composer` for [Composer](https://getcomposer.org/).
+  - Run `composer self-update` to update Composer to latest version.
 - Run `composer global require laravel/valet` for [Valet](https://laravel.com/docs/8.x/valet)
-
-### Troubleshooting
-
-> Peow peow!
-
-- Amazon S3: Craft CMS doesn't support bucket location Frankfurt because it uses a newer authentication method.
-
-## Updating from an old Craft starter setup
-
-1.  Get to know this project's `webpack.config.js` and `docker-compose.yml`.
-2.  Inside your old project start a new git branch for upgrading. And then try to copy over the build setup for asset building and docker container setup. You should also compare general.php and .htaccess setups to see if there are lessons to learn from the more up to date craft-starter.
-3.  Try, try, try until you get it right. Be methodical and commit your progress steadily within the upgrade branch. After some thorough testing you can merge your "upgrade" branch back into master.
+  - To update valet run `composer global update`.

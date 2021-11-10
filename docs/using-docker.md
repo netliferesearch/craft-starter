@@ -3,7 +3,7 @@
 Running PHP inside a docker container gives
 [speed penalties on Windows and MacOS](https://engageinteractive.co.uk/blog/making-docker-faster-on-mac). This penalty also applies to Craft's Nitro2 which uses Docker under the hood.
 
-This is why we recommend using [Valet](https://laravel.com/docs/7.x/valet) in our [GETTING_STARTED.md](GETTING_STARTED.md) guide.
+This is why we recommend using [Valet](https://laravel.com/docs/7.x/valet) in our [getting-started.md](getting-started.md) guide.
 
 Nevertheless, if you still want to use Docker feel free to read on.
 
