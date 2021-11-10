@@ -20,7 +20,7 @@
     "npm": "8.x"
   },
   "author": "Netlife Design",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE.md",
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",

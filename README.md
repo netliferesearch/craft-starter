@@ -24,8 +24,12 @@ What should future developers be aware about when developing on this rig?
 
 ### Included plugins
 
-We've included some plugins that we use in a lot of projects. Most of them are free. Ask Torgeir or Anna if some is unclear.
+We've included some plugins that we find useful projects.
 
 - [Redactor](https://plugins.craftcms.com/redactor) - Adds Redactor WYSIWIG editor field, see config files in config/redactor
 - [Seomatic](https://plugins.craftcms.com/seomatic) - Paid plugin, but really worth it.
 - [Linkfield](https://plugins.craftcms.com/typedlinkfield) - Adds link field type to Craft.
+
+## License
+
+This code is licensed under [the Hippocratic License 3.0](LICENSE.md).
