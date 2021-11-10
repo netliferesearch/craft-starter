@@ -1,8 +1,11 @@
-Using this for a new project? [See getting started](docs/getting-started.md).
+This readme.md file is a template that you must fill out as you embark on a new project, or upgrade an old Craft CMS setup.
 
-Need to upgrade an old Craft 2 project? [See upgrading legacy stuff](docs/upgrading-legacy-rig.md).
+See also the [docs/](docs) folder for useful guides including:
 
-Below is a template that you must fill out as you embark on a new project, or upgrade an old Craft CMS setup.
+- [Getting started](docs/getting-started.md).
+- [Activating livereload in development](docs/livereload.md).
+- [Handling assets across environments](docs/assets.md).
+- [Upgrading legacy stuff](docs/upgrading-legacy-rig.md).
 
 # Your project title
 

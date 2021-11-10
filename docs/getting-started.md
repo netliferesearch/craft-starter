@@ -1,13 +1,31 @@
-# Netlife Design: Craft Starter
+# Getting started
 
 _Read through the readme_, and if you are stuck, don't hesitate to ask in either #frontend or #craft in Slack. If you have made some smart improvement to the tooling or setup of in your Craft project, _please contribute to this starter by making a pull request_.
 
 Looking to get started with Docker instead? See [using-docker.md](using-docker.md).
 
-## Getting started
+## Part one: Installing global dependencies
 
-1.  Clone, or download this repository
-1.  If you haven't already install [global dependencies for the craft-starter](#global-deps).
+When installing these dependencies keep in mind that they should try to match the target server environment as close as possible so that you avoid having bugs that only show up in production.
+
+- Start by [installing Homebrew (`brew`)](https://brew.sh/)
+- Run `brew install nvm` for [Node Version Manager](https://github.com/nvm-sh/nvm). This is a nice to have for administrating Node versions.
+- Run `brew install php` for the latest version of PHP.
+- Run `brew install mariadb` for the MySQL command line tools with MariaDB.
+  - **Watch the terminal** output for any potential errors.
+  - Run `brew info mariadb` to display
+- Run `brew install composer` for [Composer](https://getcomposer.org/).
+  - Run `composer self-update` to update Composer to latest version.
+- Run `composer global require laravel/valet` for [Valet](https://laravel.com/docs/8.x/valet)
+  - To update valet run `composer global update`.
+
+## Part two: Getting started with a new project
+
+1.  Did you finish installing the global dependencies from the previous step?
+1.  Clone, or download this repository.
+    - Remember to update the current origin to avoid accidentally pushing project-specific changes to the craft-starter. Example:
+    1. Update the current `origin` with `git remote set-url origin git@github.com:netliferesearch/repository-name.git`
+    1. Push to the new origin with `git push --set-upstream origin master`
 1.  Run `npm install` to install NPM dependencies.
 1.  Run `valet link <name-of-project>` to link the repository.
 1.  Run `valet secure <name-of-project>` to add a SSL-certificate.
@@ -20,48 +38,40 @@ Looking to get started with Docker instead? See [using-docker.md](using-docker.m
     - DATABASE_URL=mysql://username@localhost/<name-of-project>
 1.  Go to `https://<name-of-project>.test/admin` to install Craft.
 
-### Troubleshooting getting started
+## Troubleshooting
 
-Running PHP, Nginx and MySQL natively on the host machine can definitely be tricky.
+_It is tricky_ to run PHP, Nginx and MySQL natively on the host machine. While this starter tries to create a smooth startup you will need to get comfortable with the terminal and debugging your host environment.
 
-### Start livereloading and asset building on localhost:3000
+Here's an incomplete list with everything that can go wrong with setting up this starter and suggestions on how to debug and fix it.
 
-When you have docker-compose running in one terminal window please open a second window where you run `npm run dev`. This will start a process that will be building our frontend dependencies. Our build setup provides a [`localhost:3000`](http://localhost:3000) address that shows the same as localhost:5000 but also has livereloading.
+Did you deal with an issue not covered here? Please update this list with a pull request so that you can save time for others!
 
-Edit CSS and JavaScript in the `/resources/`-folder. Webpack will compile, transpile, minify it into the `public` folder, ready for production. If you put files in the assets-folder, Webpack will handle those too (see file-loader).
+### Database
 
-The `main.css` is built into `public/dist/main.dist.css` and it injects vendor prefixes and inlines smaller static resources (icon fonts for example).
+Things to try if you're having trouble installing and running [MariaDB](https://mariadb.org/):
 
-The file `resources/js/main.js` is built into `public/dist/main.dist.js`, and it uses Babel, allowing you to both write ES6 as well as using a Node.js style if you prefer.
+- Do you have [MAMP](https://www.mamp.info) installed? Uninstall it.
+- Do you have [MySQL](https://www.mysql.com/) installed (not MariaDB)? Uninstall it.
 
-Both files are included in `./templates/_layout.twig`
+MariaDB can have trouble starting up due to old config files laying around. Guide to fully purging the machine before installing MariaDB.
 
-When you want to login into Craft you'll need to go to [`localhost:5000/admin`](http://localhost:5000/admin), because [`localhost:3000`](http://localhost:3000) is just a livereloading proxy that can't handle logins.
+1. Run `brew uninstall mysql`
+1. Run `brew uninstall mariadb`
+1. Run `find / -name 'mysql'` to find remaining mysql files. Delete these files.
+1. Run `find / -name 'my.cnf' -not -path "/Library/*"` to find remaining mysql configuration files. Delete these files.
+1. Then reboot your computer to ensure to remove any running mysql processes and free occupied ports.
+1. Finally you're ready to run `brew install mariadb` be sure to keep an eye on the terminal messages during the installation.
 
-## Changing the remote git repository
+### Valet (Nginx, PHP)
 
-If you have cloned this project, the git remote `origin` is set to the craft-starter repository. Unless you're actually working on improving the craft-starter, you should set the remote `origin` to your project repository.
+- Run `valet` to see what commands it offers.
+- Run `valet log` to see log options.
+- If you're getting Nginx "Gateway 502 error" you can inspect its logs using `valet log nginx`.
+  - This might be an error from PHP not running. To fix this you can call `valet use php --force`.
 
-1.  Update the current `origin` with `git remote set-url origin git@github.com:netliferesearch/repository-name.git`
-2.  Push to the new origin with `git push --set-upstream origin master`
+### PHP dependencies
 
-## What about assets?!
+If you recently updated PHP you might have old packages.
 
-We usually use S3 on Amazon Web Services. By storing assets in S3 we have an easier time switching between various server environments without manually copying assets around.
-
-S3 is a bit complicated to configure so we have created [AWS helper scripts here](https://github.com/netliferesearch/aws-helper-scripts). Be sure to use Netlife's AWS account.
-
-**Gotcha:** Craft CMS doesn't support bucket location Frankfurt because it uses a newer authentication method.
-
-## <a name="global-deps"></a> Global dependencies for the craft-starter
-
-Perform the following steps in a terminal: You only need to do this once per laptop.
-
-- Start by [installing Homebrew (`brew`)](https://brew.sh/)
-- Run `brew install nvm` for [Node Version Manager](https://github.com/nvm-sh/nvm). This is a nice to have for administrating Node versions.
-- Run `brew install php` for the latest version of PHP.
-- Run `brew install mariadb` for the MySQL command line tools with MariaDB.
-- Run `brew install composer` for [Composer](https://getcomposer.org/).
-  - Run `composer self-update` to update Composer to latest version.
-- Run `composer global require laravel/valet` for [Valet](https://laravel.com/docs/8.x/valet)
-  - To update valet run `composer global update`.
+1. Delete the `vendor/` folder to remove PHP packages.
+1. Run `composer install` to re-download PHP packages.
