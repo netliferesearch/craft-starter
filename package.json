@@ -10,9 +10,7 @@
     "build": "npm run clean && NODE_ENV=production webpack --mode production --progress --devtool source-map",
     "postinstall": "npm run build",
     "db:arcustech:download": "hamstr mysqldump --tunnel -p docker-src/db-dump/dump.sql prod",
-    "docker:rebuild": "docker-compose down && docker-compose up",
     "clean": "rimraf ./public/dist",
-    "composer": "docker run -v $(pwd):/var/www/html -it --rm netlifedesign/craft-starter-base composer",
     "prepare": "husky install"
   },
   "engines": {
