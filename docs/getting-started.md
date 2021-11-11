@@ -32,15 +32,17 @@ When installing these dependencies keep in mind that they should try to match th
     - Update the current `origin` with `git remote set-url origin git@github.com:netliferesearch/repository-name.git`
     - Push to the new origin with `git push --set-upstream origin master`
 1.  Run `npm install` to install NPM dependencies.
+    - use `nvm use <node-version>` to change Node version.
 1.  Run `composer install` to install PHP dependencies.
 1.  Run `valet link <name-of-project>` to link the repository.
 1.  Run `valet secure <name-of-project>` to add a SSL-certificate.
 1.  Check if the project is running with `valet links`. You should be able to
     see your project; `https://<name-of-project>.test`
 1.  Run `mysql` to log into the locally running mariadb database.
-    - Inside the MySQL prompt create a new database by calling `CREATE DATABASE <name-of-project> CHARACTER SET UTF8mb4 COLLATE utf8mb4_danish_ci;` Trivia: We use `utf8mb4_danish_ci` to ensure proper ordering of ÆØÅ.
+    - Inside the MySQL prompt create a new database by calling `CREATE DATABASE <name-of-project> CHARACTER SET UTF8mb4 COLLATE utf8mb4_danish_ci;`. Trivia: We use `utf8mb4_danish_ci` to ensure proper ordering of ÆØÅ.
     - To learn your mysql username run `SELECT USER(),CURRENT_USER();` inside the mysql prompt.
-1.  Run `cp .env.example .env` to create a `.env` configuration file based on the example file and complete its configuration (replace instances of <name-of-project>).
+1.  Run `cp .env.example .env` to create a `.env` configuration file;
+    1.  Within `.env` update `PRIMARY_SITE_URL` and `DATABASE_URL` (remember to replace `<name-of-project>`, `db_user` & `db_password`).
 1.  Go to `https://<name-of-project>.test/admin` to install Craft.
 
 ## Troubleshooting
