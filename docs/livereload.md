@@ -1,6 +1,7 @@
 # Start livereloading and asset building on localhost:3000
 
-Remember to update the `proxy`-address in [`webpack.config.js`](../webpack.config.js) to the same as `PRIMARY_SITE_URL` in `.env`.
+1. Run `npm run dev` to start a Browsersync instance listening on localhost:3000 that is a proxy in front of the `PRIMARY_SITE_URL` as defined in the `.env` file.
+1. You will get an insecure https error from BrowserSync, so you'll need to explicitly trust the connection for the proxy request to go trough.
 
 Edit CSS and JavaScript in the `/resources/`-folder. Webpack will compile, transpile, minify it into the `public` folder, ready for production. If you put files in the assets-folder, Webpack will handle those too (see file-loader).
 
@@ -10,7 +11,7 @@ The file `resources/js/main.js` is built into `public/dist/main.dist.js`, and it
 
 Both files are included in `./templates/_layout.twig`
 
-When you want to login into Craft you'll need to go to [`<name-of-project>.test/admin`](http://<name-of-project>.test/admin), because [`localhost:3000`](http://localhost:3000) is just a livereloading proxy that can't handle logins.
+When you want to login into Craft you'll need to go to [`<name-of-project>.test/admin`](http://<name-of-project>.test/admin), because [`localhost:3000`](https://localhost:3000) is just a livereloading proxy that can't handle logins.
 
 ## With Docker
 

@@ -1,3 +1,4 @@
+require('dotenv').config()
 const path = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin')
@@ -45,8 +46,18 @@ module.exports = {
       port: 3000,
       cors: true,
       notify: false,
-      proxy: 'http://localhost:5000',
+      https: true,
+      proxy: getEnv('PRIMARY_SITE_URL'),
       files: ['./config', './templates'],
     }),
   ],
+}
+
+// getEnv throws if variable not defined.
+function getEnv(str) {
+  const val = process.env[str]
+  if (!val) {
+    throw Error(`process.env["${str}"] was not found`)
+  }
+  return val
 }
