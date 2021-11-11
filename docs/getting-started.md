@@ -44,6 +44,7 @@ When installing these dependencies keep in mind that they should try to match th
 1.  Run `cp .env.example .env` to create a `.env` configuration file;
     1.  Within `.env` update `PRIMARY_SITE_URL` and `DATABASE_URL` (remember to replace `<name-of-project>`, `db_user` & `db_password`).
 1.  Go to `https://<name-of-project>.test/admin` to install Craft.
+    - **Tip:** There's also a `craft` command line tool that has a lot of useful commands, including a command for running the installation from the terminal. [Learn more about the Craft CLI](https://nystudio107.com/blog/exploring-the-craft-cms-3-console-command-line-interface-cli).
 1.  After the installation of Craft check out [livereloading guide](livereload.md).
 
 ## Troubleshooting
