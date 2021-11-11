@@ -1,6 +1,8 @@
 # Start livereloading and asset building on localhost:3000
 
-When you have docker-compose running in one terminal window please open a second window where you run `npm run dev`. This will start a process that will be building our frontend dependencies. Our build setup provides a [`localhost:3000`](http://localhost:3000) address that shows the same as localhost:5000 but also has livereloading.
+Update the `proxy`-address in [`webpack.config.js`](../webpack.config.js) to the same as `PRIMARY_SITE_URL` in `.env`.
+
+When you have `docker-compose` running in one terminal window please open a second window where you run `npm run dev`. This will start a process that will be building our frontend dependencies. Our build setup provides a [`localhost:3000`](http://localhost:3000) address that shows the same as localhost:5000 but also has livereloading.
 
 Edit CSS and JavaScript in the `/resources/`-folder. Webpack will compile, transpile, minify it into the `public` folder, ready for production. If you put files in the assets-folder, Webpack will handle those too (see file-loader).
 
