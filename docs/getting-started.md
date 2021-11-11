@@ -6,18 +6,23 @@ Looking to get started with Docker instead? See [using-docker.md](using-docker.m
 
 ## Part one: Installing global dependencies
 
+**Headsup:** To be able to effectively work and debug in the terminal you need to be comfortable with [managing your shell environment](https://fedoramagazine.org/manage-your-shell-environment/).
+
 When installing these dependencies keep in mind that they should try to match the target server environment as close as possible so that you avoid having bugs that only show up in production.
 
 - Start by [installing Homebrew](https://brew.sh/).
 - Run `brew install nvm` for [Node Version Manager](https://github.com/nvm-sh/nvm). This is a nice to have for administrating Node versions.
 - Run `brew install php` for the latest version of PHP.
 - Run `brew install mariadb` for the MySQL command line tools with MariaDB.
-  - **Watch the terminal** output for any potential errors.
-  - Run `brew info mariadb` to re-visit Homebrew's instructions on the package.
+  1. **Watch the terminal** output for any potential errors.
+  1. Run `brew info mariadb` to re-visit Homebrew's instructions on the package.
+  1. Run `brew services mariadb start` to permanently run the database in the background across computer restarts.
+  1. **Alternatively** run `mysql.server start` to only run the server until next computer restart.
+  1. Finally, after the mysql server process has started. Run `mysql` on the terminal to verify that you're able to log into the database.
 - Run `brew install composer` for [Composer](https://getcomposer.org/).
   - Run `composer self-update` to update Composer to latest version.
-- Run `composer global require laravel/valet` for [Valet](https://laravel.com/docs/8.x/valet)
-  - To update valet run `composer global update`.
+- Install `valet` which is a command-line tool that helps setup a local PHP development environment. [See Valet installation guide](https://laravel.com/docs/8.x/valet).
+  - **Tip:** Valet will always ask you to fill in password for it make changes, but you can run `valet trust` to avoid that.
 
 ## Part two: Getting started with a new project
 
@@ -27,6 +32,7 @@ When installing these dependencies keep in mind that they should try to match th
     - Update the current `origin` with `git remote set-url origin git@github.com:netliferesearch/repository-name.git`
     - Push to the new origin with `git push --set-upstream origin master`
 1.  Run `npm install` to install NPM dependencies.
+1.  Run `composer install` to install PHP dependencies.
 1.  Run `valet link <name-of-project>` to link the repository.
 1.  Run `valet secure <name-of-project>` to add a SSL-certificate.
 1.  Check if the project is running with `valet links`. You should be able to
