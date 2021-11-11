@@ -7,6 +7,4 @@ license.key
 /public/dist
 /public/cpresources
 *.sql
-
-
-
+/config/project

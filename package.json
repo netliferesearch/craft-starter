@@ -8,11 +8,8 @@
     "start": "echo 'You probably want to $ npm run dev'",
     "dev": "npm run clean && webpack --watch --mode development --progress",
     "build": "npm run clean && NODE_ENV=production webpack --mode production --progress --devtool source-map",
-    "postinstall": "npm run build",
     "db:arcustech:download": "hamstr mysqldump --tunnel -p docker-src/db-dump/dump.sql prod",
-    "docker:rebuild": "docker-compose down && docker-compose up",
     "clean": "rimraf ./public/dist",
-    "composer": "docker run -v $(pwd):/var/www/html -it --rm netlifedesign/craft-starter-base composer",
     "prepare": "husky install"
   },
   "engines": {
@@ -28,6 +25,7 @@
     "browser-sync": "^2.26.12",
     "browser-sync-webpack-plugin": "^2.2.2",
     "css-loader": "^4.2.2",
+    "dotenv": "^10.0.0",
     "file-loader": "^6.2.0",
     "hamstr": "^1.0.3",
     "husky": "^7.0.4",
