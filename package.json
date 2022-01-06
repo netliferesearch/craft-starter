@@ -6,8 +6,8 @@
   "private": true,
   "scripts": {
     "start": "echo 'You probably want to $ npm run dev'",
-    "dev": "npm run clean && webpack --watch --mode development --progress",
-    "build": "npm run clean && NODE_ENV=production webpack --mode production --progress --devtool source-map",
+    "dev": "vite",
+    "build": "vite build",
     "db:arcustech:download": "hamstr mysqldump --tunnel -p docker-src/db-dump/dump.sql prod",
     "clean": "rimraf ./public/dist",
     "prepare": "husky install"
@@ -19,26 +19,20 @@
   "author": "Netlife Design",
   "license": "MIT",
   "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.4",
-    "babel-preset-env": "^1.7.0",
-    "browser-sync": "^2.26.12",
-    "browser-sync-webpack-plugin": "^2.2.2",
-    "css-loader": "^4.2.2",
+    "@vitejs/plugin-legacy": "^1.6.2",
     "dotenv": "^10.0.0",
-    "file-loader": "^6.2.0",
     "hamstr": "^1.0.3",
     "husky": "^7.0.4",
     "lint-staged": "^11.2.6",
-    "mini-css-extract-plugin": "^0.11.0",
     "postcss-cssnext": "^3.1.0",
     "postcss-import": "^11.1.0",
-    "postcss-loader": "^2.1.5",
     "prettier": "^2.3.2",
     "prettier-plugin-twig-melody": "^0.4.6",
     "rimraf": "^2.6.2",
-    "webpack": "^4.44.1",
-    "webpack-cli": "^3.3.12"
+    "rollup-plugin-copy": "^3.4.0",
+    "vite": "^2.7.10",
+    "vite-plugin-mkcert": "^1.5.2",
+    "vite-plugin-restart": "^0.1.0"
   },
   "postcss": {
     "plugins": {
