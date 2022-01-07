@@ -1,22 +1,54 @@
 # Start livereloading and asset building on localhost:3000
 
-1. Run `npm run dev` to start a Browsersync instance listening on localhost:3000 that is a proxy in front of the `PRIMARY_SITE_URL` as defined in the `.env` file.
-1. You will get an insecure https error from BrowserSync, so you'll need to explicitly trust the connection for the proxy request to go trough.
+1. Run `npm run dev` to start a [Vite](https://vitejs.dev/) Server on localhost:3000 that will serve script and style resources.
+1. On the initial `npm run dev` you might be prompted for you password to authorize the creation of a SSL certificat for you localhost so that the resources can be served from https://localhost:3000.
 
-Edit CSS and JavaScript in the `/resources/`-folder. Webpack will compile, transpile, minify it into the `public` folder, ready for production. If you put files in the assets-folder, Webpack will handle those too (see file-loader).
+> **NB!** Note that the root of https://localhost:3000 is not serving anything, only the path to your resources (e.g. https://localhost:3000/resources/js/main.js').
 
-The `main.css` is built into `public/dist/main.dist.css` and it injects vendor prefixes and inlines smaller static resources (icon fonts for example).
+With `npm run dev` running, when you edit CSS and JavaScript in the `/resources/`-folder, Vite will provide a Hot Module Replacement (HMR) experience to your browser running [`<name-of-project>.test`](http://<name-of-project>.test) - refreshing changes on save.
 
-The file `resources/js/main.js` is built into `public/dist/main.dist.js`, and it uses Babel, allowing you to both write ES6 as well as using a Node.js style if you prefer.
+To achieve HMR, the CSS is imported into the main JS-file and added to the DOM via the [Craft Vite plugin](https://plugins.craftcms.com/vite) (when in `dev` mode):
 
-Both files are included in `./templates/_layout.twig`
+```
+{{ craft.vite.script('resources/js/main.js', false) }}
+```
 
-When you want to login into Craft you'll need to go to [`<name-of-project>.test/admin`](http://<name-of-project>.test/admin), because [`localhost:3000`](https://localhost:3000) is just a livereloading proxy that can't handle logins.
+Vite will also be listening to changes in yor `template`-files and refresh the browser window when files change.
+
+## Build for production
+
+To build for production, run `npm run build` (this will typically be automated as part of the deploy pipelines).
+
+When `npm run build` is run, Vite vil use Rollup to transpile, minify etc resources and generate production ready files in the `public/dist` folder. It will generate ESM files for modern browsers and legacy-versions for older browsers, as well provide automatic cache busting through hashes in the filenames.
+
+When not in dev mode the `{{ craft.vite.script(...) }}` tag will inject the correct paths to the DOM.
+
+Vite is mostly zero-config, but can be customized in the `/vite.config.js`-file.
+
+The Craft Vite Plugin can be configured in the `/config/vite.php`-file.
+
+For more details and guides on cofiguration, see:
+
+- https://nystudio107.com/blog/using-vite-js-next-generation-frontend-tooling-with-craft-cms
+- https://vitejs.dev/guide/#scaffolding-your-first-vite-project
+- https://nystudio107.com/docs/vite/
 
 ## With Docker
 
-Remember to read the [using Docker guide](using-docker.md)
+Remember to read the [using Docker guide](using-docker.md).
 
-When you have `docker-compose` running in one terminal window please open a second window where you run `npm run dev`. This will start a process that will be building our frontend dependencies. Our build setup provides a [`localhost:3000`](http://localhost:3000) address that shows the same as localhost:5000 but also has livereloading.
+If you are running in Docker, you need to make a couple of adjustments:
 
-When you want to login into Craft you'll need to go to [`localhost:5000/admin`](http://localhost:5000/admin), because [`localhost:3000`](http://localhost:3000) is just a livereloading proxy that can't handle logins.
+1.  In `/config/vite.php`, set `devServerPublic` variable to `http://localhost:3000/` (not `https`).
+1.  Update the `server`object of the vite config file (`/vite.config.js`) to the following:
+
+````
+  server: {
+    origin: 'https://localhost:3000',
+    host: '0.0.0.0',  // <- for docker
+    hmr: {
+      host: 'localhost',
+    },
+  },
+```
+````
