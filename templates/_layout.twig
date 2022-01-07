@@ -11,6 +11,8 @@
       {% endif %}{{ siteName }}
     </title>
     <link rel="home" href="{{ siteUrl }}" />
+
+    {{ craft.vite.script('resources/js/main.js', false) }}
   </head>
 
   <body>
@@ -30,7 +32,5 @@
     {% cache globally using key 'page-footer' if not craft.app.config.general.devMode %}
       {% include 'partials/footer' %}
     {% endcache %}
-
-    {{ craft.vite.script('resources/js/main.js', false) }}
   </body>
 </html>
