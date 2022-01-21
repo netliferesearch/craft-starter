@@ -7,6 +7,8 @@
 
 With `npm run dev` running, when you edit CSS and JavaScript in the `/resources/`-folder, Vite will provide a Hot Module Replacement (HMR) experience to your browser running [`<name-of-project>.test`](http://<name-of-project>.test) - refreshing changes on save.
 
+> **NB!** The frontend code will throw an `Calling unknown method` error if the Vite plugin hasn't been enabled yet in the Craft dashboard under settings -> plugins.
+
 To achieve HMR, the CSS is imported into the main JS-file and added to the DOM via the [Craft Vite plugin](https://plugins.craftcms.com/vite) (when in `dev` mode):
 
 ```
