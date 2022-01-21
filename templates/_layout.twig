@@ -11,7 +11,8 @@
       {% endif %}{{ siteName }}
     </title>
     <link rel="home" href="{{ siteUrl }}" />
-    <link rel="stylesheet" href="/dist/main.dist.css?v={{ alias('@deployId') }}" />
+
+    {{ craft.vite.script('resources/js/main.js', false) }}
   </head>
 
   <body>
@@ -31,7 +32,5 @@
     {% cache globally using key 'page-footer' if not craft.app.config.general.devMode %}
       {% include 'partials/footer' %}
     {% endcache %}
-
-    <script src="/dist/main.dist.js?v={{ alias('@deployId') }}"></script>
   </body>
 </html>

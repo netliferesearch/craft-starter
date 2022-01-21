@@ -3,6 +3,7 @@
     "craftcms/cms": "3.7.20",
     "craftcms/redactor": "2.5.0",
     "nystudio107/craft-seomatic": "3.2.42",
+    "nystudio107/craft-vite": "^1.0",
     "sebastianlenz/linkfield": "^1.0",
     "vlucas/phpdotenv": "^3.4.0"
   },
