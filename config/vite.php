@@ -71,17 +71,4 @@ return [
      * @var bool Whether the modulepreload-polyfill shim should be included
      */
     'includeModulePreloadShim' => true,
-
-    /**
-     * @var string File system path (or URL) to where the Critical CSS files are stored
-     * Currently not implemented
-     */
-    // 'criticalPath' => '@webroot/dist/criticalcss',
-
-    /**
-     * @var string the suffix added to the name of the currently rendering template for the critical css file name
-     *      * Currently not implemented
-
-     */
-    // 'criticalSuffix' =>'_critical.min.css',
 ];
