@@ -40,11 +40,8 @@ export default ({ command }) => ({
     mkcert(),
   ],
 
-  // publicDir: '../resources/public',
-
   server: {
     origin: 'https://localhost:3000',
-    // host: '0.0.0.0',
     https: true,
     hmr: {
       host: 'localhost',
