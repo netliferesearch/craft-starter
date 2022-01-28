@@ -20,24 +20,15 @@
   "license": "MIT",
   "devDependencies": {
     "@vitejs/plugin-legacy": "^1.6.2",
-    "dotenv": "^10.0.0",
     "hamstr": "^1.0.3",
     "husky": "^7.0.4",
     "lint-staged": "^11.2.6",
-    "postcss-cssnext": "^3.1.0",
-    "postcss-import": "^11.1.0",
     "prettier": "^2.3.2",
     "prettier-plugin-twig-melody": "^0.4.6",
     "rimraf": "^2.6.2",
     "vite": "^2.7.10",
     "vite-plugin-mkcert": "^1.5.2",
     "vite-plugin-restart": "^0.1.0"
-  },
-  "postcss": {
-    "plugins": {
-      "postcss-import": {},
-      "postcss-cssnext": {}
-    }
   },
   "prettier": {
     "tabWidth": 2,
