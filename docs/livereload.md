@@ -23,7 +23,7 @@ To build for production, run `npm run build` (this will typically be automated a
 
 When `npm run build` is run, Vite vil use Rollup to transpile, minify etc resources and generate production ready files in the `public/dist` folder. It will generate ESM files for modern browsers and legacy-versions for older browsers, as well provide automatic cache busting through hashes in the filenames.
 
-When not in dev mode the `{{ craft.vite.script(...) }}` tag will inject the correct paths to the DOM.
+When not in dev mode the `{{ craft.vite.script(...) }}` tag will inject the correct paths to the DOM. This means that when testing build configuration locally, you need to switch your `CRAFT_ENVIRONMENT` to `production` or `staging` in your .env.
 
 Vite is mostly zero-config, but can be customized in the `/vite.config.js`-file.
 
