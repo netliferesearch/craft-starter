@@ -31,11 +31,6 @@ return [
 
         // be sure to update php upload limit also
         'maxUploadFileSize' => '20M',
-
-        // Alias to bust cache. Needs some setup in buddy.works
-        'aliases' => [
-            '@deployId' => 'VERSION_CODE',
-        ],
     ],
 
     // Dev environment settings
