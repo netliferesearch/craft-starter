@@ -41,10 +41,11 @@ Remember to read the [using Docker guide](using-docker.md).
 
 If you are running in Docker, you need to make a couple of adjustments:
 
-1.  In `/config/vite.php`, set `devServerPublic` variable to `http://localhost:3000/` (not `https`).
-1.  Update the `server`object of the vite config file (`/vite.config.js`) to the following:
+1.  In [`vite.php`](/config/vite.php), set `devServerPublic` variable to `http://localhost:3000/` (not `https`).
+1. Update `devServerPublic` in [`vite.php`](/config/vite.php) to use `http` instead of `https`.
+1.  Update the `server`-object in [`vite.config.js`](/vite.config.js) to the following:
 
-````
+```js
   server: {
     origin: 'https://localhost:3000',
     host: '0.0.0.0',  // <- for docker
@@ -53,4 +54,3 @@ If you are running in Docker, you need to make a couple of adjustments:
     },
   },
 ```
-````
