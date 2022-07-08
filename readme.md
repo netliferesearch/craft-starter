@@ -24,7 +24,8 @@ See also the [docs/](docs) folder for useful guides including:
 
 ## Things to know
 
-What should future developers be aware about when developing on this rig?
+- What should future developers be aware about when developing on this rig?
+- Where are the assets hosted? AWS S3, local filesystem, somwhere else?
 
 ### Included plugins
 
