@@ -1,4 +1,7 @@
 {
+  "name": "netlife/craft-starter",
+  "description": "Good defaults for Craft CMS 3",
+  "license": "proprietary",
   "require": {
     "craftcms/cms": "3.7.41",
     "craftcms/redactor": "2.10.8",

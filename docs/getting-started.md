@@ -47,6 +47,8 @@ When installing these dependencies keep in mind that they should try to match th
 1.  Go to `https://<name-of-project>.test/admin` to install Craft. (NB [Database Connection Error](#database-connection-error)).
     - **Tip:** There's also a `craft` command line tool that has a lot of useful commands, including a command for running the installation from the terminal. [Learn more about the Craft CLI](https://nystudio107.com/blog/exploring-the-craft-cms-3-console-command-line-interface-cli).
 1.  After the installation of Craft check out [livereloading guide](livereload.md).
+1.  Update [`package.json`](/package.json) `name`, `description` and `version`.
+1.  Update [`composer.json`](/composer.json) `name` and `description`.
 
 ## Troubleshooting
 
