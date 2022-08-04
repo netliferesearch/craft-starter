@@ -40,15 +40,17 @@ When installing these dependencies keep in mind that they should try to match th
     see your project; `https://<name-of-project>.test`
 1.  Run `mysql` to log into the locally running mariadb database.
     - Inside the MySQL prompt create a new database by calling `CREATE DATABASE <name-of-project> CHARACTER SET UTF8mb4 COLLATE utf8mb4_danish_ci;`. Trivia: We use `utf8mb4_danish_ci` to ensure proper ordering of ÆØÅ.
+    - `character` and `collation` can also be set in [db.php](/config/db.php)
     - To learn your mysql username run `SELECT USER(),CURRENT_USER();` inside the mysql prompt.
     - Exit the mysql prompt (type `quit`) before continuing.
 1.  Run `cp .env.example .env` to create a `.env` configuration file;
-    1.  Within `.env` update `PRIMARY_SITE_URL` and `DATABASE_URL` (remember to replace `<name-of-project>`, `db_user` & `db_password`).
+    1.  Within `.env` update `PRIMARY_SITE_URL` and `DB`-variables (remember to replace `<name-of-project>`, `db_user` & `db_password`).
 1.  Go to `https://<name-of-project>.test/admin` to install Craft. (NB [Database Connection Error](#database-connection-error)).
     - **Tip:** There's also a `craft` command line tool that has a lot of useful commands, including a command for running the installation from the terminal. [Learn more about the Craft CLI](https://nystudio107.com/blog/exploring-the-craft-cms-3-console-command-line-interface-cli).
 1.  After the installation of Craft check out [livereloading guide](livereload.md).
 1.  Update [`package.json`](/package.json) `name`, `description` and `version`.
 1.  Update [`composer.json`](/composer.json) `name` and `description`.
+1.  Remember to remove `/config/project` from [.gitignore](/.gitignore) so that your changes in the project config gets pushed to GitHub. 
 
 ## Troubleshooting
 
@@ -64,7 +66,7 @@ If you are getting a Craft error that says:
 > 
 > Craft CMS can’t connect to the database with the credentials in config/db.php.
 
-Confirm you have the right credentials and if so try using `127.0.0.1` instead of `localhost` in the `.env` `DATABASE_URL` 
+Confirm you have the right credentials and if so try using `127.0.0.1` instead of `localhost` in the `.env` `DB_`-variables 
 
 ### Database
 
