@@ -5,8 +5,8 @@
   "require": {
     "craftcms/cms": "3.7.50",
     "craftcms/redactor": "2.10.10",
-    "nystudio107/craft-seomatic": "3.4.36",
-    "nystudio107/craft-vite": "1.0.26",
+    "nystudio107/craft-seomatic": "3.4.37",
+    "nystudio107/craft-vite": "1.0.27",
     "sebastianlenz/linkfield": "^1.0",
     "vlucas/phpdotenv": "^3.4.0"
   },
