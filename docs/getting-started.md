@@ -16,7 +16,7 @@ When installing these dependencies keep in mind that they should try to match th
 - Run `brew install mariadb` for the MySQL command line tools with MariaDB.
   1. **Watch the terminal** output for any potential errors.
   1. Run `brew info mariadb` to re-visit Homebrew's instructions on the package.
-  1. Run `brew services mariadb start` to permanently run the database in the background across computer restarts.
+  1. Run `brew services start mariadb ` to permanently run the database in the background across computer restarts.
   1. **Alternatively** run `mysql.server start` to only run the server until next computer restart.
   1. Finally, after the mysql server process has started. Run `mysql` on the terminal to verify that you're able to log into the database.
 - Run `brew install composer` for [Composer](https://getcomposer.org/).
