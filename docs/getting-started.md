@@ -39,7 +39,7 @@ When installing these dependencies keep in mind that they should try to match th
 1.  Check if the project is running with `valet links`. You should be able to
     see your project; `https://<name-of-project>.test`
 1.  Run `mysql` to log into the locally running mariadb database.
-    - Inside the MySQL prompt create a new database by calling `CREATE DATABASE <name-of-project> CHARACTER SET UTF8mb4 COLLATE utf8mb4_danish_ci;`. Trivia: We use `utf8mb4_danish_ci` to ensure proper ordering of ÆØÅ.
+    - Inside the MySQL prompt create a new database by calling `CREATE DATABASE `<name-of-project>` CHARACTER SET UTF8mb4 COLLATE utf8mb4_danish_ci;`. Trivia: We use `utf8mb4_danish_ci` to ensure proper ordering of ÆØÅ.
     - `character` and `collation` can also be set in [db.php](/config/db.php)
     - To learn your mysql username run `SELECT USER(),CURRENT_USER();` inside the mysql prompt.
     - Exit the mysql prompt (type `quit`) before continuing.
