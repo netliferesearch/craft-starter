@@ -22,7 +22,7 @@
     "@vitejs/plugin-legacy": "^1.6.2",
     "hamstr": "^1.0.3",
     "husky": "^7.0.4",
-    "lint-staged": "^11.2.6",
+    "lint-staged": "^13.2.1",
     "prettier": "^2.3.2",
     "prettier-plugin-twig-melody": "^0.4.6",
     "rimraf": "^2.6.2",
