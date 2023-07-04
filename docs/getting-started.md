@@ -2,8 +2,6 @@
 
 _Read through the readme_, and if you are stuck, don't hesitate to ask in #craft in Slack. If you have made some smart improvement to the tooling or setup of in your Craft project, _please contribute to this starter by making a pull request_.
 
-Looking to get started with Docker instead? See [using-docker.md](using-docker.md).
-
 ## Part one: Installing global dependencies
 
 **Headsup:** To be able to effectively work and debug in the terminal you need to be comfortable with [managing your shell environment](https://fedoramagazine.org/manage-your-shell-environment/).
@@ -51,7 +49,7 @@ When installing these dependencies keep in mind that they should try to match th
 1.  After the installation of Craft check out [livereloading guide](livereload.md).
 1.  Update [`package.json`](/package.json) `name`, `description` and `version`.
 1.  Update [`composer.json`](/composer.json) `name` and `description`.
-1.  Remember to remove `/config/project` from [.gitignore](/.gitignore) so that your changes in the project config gets pushed to GitHub. 
+1.  Remember to remove `/config/project` from [.gitignore](/.gitignore) so that your changes in the project config gets pushed to GitHub.
 
 ## Troubleshooting
 
@@ -62,12 +60,14 @@ Here's an incomplete list with everything that can go wrong with setting up this
 Did you deal with an issue not covered here? Please update this list with a pull request so that you can save time for others!
 
 ### Database Connection Error
+
 If you are getting a Craft error that says:
+
 > Database Connection Error – craft\errors\DbConnectException
-> 
+>
 > Craft CMS can’t connect to the database with the credentials in config/db.php.
 
-Confirm you have the right credentials and if so try using `127.0.0.1` instead of `localhost` in the `.env` `DB_`-variables 
+Confirm you have the right credentials and if so try using `127.0.0.1` instead of `localhost` in the `.env` `DB_`-variables
 
 ### Database
 
