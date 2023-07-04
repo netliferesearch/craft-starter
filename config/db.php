@@ -8,13 +8,18 @@
  * @see craft\config\DbConfig
  */
 
-$db_url = parse_url(getenv('JAWSDB_URL') ?: getenv('DATABASE_URL'));
+use craft\helpers\App;
 
 return [
-    'driver' => "mysql", // set mysql or psql
-    'server' => $db_url['host'],
-    'user' => $db_url['user'],
-    'password' => $db_url['pass'],
-    'database' => substr($db_url['path'],1),
-    'tablePrefix' => 'craft'
+    // 'dsn' => App::env('DB_DSN') ?: null,
+    'driver' => App::env('DB_DRIVER'),
+    'server' => App::env('DB_SERVER'),
+    'port' => App::env('DB_PORT'),
+    'database' => App::env('DB_DATABASE'),
+    'user' => App::env('DB_USER'),
+    'password' => App::env('DB_PASSWORD'),
+    'schema' => App::env('DB_SCHEMA'),
+    'tablePrefix' => App::env('DB_TABLE_PREFIX'),
+    // 'charset' => 'utf8',
+    // 'collation' => 'utf8_unicode_ci',
 ];

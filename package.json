@@ -1,7 +1,9 @@
 {
   "name": "netlife-craft-starter",
-  "version": "3.0.0",
-  "description": "Good defaults for Craft CMS 3",
+  "version": "4.0.0",
+  "description": "Good defaults for Craft CMS 4",
+  "author": "Netlife Design",
+  "license": "MIT",
   "main": "index.js",
   "private": true,
   "scripts": {
@@ -15,8 +17,6 @@
     "node": "16.x",
     "npm": "8.x"
   },
-  "author": "Netlife Design",
-  "license": "MIT",
   "devDependencies": {
     "@vitejs/plugin-legacy": "^1.6.2",
     "hamstr": "^1.0.3",
@@ -39,7 +39,9 @@
       "switch,case,default,endswitch",
       "ifchildren,endifchildren",
       "cache,endcache",
-      "js,endjs"
+      "js,endjs",
+      "block,endblock",
+      "for,endfor"
     ]
   },
   "lint-staged": {

@@ -8,43 +8,34 @@
  * @see craft\config\GeneralConfig
  */
 
+use craft\config\GeneralConfig;
+use craft\helpers\App;
+
+$isDev = App::env('CRAFT_ENVIRONMENT') === 'dev';
+$isProd = App::env('CRAFT_ENVIRONMENT') === 'production';
+
 return [
-    // Global settings
-    '*' => [
-        // Default Week Start Day (0 = Sunday, 1 = Monday...)
-        'defaultWeekStartDay' => 0,
+    // Default Week Start Day (0 = Sunday, 1 = Monday...)
+    'defaultWeekStartDay' => 1,
 
-        // Enable CSRF Protection (recommended)
-        'enableCsrfProtection' => true,
+    // Whether generated URLs should omit "index.php"
+    'omitScriptNameInUrls' => true,
 
-        // Whether generated URLs should omit "index.php"
-        'omitScriptNameInUrls' => true,
+    // The URI segment that tells Craft to load the control panel
+    'cpTrigger' => App::env('CP_TRIGGER') ?: 'admin',
 
-        // Control Panel trigger word
-        'cpTrigger' => 'admin',
+    // The secure key Craft will use for hashing and encrypting data
+    'securityKey' => App::env('SECURITY_KEY'),
 
-        // The secure key Craft will use for hashing and encrypting data
-        'securityKey' => getenv('CRAFT_SECURITY_KEY'),
+    // Whether Dev Mode should be enabled (see https://craftcms.com/guides/what-dev-mode-does)
+    'devMode' => $isDev,
 
-        // avoid æøå in slugs.
-        'limitAutoSlugsToAscii' => true,
+    // Whether administrative changes should be allowed
+    'allowAdminChanges' => $isDev,
 
-        // be sure to update php upload limit also
-        'maxUploadFileSize' => '20M',
-    ],
+    // Whether crawlers should be allowed to index pages and following links
+    'disallowRobots' => !$isProd,
 
-    // Dev environment settings
-    'dev' => [
-        // Base site URL
-        'siteUrl' => null,
-
-        // Dev Mode (see https://craftcms.com/support/dev-mode)
-        'devMode' => true,
-    ],
-
-    // Production environment settings
-    'production' => [
-        // Base site URL
-        'siteUrl' => null,
-    ],
+    // Do not allow norwegian characters in slugs
+    'limitAutoSlugsToAscii' => true
 ];
