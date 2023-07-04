@@ -29,6 +29,9 @@ examples of what it can look like.
         <loc>
           {{ entry.url }}
         </loc>
+        <lastmod>
+          {{ entry.dateUpdated|date('c') }}
+        </lastmod>
       </url>
     {% endfor %}
   {% endfor %}
