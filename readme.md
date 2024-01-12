@@ -34,3 +34,9 @@ We've included some plugins that we use in a lot of projects. Most of them are f
 - [Redactor](https://plugins.craftcms.com/redactor) - Adds Redactor WYSIWIG editor field, see config files in config/redactor
 - [Seomatic](https://plugins.craftcms.com/seomatic) - Paid plugin, but really worth it.
 - [Linkfield](https://plugins.craftcms.com/typedlinkfield) - Adds link field type to Craft.
+
+# Environment variables
+We are using the .env-file to store license keys and other variables that Craft uses. You'll find examples in [here](.env.example). Most of these are used in [the config file](config/general.php).
+
+## Plugin license keys
+When installing a new plugin add the license key to the .env-file (and update the .env.example-file), and follow the naming convention (PLUGIN_<PLUGIN_HANDLE>_LICENSE)
