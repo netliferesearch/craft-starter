@@ -33,29 +33,3 @@ return GeneralConfig::create()
         'alwaysShowFocusRings' => true,
         'useShapes' => true,
     ]);
-
-// return [
-//     // Default Week Start Day (0 = Sunday, 1 = Monday...)
-//     'defaultWeekStartDay' => 1,
-
-//     // Whether generated URLs should omit "index.php"
-//     'omitScriptNameInUrls' => true,
-
-//     // The URI segment that tells Craft to load the control panel
-//     'cpTrigger' => App::env('CP_TRIGGER') ?: 'admin',
-
-//     // The secure key Craft will use for hashing and encrypting data
-//     'securityKey' => App::env('SECURITY_KEY'),
-
-//     // Whether Dev Mode should be enabled (see https://craftcms.com/guides/what-dev-mode-does)
-//     'devMode' => $isDev,
-
-//     // Whether administrative changes should be allowed
-//     'allowAdminChanges' => $isDev,
-
-//     // Whether crawlers should be allowed to index pages and following links
-//     'disallowRobots' => !$isProd,
-
-//     // Do not allow norwegian characters in slugs
-//     'limitAutoSlugsToAscii' => true
-// ];
