@@ -1,4 +1,5 @@
 <?php
+
 /**
  * General Configuration
  *
@@ -14,28 +15,47 @@ use craft\helpers\App;
 $isDev = App::env('CRAFT_ENVIRONMENT') === 'dev';
 $isProd = App::env('CRAFT_ENVIRONMENT') === 'production';
 
-return [
-    // Default Week Start Day (0 = Sunday, 1 = Monday...)
-    'defaultWeekStartDay' => 1,
+return GeneralConfig::create()
+    ->aliases([
+        '@webroot' => App::env('WEB_ROOT_PATH'),
+        '@web' => App::env('SITE_URL'),
+    ])
+    ->allowAdminChanges($isDev)
+    ->allowUpdates($isDev)
+    ->devMode($isDev)
+    ->securityKey(App::env('SECURITY_KEY'))
+    ->disallowRobots(!$isProd)
+    ->omitScriptNameInUrls(true)
+    ->defaultWeekStartDay(1)
+    ->cpTrigger(App::env('CP_TRIGGER') ?: 'admin')
+    ->limitAutoSlugsToAscii(true)
+    ->accessibilityDefaults([
+        'alwaysShowFocusRings' => true,
+        'useShapes' => true,
+    ]);
 
-    // Whether generated URLs should omit "index.php"
-    'omitScriptNameInUrls' => true,
+// return [
+//     // Default Week Start Day (0 = Sunday, 1 = Monday...)
+//     'defaultWeekStartDay' => 1,
 
-    // The URI segment that tells Craft to load the control panel
-    'cpTrigger' => App::env('CP_TRIGGER') ?: 'admin',
+//     // Whether generated URLs should omit "index.php"
+//     'omitScriptNameInUrls' => true,
 
-    // The secure key Craft will use for hashing and encrypting data
-    'securityKey' => App::env('SECURITY_KEY'),
+//     // The URI segment that tells Craft to load the control panel
+//     'cpTrigger' => App::env('CP_TRIGGER') ?: 'admin',
 
-    // Whether Dev Mode should be enabled (see https://craftcms.com/guides/what-dev-mode-does)
-    'devMode' => $isDev,
+//     // The secure key Craft will use for hashing and encrypting data
+//     'securityKey' => App::env('SECURITY_KEY'),
 
-    // Whether administrative changes should be allowed
-    'allowAdminChanges' => $isDev,
+//     // Whether Dev Mode should be enabled (see https://craftcms.com/guides/what-dev-mode-does)
+//     'devMode' => $isDev,
 
-    // Whether crawlers should be allowed to index pages and following links
-    'disallowRobots' => !$isProd,
+//     // Whether administrative changes should be allowed
+//     'allowAdminChanges' => $isDev,
 
-    // Do not allow norwegian characters in slugs
-    'limitAutoSlugsToAscii' => true
-];
+//     // Whether crawlers should be allowed to index pages and following links
+//     'disallowRobots' => !$isProd,
+
+//     // Do not allow norwegian characters in slugs
+//     'limitAutoSlugsToAscii' => true
+// ];
