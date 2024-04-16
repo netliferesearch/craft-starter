@@ -14,8 +14,8 @@
     "prepare": "husky install"
   },
   "engines": {
-    "node": "20.x",
-    "npm": "9.x"
+    "node": "20.12.2",
+    "npm": "10.x"
   },
   "devDependencies": {
     "@vitejs/plugin-basic-ssl": "^1.0.1",
