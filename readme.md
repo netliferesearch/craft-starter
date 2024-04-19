@@ -6,7 +6,6 @@ See also the [docs/](docs) folder for useful guides including:
 - [Activating livereload in development](docs/livereload.md).
 - [Handling assets across environments](docs/assets.md).
 - [Testing email locally](https://ryangjchandler.co.uk/posts/setup-mailhog-with-laravel-valet).
-- [Upgrading legacy stuff](docs/upgrading-legacy-rig.md).
 
 # Your project title
 
@@ -31,6 +30,6 @@ See also the [docs/](docs) folder for useful guides including:
 
 We've included some plugins that we use in a lot of projects. Most of them are free. Ask Torgeir or Anna if some is unclear.
 
-- [Redactor](https://plugins.craftcms.com/redactor) - Adds Redactor WYSIWIG editor field, see config files in config/redactor
+- [CKEditor](https://plugins.craftcms.com/ckeditor) - Adds CKEditor WYSIWIG editor field, see config in plugin settings or files config/project/ckeditor
 - [Seomatic](https://plugins.craftcms.com/seomatic) - Paid plugin, but really worth it.
-- [Linkfield](https://plugins.craftcms.com/typedlinkfield) - Adds link field type to Craft.
+- [Hyper](https://plugins.craftcms.com/hyper) - Adds link field type and references with overwritten text to Craft.

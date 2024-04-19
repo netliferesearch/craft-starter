@@ -3,11 +3,11 @@
   "description": "Good defaults for Craft CMS 3",
   "license": "proprietary",
   "require": {
+    "craftcms/ckeditor": "3.8.3",
     "craftcms/cms": "4.8.9",
-    "craftcms/redactor": "3.0.4",
     "nystudio107/craft-seomatic": "4.0.48",
     "nystudio107/craft-vite": "4.0.9",
-    "sebastianlenz/linkfield": "2.1.5",
+    "verbb/hyper": "1.1.27",
     "vlucas/phpdotenv": "^3.4.0"
   },
   "autoload": {
