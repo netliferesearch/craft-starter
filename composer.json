@@ -1,13 +1,13 @@
 {
   "name": "netlife/craft-starter",
-  "description": "Good defaults for Craft CMS 4",
+  "description": "Good defaults for Craft CMS 5",
   "license": "proprietary",
   "require": {
-    "craftcms/ckeditor": "3.8.3",
-    "craftcms/cms": "4.8.9",
-    "nystudio107/craft-seomatic": "4.0.48",
-    "nystudio107/craft-vite": "4.0.9",
-    "verbb/hyper": "1.1.27",
+    "craftcms/ckeditor": "4.0.3",
+    "craftcms/cms": "^5.0.0",
+    "nystudio107/craft-seomatic": "5.0.2",
+    "nystudio107/craft-vite": "5.0.0",
+    "verbb/hyper": "2.0.0-beta.8",
     "vlucas/phpdotenv": "^3.4.0"
   },
   "autoload": {
@@ -19,7 +19,7 @@
     "sort-packages": true,
     "optimize-autoloader": true,
     "platform": {
-      "php": "8.3.2"
+      "php": "8.3"
     },
     "allow-plugins": {
       "craftcms/plugin-installer": true,

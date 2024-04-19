@@ -1,7 +1,7 @@
 {
   "name": "netlife-craft-starter",
-  "version": "4.0.0",
-  "description": "Good defaults for Craft CMS 4",
+  "version": "5.0.0",
+  "description": "Good defaults for Craft CMS 5",
   "author": "Netlife Design",
   "license": "MIT",
   "main": "index.js",
