@@ -1,6 +1,6 @@
 import legacy from '@vitejs/plugin-legacy'
 import ViteRestart from 'vite-plugin-restart'
-import basicSsl from '@vitejs/plugin-basic-ssl'
+import mkcert from 'vite-plugin-mkcert'
 
 // https://vitejs.dev/config/
 export default ({ command }) => ({
@@ -27,7 +27,7 @@ export default ({ command }) => ({
     }),
 
     // Plugin that provides certificate support for vite https development services.
-    basicSsl(),
+    mkcert(),
   ],
 
   server: {
