@@ -6,7 +6,7 @@ When deploying live we use [Servebolt](https://admin.servebolt.com/account) as s
 
 1. Add new bolt, give it a name
 2. Choose "Velg other CMS"
-3. In Advanced option choose PHP 8.1
+3. In Advanced option choose PHP 8.3
 4. Choose Oslo timezone
 
 ## Buddy works

@@ -1,6 +1,6 @@
 {
   "name": "netlife/craft-starter",
-  "description": "Good defaults for Craft CMS 3",
+  "description": "Good defaults for Craft CMS 4",
   "license": "proprietary",
   "require": {
     "craftcms/ckeditor": "3.8.3",
@@ -19,7 +19,7 @@
     "sort-packages": true,
     "optimize-autoloader": true,
     "platform": {
-      "php": "8.0.2"
+      "php": "8.3.2"
     },
     "allow-plugins": {
       "craftcms/plugin-installer": true,
